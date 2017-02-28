@@ -83,6 +83,7 @@
     "changesource": true,
     "override": false,
     "imagelocalization": false,
+    "searchmeta": true,
     "localization": true
   },
   "database": {
