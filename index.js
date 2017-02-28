@@ -7,8 +7,6 @@ const EventEmitter = require('events');
 const child_process = require('child_process');
 const Random = require('./lib/jsrandom');
 const Hash = require("./lib/Hash");
-const Log = require("./lib/log");
-const WebSocket = require('./lib/websocket');
 const DataBase = require("./lib/database");
 const request = require("./lib/request");
 const utils = require("./lib/utils");
@@ -816,7 +814,6 @@ Wedge.prototype.Decoder = decoder;
 Wedge.prototype.Parser = Parser;
 Wedge.prototype.Attributes = Attributes;
 Wedge.prototype.Types = Attributes.classes;
-Wedge.prototype.WebSocket = WebSocket;
 Wedge.prototype.noop = function(){};
 Wedge.prototype.lib = {
     utils:utils,

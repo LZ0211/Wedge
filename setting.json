@@ -16,19 +16,9 @@
       "func": "./plugins/testSelector"
     },
     {
-      "name": "commander",
-      "activated": true,
-      "func": "./plugins/commander"
-    },
-    {
       "name": "deepQuest",
       "activated": true,
       "func": "./plugins/deepQuest"
-    },
-    {
-      "name": "listenWsQuest",
-      "activated": true,
-      "func": "./plugins/listenWsQuest"
     },
     {
       "name": "sendToiReader",
@@ -79,9 +69,6 @@
     "selector": {},
     "replacer": {},
     "decoder": {}
-  },
-  "server": {
-    "port": 8080
   },
   "thread": {
     "batch": 3,

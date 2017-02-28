@@ -1,7 +1,0 @@
-{
-    "width" : 600,
-    "height" : 700,
-    "title" : "E-Book Viewer",
-    "icon" : "./icon/address_books.png",
-    "autoHideMenuBar" : true
-}
