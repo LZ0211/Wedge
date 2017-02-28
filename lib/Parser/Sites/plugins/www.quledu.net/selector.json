@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.quledu\\.net\\/wcxs\\-\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "source": "$('meta[property=\"og:url\"]').attr('content')",
+      "title": "$('meta[property=\"og:title\"]').attr('content')",
+      "author": "$('meta[property=\"og:novel:author\"]').attr('content')",
+      "classes": "$('meta[property=\"og:novel:category\"]').attr('content')",
+      "isend": "$('meta[property=\"og:novel:status\"]').attr('content')",
+      "cover": "$('meta[property=\"og:image\"]').attr('content')",
+      "brief": "$('meta[property=\"og:description\"]').attr('content')"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.quledu\\.net\\/wcxs\\-\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('ul.list-group.list-charts').eq(1).find('a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.quledu\\.net\\/wcxs\\-\\d+\\-\\d+.html$/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "chapterInfos": {
+      "title": "$('.panel-heading').eq(0).text()",
+      "source": "$.location()",
+      "content": "($('.panel-body.content-body.content-ext').html()|| '').replace(this.title($),'')"
+    }
+  }
+}

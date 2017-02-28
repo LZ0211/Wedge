@@ -1,0 +1,34 @@
+{
+  "infoPage": {
+    "match": "true",
+    "indexPage": "$.location()",
+    "footer": "true",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('b > a').eq(0).text()",
+      "author": "'1024核工厂'",
+      "classes": "$('b > a').eq(0).text()",
+      "isend": "false",
+      "cover": "'http://image.hnol.net/c/2016-03/13/13/201603131308166381-2089977.jpg'",
+      "brief": "$('b > a').eq(0).text()"
+    }
+  },
+  "indexPage": {
+    "match": "true",
+    "infoPage": "$.location()",
+    "footer": "true",
+    "bookIndexs": "$('ul a').map((i,v)=>({href:$.location($(v).attr('href').replace('simple/','')),text:$(v).text(),id:$(v).attr('href').split('?t').pop().replace('.html','')})).toArray()"
+  },
+  "contentPage": {
+    "match": "!!$('td.tpc_content').length",
+    "footer": "!!$('small').length",
+    "filter": "$('script').remove()",
+    "filter2": "$('td.tpc_content a').each((i,v)=>$(v).replaceWith($(v).html()))",
+    "chapterInfos": {
+      "title": "$('b > a').eq(0).text()",
+      "id": "$.location().split('?t').pop().replace('.html','')",
+      "source": "$.location()",
+      "content": "$('td.tpc_content').html()"
+    }
+  }
+}

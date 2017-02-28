@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": null,
+      "author": "作&nbsp;&nbsp;&nbsp;&nbsp;者：",
+      "classes": null,
+      "isend": null,
+      "cover": null,
+      "brief": {"    ":"\n"},
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": null,
+      "source": null,
+      "content": ["找本站搜索.*?笔趣阁.*"]
+    }
+  }
+}

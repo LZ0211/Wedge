@@ -1,0 +1,118 @@
+[
+  {
+    "url": "http://se.qidian.com/?kw=%title%",
+    "name": ".qidian.com"
+  },
+  {
+    "url": "http://book.qq.com/search/index/type/all/wd/%title%.html",
+    "name": ".qq.com"
+  },
+  {
+    "url": "http://ebook.qq.com/search/index/keyWord/%title%.html",
+    "name": ".qq.com"
+  },
+  {
+    "url": "http://yuedu.sogou.com/search?keyword=%title%",
+    "name": ".sogou.com"
+  },
+  {
+    "url": "http://search.zongheng.com/search/all/%title%/1.html",
+    "name": ".zongheng.com"
+  },
+  {
+    "url": "http://search.17k.com/search.xhtml?c.st=0&c.q=%title%",
+    "name": ".17k.com"
+  },
+  {
+    "url": "https://www.readnovel.com/search?kw=%title%",
+    "name": ".readnovel.com"
+  },
+  {
+    "url": "http://www.motie.com/rest/daguan/?objectType=2&queryString=%title%",
+    "name": ".motie.com"
+  },
+  {
+    "url": "http://www.hongshu.com/bookstore.html?keyword=%title%&keytype=2",
+    "name": ".hongshu.com"
+  },
+  {
+    "url": "http://zhannei.baidu.com/cse/search?s=13602090313724893225&entry=1&q=%title%",
+    "name": ".xs8.cn"
+  },
+  {
+    "url": "http://www.xxsy.net/search.html?s_wd=%title%",
+    "name": ".xxsy.net"
+  },
+  {
+    "url": "https://www.sogou.com/web?query=%title%+%E7%BA%A2%E8%A2%96%E6%B7%BB%E9%A6%99&ie=utf8&_ast=1488053248&_asf=null&w=01029901&cid=&cid=&sut=5558&sst0=1488053317810&lkt=0%2C0%2C0",
+    "name": ".sogou.com"
+  },
+  {
+    "url": "http://www.zhulang.com/search/index.html",
+    "method": "post",
+    "data": "k=%title%",
+    "name": ".zhulang.com"
+  },
+  {
+    "url": "http://s.hongxiu.com/searchresult.aspx?query=%title%&iftitle=1",
+    "charset": "gbk",
+    "name": ".hongxiu.com"
+  },
+  {
+    "url": "http://www.yousuu.com/search/%title%?type=all",
+    "name": ".yousuu.com"
+  },
+  {
+    "url": "http://xiaoshuo.360.cn/search/?kw=%title%",
+    "name": ".360.cn"
+  },
+  {
+    "url": "http://www.heiyan.com/search/?queryString=%title%",
+    "name": ".heiyan.com"
+  },
+  {
+    "url": "http://www.ruochu.com/search/?queryString=%title%",
+    "name": ".ruochu.com"
+  },
+  {
+    "url": "http://book.km.com/search.html?keyword=%title%",
+    "charset": "gbk",
+    "name": ".km.com"
+  },
+  {
+    "url": "http://www.3gsc.com.cn/search/index/show/pic",
+    "method": "post",
+    "data": "keytype=0&search_key=%title%&ver=new",
+    "name": ".3gsc.com.cn"
+  },
+  {
+    "url": "http://www.tadu.com/search",
+    "method": "post",
+    "data": "query=%title%",
+    "name": ".tadu.com"
+  },
+  {
+    "url": "http://xiaoshuo.sogou.com/search/?key=%title%",
+    "name": ".sogou.com"
+  },
+  {
+    "url": "http://yuedu.163.com/search.do?key=%title%&type=4",
+    "name": ".163.com"
+  },
+  {
+    "url": "http://www.xiang5.com/search.php?keyword=%title%",
+    "name": ".xiang5.com"
+  },
+  {
+    "url": "http://www.shuhai.com/search/%title%?formhash=f88879d7",
+    "name": ".shuhai.com"
+  },
+  {
+    "url": "http://www.cjzww.com/search.html?searchType=All&searchKey=%title%",
+    "name": ".cjzww.com"
+  },
+  {
+    "url": "https://book.douban.com/subject_search?search_text=%title%",
+    "name": ".douban.com"
+  }
+]

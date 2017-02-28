@@ -1,0 +1,14 @@
+<book-snbf version="1.0">
+&para;&nbsp;<head>
+&para;&nbsp;&nbsp;<name>{{=it.meta.title}}</name>
+&para;&nbsp;&nbsp;<author>{{=it.meta.author}}</author>
+&para;&nbsp;&nbsp;<language>ZHO</language>
+&para;&nbsp;&nbsp;<rights>裂章</rights>
+&para;&nbsp;&nbsp;<publisher>裂章</publisher>
+&para;&nbsp;&nbsp;<generator>Node.js</generator>
+&para;&nbsp;&nbsp;<created>裂章</created>
+&para;&nbsp;&nbsp;<abstract>{{=it.meta.brief}}</abstract>
+&para;&nbsp;&nbsp;<cover>cover.jpg</cover>
+&para;&nbsp;</head>
+&para;</book-snbf>
+&para;

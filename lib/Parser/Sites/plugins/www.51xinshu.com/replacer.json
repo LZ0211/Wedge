@@ -1,0 +1,40 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": null,
+      "author": null,
+      "classes": null,
+      "isend": ["状态："],
+      "cover": null,
+      "brief": ["[\\s\\S]*?简介："],
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": null,
+      "source": null,
+      "content": [
+            "【本小说发自.*",
+            "一下.*?第一时间免费阅读。",
+            "手机用户请浏览阅读，更优质的阅读体验。",
+            {"<br \\/>&nbsp;&nbsp;&nbsp;&nbsp;荡漾<":"<"},
+            "\"\\);",
+            " ?\\('",
+            "'\\) -- The CHM[\\s\\S]*"
+        ]
+    }
+  }
+}

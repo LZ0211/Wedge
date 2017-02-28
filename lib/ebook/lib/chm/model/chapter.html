@@ -1,0 +1,18 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN">
+&para;<!-- source={{=it.source}} -->
+&para;<head>
+&para;&nbsp;<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+&para;&nbsp;<link rel="stylesheet" type="text/css" href="css/style.css"/>
+&para;&nbsp;<title>{{=it.title}}</title>
+&para;</head>
+&para;<body>
+&para;&nbsp;<div id="main">
+&para;&nbsp;&nbsp;<h3 id="title">{{=it.title}}</h3>
+&para;&nbsp;&nbsp;<div id="content">
+{{~it.content.split("\n") :value:index}}
+&para;&nbsp;&nbsp;&nbsp;<p>{{=value}}</p>
+{{~}}
+&para;&nbsp;&nbsp;</div>
+&para;&nbsp;</div>
+&para;</body>
+&para;</html>

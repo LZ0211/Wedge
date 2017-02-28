@@ -1,0 +1,36 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": null,
+      "author": null,
+      "classes": null,
+      "isend": null,
+      "cover": null,
+      "brief": "简介：",
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": null,
+      "source": null,
+      "content": ["<img width=\"14\" height=\"16\" src=\"",".png\" \\/>","http:\\/\\/p..qhimg.com\\/",
+        {
+          "t0128e86653bc63b950":"。",
+          "t012baf5ac91f5b5c6b":"，"
+        }]
+    }
+  }
+}

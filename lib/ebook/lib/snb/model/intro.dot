@@ -1,0 +1,17 @@
+<snbc>
+&para;&nbsp;<head>
+&para;&nbsp;&nbsp;<title>书籍简介</title>
+&para;&nbsp;</head>
+&para;&nbsp;<body>
+&para;&nbsp;&nbsp;<img>cover.jpg</img>
+&para;&nbsp;&nbsp;<text><![CDATA[【书名】：{{=it.meta.title}}]]></text>
+&para;&nbsp;&nbsp;<text><![CDATA[【作者】：{{=it.meta.author}}]]></text>
+&para;&nbsp;&nbsp;<text><![CDATA[【状态】：{{=it.meta.isend?"已完结":"连载中"}}]]></text>
+&para;&nbsp;&nbsp;<text><![CDATA[【分类】：{{=it.meta.classes}}]]></text>
+&para;&nbsp;&nbsp;<text><![CDATA[【简介】：]]></text>
+{{~it.meta.brief.split("\n") :value:index}}
+&para;&nbsp;&nbsp;<text><![CDATA[　　{{=value}}]]></text>
+{{~}}
+&para;&nbsp;</body>
+&para;</snbc>
+&para;

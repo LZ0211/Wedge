@@ -1,0 +1,33 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.17k\\.com\\/book\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(点击阅读)').attr('href'))",
+    "footer": "$('.Footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('div.Info > h1').text()",
+      "author": "$('div.author > a.name').text()",
+      "classes": "$('.infoPath a').eq(-2).text()",
+      "isend": "$('.label').text()",
+      "cover": "$.location($('img.book').attr('src'))",
+      "brief": "$('dt.tit').next().find('a').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.17k\\.com\\/list\\/\\d+\\.html$/i.test($.location())",
+    "infoPage": "$.location($('a:contains(返回首页)').attr('href'))",
+    "footer": "$('.Footer').length > 0",
+    "filter": "$('img[alt=\"vip\"]').parent('a').remove()",
+    "bookIndexs": "$('dl.Volume > dd > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text().trim()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.17k\\.com\\/chapter\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.Footer').length > 0",
+    "filter": "$('#chapterContentWapper').find('div,style').remove()",
+    "chapterInfos": {
+      "title": "$('h1').text()",
+      "source": "$.location()",
+      "content": "$('#chapterContentWapper').html()"
+    }
+  }
+}

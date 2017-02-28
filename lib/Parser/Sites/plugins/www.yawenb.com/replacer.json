@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": null,
+      "author": ["作&nbsp;&nbsp;者：","作&nbsp;&nbsp;&nbsp;&nbsp;者：","作者："],
+      "classes": null,
+      "isend": null,
+      "cover": null,
+      "brief": {"    ":"\n","　　":"\n"},
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": ["（.*?[求推荐收藏感谢更月票]+.*?）","\\(.*?[求推荐收藏感谢更月票]+.*?\\)"],
+      "source": null,
+      "content": ["『雅.{0,2}文.{0,2}言.{0,2}情.{0,2}首.{0,2}发』","(凑字){2,}","www.yawen8.com请使用访问本站。","。『雅文言情小说吧』","www.yawen8.com。。","&#\\d{1,5};"]
+    }
+  }
+}

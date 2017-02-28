@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.shuqiba\\.com\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "!!$('#footer').length",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('.book-title h1').text()",
+      "author": "$('.book-stats b').eq(0).text()",
+      "classes": "$('.book-stats b').eq(1).text()",
+      "isend": "$('.book-stats b').eq(2).text()",
+      "cover": "$.location($('.book-img > img').attr('src'))",
+      "brief": "$('.book-intro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.shuqiba\\.com\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "!!$('#footer').length",
+    "bookIndexs": "$('.chapterlist').eq(1).find('a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.shuqiba\\.com\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#BookText').html()"
+    }
+  }
+}

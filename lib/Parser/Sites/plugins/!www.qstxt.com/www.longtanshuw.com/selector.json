@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.longtanshuw\\.com\\/book\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('.info > h1 > a').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "filter": "$('p.author span').remove()",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('.info > h1 > a').text()",
+      "author": "$('p.author').text()",
+      "classes": "$('.txt_nav a').eq(1).text()",
+      "isend": "!$('.lzzico').length",
+      "cover": "$.location($('.con_limg img').attr('src'))",
+      "brief": "$('.info .r_cons').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.longtanshuw\\.com\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location($('.nowplace a').eq(-2).attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('.novel_list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.longtanshuw\\.com\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "!!$('.page_next_preview').length",
+    "filter": "$('.other_links').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

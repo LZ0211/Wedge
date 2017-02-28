@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.bxwx9\\.org\\/binfo\\/\\d+\\/\\d+\\.htm$/i.test($.location())",
+    "indexPage": "$.location($('img[src=\"/images/dian.gif\"]').parent('a').attr('href'))",
+    "footer": "$('.m_foot').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('td > font > strong').text()",
+      "author": "$('td[width=\"16%\"] a').eq(1).text()",
+      "classes": "$('#centerm a').eq(1).text()",
+      "isend": "$('td:contains(文章状态)').next('td').text()",
+      "cover": "$.location($('img.picborder').attr('src'))",
+      "brief": "$('tr:contains(内容简介)').next('tr').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.bxwx9\\.org\\/b\\/\\d+\\/\\d+\\/index\\.html$/i.test($.location())",
+    "infoPage": "$.location($('div.toproad > ul a').attr('href'))",
+    "footer": "$('#copyright').length > 0",
+    "bookIndexs": "$('div.TabCss a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.bxwx9\\.org\\/b\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#footlink').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

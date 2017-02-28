@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": null,
+      "author": "作者：",
+      "classes": "分类：",
+      "isend": null,
+      "cover": null,
+      "brief": ["简介：","作者：.*?无弹窗免费全文阅读为转载.*"],
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": ["（.*?[求推荐收藏感谢更月票]+.*?）","\\(.*?[求推荐收藏感谢更月票]+.*?\\)"],
+      "source": null,
+      "content": ["请记住本书首发域.*","手机用户请浏览.*","&nbsp;天才壹秒記住[^<>]*?為您提供精彩小說閱讀。","http:\\/\\/www.biqukan.com.*?html"]
+    }
+  }
+}

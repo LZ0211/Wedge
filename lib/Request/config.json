@@ -1,0 +1,6 @@
+{
+    "Timeout":30000,
+    "maxReconnects":0,
+    "maxRedirects":5,
+    "Method":"GET"
+}

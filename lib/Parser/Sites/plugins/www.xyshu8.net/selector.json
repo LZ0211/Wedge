@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.xyshu8\\.net\\/Book\\/\\d+\\/Index\\.aspx$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(点击阅读)').attr('href'))",
+    "footer": "!!$('#footer,.footer').length",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('#info h1').text()",
+      "author": "$('#info > h1 > span > a').text()",
+      "classes": "$('div.info td').eq(0).find('a').text()",
+      "isend": "$('b.ny').text()",
+      "cover": "$.location($('.img > img').attr('src'))",
+      "brief": "$('#info > h3 > p').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.xyshu8\\.net\\/Html\\/Book\\/\\d+\\/\\d+\\/Index\\.html$/i.test($.location())",
+    "infoPage": "$.location($('a:contains(书籍介绍)').attr('href'))",
+    "footer": "!!$('#copyRight').length",
+    "bookIndexs": "$('#BookText > ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.xyshu8\\.net\\/Html\\/Book\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

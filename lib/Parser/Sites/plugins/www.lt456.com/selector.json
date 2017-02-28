@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.lt456\\.com\\/modules\\/article\\/articleinfo\\.php\\?id=\\d+$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(点击阅读)').attr('href'))",
+    "footer": "$('#footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('#info h1').text()",
+      "author": "$('.txt b').eq(0).text()",
+      "classes": "$('.txt b').eq(2).text()",
+      "isend": "$('.txt b').eq(1).text()",
+      "cover": "$.location($('.img img').attr('src'))",
+      "brief": "$('#htmljiashao').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.lt456\\.com\\/xs\\/\\d+\\/\\d+\\/index\\.html$/i.test($.location())",
+    "infoPage": "$.location($('#htmldhshuming a').attr('href'))",
+    "footer": "$('#footer').length > 0",
+    "filter": "$('#htmlList dl').eq(0).remove()",
+    "bookIndexs": "$('#htmlList a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.lt456\\.com\\/ltvvv\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#footer').length > 0",
+    "filter": "$('#htmlContent').find('a,script').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#htmlContent').html()"
+    }
+  }
+}

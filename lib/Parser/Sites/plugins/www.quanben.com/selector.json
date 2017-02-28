@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "!!$('.btopt > a').length",
+    "indexPage": "$.location($('.btopt a').attr('href'))",
+    "footer": "!!$('.footer').length",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('h1.f20h').text()",
+      "author": "$('h1.f20h').next().text()",
+      "classes": "$('h1.f20h').next().next().find('a').text()",
+      "isend": "true",
+      "cover": "$.location($('.pic > img').attr('src'))",
+      "brief": "$('div.intro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "!!$('.mulu_list').length",
+    "infoPage": "$.location($('a:contains(返回书页)').eq(0).attr('href'))",
+    "footer": "!!$('.footer').length",
+    "bookIndexs": "$('.mulu_list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "!!$('#htmlContent').length",
+    "footer": "!!$('.footer').length",
+    "filter": "$('#htmlContent').find('div,a,script').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#htmlContent').html()"
+    }
+  }
+}

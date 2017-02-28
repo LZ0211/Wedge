@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.luluxsw\\.com\\/intro\\/\\d+$/i.test($.location())",
+    "indexPage": "$.location($('a.startedbtn').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('.con_lwrap h1').text()",
+      "author": "$('p.author > span > a').eq(0).text()",
+      "classes": "$('.crumbswrap a').eq(1).text()",
+      "isend": "$('p.author > span > a').eq(1).text()",
+      "cover": "$.location($('.con_limg > img').attr('src'))",
+      "brief": "$('div.r_cons').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.luluxsw\\.com\\/yuedu\\/\\d+\\/\\d+\\/index\\.html$/i.test($.location())",
+    "infoPage": "$.location().replace(/yuedu\\/\\d+\\/(\\d+)\\/index.html/,'intro/$1')",
+    "footer": "$('.blinebgs').length > 0",
+    "bookIndexs": "$('div.clearfix a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.luluxsw\\.com\\/yuedu\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#footer').length > 0",
+    "chapterInfos": {
+      "title": "$('.BookCon h1').text()",
+      "source": "$.location()",
+      "content": "$('#BookText').html()"
+    }
+  }
+}

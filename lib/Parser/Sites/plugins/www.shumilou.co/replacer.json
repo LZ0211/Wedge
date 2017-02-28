@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": null,
+      "author": ["状态:[\\s\\S]*","[\\s\\S]*作者:","^\\s*|\\s*$"],
+      "classes": ["简介:[\\s\\S]*","[\\s\\S]*分类:","^\\s*|\\s*$"],
+      "isend": ["分类:[\\s\\S]*","[\\s\\S]*状态:","^\\s*|\\s*$"],
+      "cover": null,
+      "brief": ["分享到：[\\s\\S]*","[\\s\\S]*简介:","^\\s*|\\s*$",".*?《(.*)?》.*?\\1全文阅读关于\\1："],
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": null,
+      "source": null,
+      "content": ["书迷楼www.shumilou.co"]
+    }
+  }
+}

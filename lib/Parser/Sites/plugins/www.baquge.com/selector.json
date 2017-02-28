@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.baquge\\.com\\/files\\/article\\/html\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('#footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('#info h1').text()",
+      "author": "$('#info p').eq(0).text()",
+      "classes": "$('.con_top a').eq(1).text()",
+      "isend": "$('#info p').eq(1).text()",
+      "cover": "$.location($('#fmimg > img').attr('src'))",
+      "brief": "$('#intro > p').eq(0).html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.baquge\\.com\\/files\\/article\\/html\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('#footer').length > 0",
+    "bookIndexs": "$('#list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.baquge\\.com\\/files\\/article\\/html\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

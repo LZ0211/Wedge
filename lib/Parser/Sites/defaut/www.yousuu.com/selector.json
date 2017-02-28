@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.yousuu\\.com\\/book\\/\\d+$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "!!$('.footer').length",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('.media').prev().find('span').text()",
+      "author": "$('li:contains(作者:)').find('a').text()",
+      "classes": "$('#booktag > a.tag').text()",
+      "isend": "false",
+      "cover": "$.location($('img.bookavatar').attr('src'))",
+      "brief": "$('#bookinfo').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.yousuu\\.com\\/book\\/\\d+$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "!!$('.footer').length",
+    "bookIndexs": "[]"
+  },
+  "contentPage": {
+    "match": "false",
+    "footer": "false",
+    "chapterInfos": {
+      "title": "",
+      "source": "",
+      "content": ""
+    }
+  }
+}

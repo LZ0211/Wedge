@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.ihuaben\\.com\\/book\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('div.book-info > h1 > em').text().trim()",
+      "author": "$('div.book-info > h1 > span > a').text().trim()",
+      "classes": "$('div.book-info > p.tag > a').text()",
+      "isend": "false",
+      "cover": "$.location($('#bookImg > img').attr('src'))",
+      "brief": "$('div.book-intro > p').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/book.qidian.com\\/info\\/\\d+$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('div.volume').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/read.qidian.com\\/chapter\\/\\w+\\/\\w+$/i.test($.location())",
+    "footer": "$('.chapter-control').length > 0",
+    "chapterInfos": {
+      "title": "$('h3.j_chapterName').text()",
+      "source": "$.location()",
+      "content": "$('.read-content').html()"
+    }
+  }
+}

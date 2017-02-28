@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/info\\/\\d+\\/\\d+\\.htm$/i.test($.location()) || /shu\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('.btnlinks > a.read').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('#content h1').text()",
+      "author": "$('th:contains(小说作者)').next('td').text()",
+      "classes": "$('th:contains(小说类别)').next('td').text()",
+      "isend": "$('th:contains(小说状态)').next('td').text()",
+      "cover": "$.location($('a.hst img').attr('src'))",
+      "brief": " $('#sidename').prev('p').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/book\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location($('a:contains(返回书页)').attr('href'))",
+    "footer": "$('#a_footer').length > 0",
+    "filter": "$('td:contains(更新重要通告)').remove()",
+    "bookIndexs": "$('td.L a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/book\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#a_footer').length > 0",
+    "chapterInfos": {
+      "title": "$('dd > h1').text()",
+      "source": "$.location()",
+      "content": "$('#contents').html()"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/\\/html\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('#footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('#info h1').text()",
+      "author": "$('#info > p').eq(0).text()",
+      "classes": "$('.con_top').text().split('&gt;')[1]",
+      "isend": "false",
+      "cover": "$.location($('#fmimg > img').attr('src'))",
+      "brief": "$('#intro > p').eq(0).html() || $('#intro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/html\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('#footer').length > 0",
+    "filter": "$('#list dt').length > 1 && $('#list dt').eq(0).text().match('缓存技术') && $('#list dt').eq(1).prevAll('dd').length < 30 && $('#list dt').eq(1).prevAll('dd').remove()",
+    "bookIndexs": "$('#list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/html\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "filter": "$('#content').find('a,script').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

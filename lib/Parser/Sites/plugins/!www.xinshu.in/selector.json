@@ -1,0 +1,34 @@
+{
+  "infoPage": {
+    "match": "/\\/\\w+?\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.Layout.ft').length > 0",
+    "filter": "$('.words a').each((i,v)=>$(v).replaceWith($(v).text()))",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('.title h2').text()",
+      "author": "$('div.info a').eq(0).text()",
+      "classes": "$('div.info a').eq(1).text()",
+      "isend": "$('li.wj').text()",
+      "cover": "$.location($('div.pic img').attr('src'))",
+      "brief": "$('div.words').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/\\w+?\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.Layout.ft').length > 0",
+    "bookIndexs": "$('div.list_box a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/\\w+?\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.Layout.ft').length > 0",
+    "filter0": "$('div.box_box').find('img,script').remove()",
+    "filter1": "$('.box_box').find('a,div').each((i,v)=>{$(v).replaceWith($(v).text())})",
+    "chapterInfos": {
+      "title": "$('.box_con h2').text()",
+      "source": "$.location()",
+      "content": "$('div.box_box').html()"
+    }
+  }
+}

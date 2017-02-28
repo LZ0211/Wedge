@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.3gsc\\.com\\.cn\\/book\\/\\d+$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(开始阅读)').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('h1.RecArticle').text().trim()",
+      "author": "$('a.author').text().trim()",
+      "classes": "$('a.Sort').last().text()",
+      "isend": "$('.RecReview1').text()",
+      "cover": "$.location($('.RecBook img').attr('src'))",
+      "brief": "$('.RecReview').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.3gsc\\.com\\.cn\\/bookreader\\/\\d+$/i.test($.location())",
+    "infoPage": "$.location($('a:contains(返回简介)').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "filter": "$('.viptitle').nextAll().remove()",
+    "bookIndexs": "$('.menu-area a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.3gsc\\.com\\.cn\\/bookcon/i.test($.location())",
+    "footer": "!!$('.footer').length",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.menu-area').html()"
+    }
+  }
+}

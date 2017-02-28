@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/daizhuzai\\.com\\/\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "title": "$('.header h1').text().trim()",
+      "author": "$('#author a').eq(0).text().trim()",
+      "classes": "$('#author a').eq(1).text().trim()",
+      "isend": "$('#author').text()",
+      "cover": "$.location($('.novelinfo img').attr('src'))",
+      "brief": "$('#intro > p').eq(0).html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/daizhuzai\\.com\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('.dirlist a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/daizhuzai\\.com\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "true",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "",
+      "ajax": "{url:'http://daizhuzai.com' + $('script').text().replace(/[\\s\\S]*?\\$.get\\('(\\/novelsearch\\/reader\\/transcode.*?)',\\{siteid:'(.*)?',url:'(.*)?'\\}[\\s\\S]*/i,'$1?siteid=$2&url=$3'),success:data=>data.info}"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.longtengxsw\\.com\\/book\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(开始阅读)').attr('href'))",
+    "footer": "$('#footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('.d_title h1').text()",
+      "author": "$('.p_author a').text()",
+      "classes": "$('.tabstit a').eq(1).text()",
+      "isend": "$('.pd_r').last().text()",
+      "cover": "$.location($('#bookimg img').attr('src'))",
+      "brief": "$('#showinfo .d2').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.longtengxsw\\.com\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location($('.tabstit a').eq(2).attr('href'))",
+    "footer": "$('#footer').length > 0",
+    "bookIndexs": "$('#readerlist a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.longtengxsw\\.com\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#footer').length > 0",
+    "filter": "$('#content').find('a,table').remove()",
+    "chapterInfos": {
+      "title": "$('.title h1').text()",
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

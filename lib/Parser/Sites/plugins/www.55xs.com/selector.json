@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.55xs\\.com\\/txt\\/\\d+\\.htm$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(点击阅读)').attr('href'))",
+    "footer": "$('.copyright').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('#book > h1').text()",
+      "author": "$('#book > h1 > span > a').text()",
+      "classes": "$('strong:contains(作品类别)').parent().text()",
+      "isend": "$('strong:contains(文章状态)').parent().text()",
+      "cover": "$.location($('.atc img').attr('src'))",
+      "brief": "$('.intro > p').eq(1).html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.55xs\\.com\\/files\\/article\\/html\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location($('a:contains(返回书页)').attr('href'))",
+    "footer": "$('.copyright').length > 0",
+    "bookIndexs": "$('.list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.55xs\\.com\\/files\\/article\\/html\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#a_footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#contents').html()"
+    }
+  }
+}

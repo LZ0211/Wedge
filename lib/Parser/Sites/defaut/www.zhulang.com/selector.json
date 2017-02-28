@@ -1,0 +1,33 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.zhulang\\.com\\/\\d+\\/(index\\.html)?$/i.test($.location())",
+    "indexPage": "$.location($('.cover-btn a').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('.cover-tit h2').text()",
+      "author": "$('.cover-tit h2').find('span').text()",
+      "classes": "$('.cover-tit p').find('span').eq(0).text()",
+      "isend": "false",
+      "cover": "$.location($('.cover-box-left img').attr('src'))",
+      "brief": " $('p.summ-part').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/book\\.zhulang\\.com\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location($('.crumbs > strong > a').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "filter": "$('a:contains(vip)').remove()",
+    "bookIndexs": "$('.chapter-list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text().trim()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/book\\.zhulang\\.com\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.read-mask').length > 0",
+    "filter": "$('#read-content p').find('cite,a').remove()",
+    "chapterInfos": {
+      "title": "$('#read-content h2').text()",
+      "source": "$.location()",
+      "content": "$('#read-content p').html()"
+    }
+  }
+}

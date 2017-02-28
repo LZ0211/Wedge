@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/\\/book\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('#divfoot').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('td > h1').text()",
+      "author": "$.html().replace(/[\\s\\S]*>类&nbsp;&nbsp;&nbsp;别：(.*)?<[\\s\\S]*/,'$1')",
+      "classes": "$.html().replace(/[\\s\\S]*>作&nbsp;&nbsp;&nbsp;者：(.*)?<[\\s\\S]*/,'$1')",
+      "isend": "false",
+      "cover": "$.location($('img.picborder').attr('src'))",
+      "brief": "$('strong:contains(作品简介)').parent().html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/book\\/\\d+\\.html$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('#divfoot').length > 0",
+    "bookIndexs": "$('.dccss a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/chapter\\/\\d+_\\d+\\.html$/i.test($.location())",
+    "footer": "$('#tpcs').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

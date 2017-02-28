@@ -1,0 +1,175 @@
+{
+  "plugins": [
+    {
+      "name": "5sing",
+      "activated": true,
+      "func": "./plugins/5sing"
+    },
+    {
+      "name": "testRule",
+      "activated": true,
+      "func": "./plugins/testRule"
+    },
+    {
+      "name": "testSelector",
+      "activated": true,
+      "func": "./plugins/testSelector"
+    },
+    {
+      "name": "commander",
+      "activated": true,
+      "func": "./plugins/commander"
+    },
+    {
+      "name": "deepQuest",
+      "activated": true,
+      "func": "./plugins/deepQuest"
+    },
+    {
+      "name": "listenWsQuest",
+      "activated": true,
+      "func": "./plugins/listenWsQuest"
+    },
+    {
+      "name": "sendToiReader",
+      "activated": true,
+      "func": "./plugins/sendToiReader"
+    },
+    {
+      "name": "sendToQQ",
+      "activated": true,
+      "func": "./plugins/sendToQQ"
+    },
+    {
+      "name": "sendToQidian",
+      "activated": true,
+      "func": "./plugins/sendToQidian"
+    }
+  ],
+  "request": {
+    "reconnect": 5,
+    "timeout": 5000,
+    "image": true,
+    "imagereconnect": 3,
+    "script": false,
+    "scriptreconnect": 3,
+    "css": false,
+    "cssreconnect": 3,
+    "frame": false,
+    "framereconnect": 1
+  },
+  "ebook": {
+    "activated": "auto",
+    "formation": "epub",
+    "directory": "E:/MyBooks/Library/ebook",
+    "opendirectory": false,
+    "openebookfile": false
+  },
+  "loader": {
+    "check": {
+      "add": true,
+      "remove": true
+    },
+    "sync": false,
+    "thread": 3
+  },
+  "reader": {},
+  "parser": {
+    "filter": {},
+    "selector": {},
+    "replacer": {},
+    "decoder": {}
+  },
+  "server": {
+    "port": 8080
+  },
+  "thread": {
+    "batch": 3,
+    "execute": 10,
+    "new": 3,
+    "update": 3,
+    "merge": 3,
+    "request": 3,
+    "image": 2
+  },
+  "book": {
+    "changesource": true,
+    "override": false,
+    "imagelocalization": false,
+    "localization": true
+  },
+  "database": {
+    "primary": "uuid"
+  },
+  "formation": {
+    "meta": {
+      "title": {
+        "type": "path"
+      },
+      "author": {
+        "type": "path"
+      },
+      "classes": {
+        "type": "text"
+      },
+      "uuid": {
+        "type": "uuid"
+      },
+      "source": {
+        "type": "url"
+      },
+      "isend": {
+        "type": "isend"
+      },
+      "date": {
+        "type": "time"
+      },
+      "brief": {
+        "type": "text"
+      },
+      "cover": {
+        "type": "base64"
+      }
+    },
+    "list": {
+      "title": {
+        "type": "path"
+      },
+      "id": {
+        "type": "id"
+      },
+      "source": {
+        "type": "url"
+      },
+      "date": {
+        "type": "time"
+      },
+      "file": {
+        "type": "path"
+      },
+      "size": {
+        "type": "integer"
+      }
+    },
+    "json": {
+      "title": {
+        "type": "path"
+      },
+      "id": {
+        "type": "id"
+      },
+      "source": {
+        "type": "url"
+      },
+      "date": {
+        "type": "time"
+      },
+      "size": {
+        "type": "integer"
+      },
+      "content": {
+        "type": "text"
+      }
+    }
+  }
+}

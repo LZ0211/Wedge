@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.ruochu\\.com\\/book\\/\\d+$/i.test($.location())",
+    "indexPage": "$.location()+'/chapter'",
+    "footer": "!!$('.footer').length",
+    "bookInfos": {
+      "title": "$('h2').eq(0).text().trim()",
+      "author": "$('a.name strong').text().trim()",
+      "classes": "$('.cate > a').text()",
+      "isend": "!$('.is-serialize').length",
+      "cover": "$.location($('.pic img').attr('src'))",
+      "brief": "$('.summary .note').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.ruochu\\.com\\/book\\/\\d+\\/chapter$/i.test($.location())",
+    "infoPage": "$.location().replace('/chapter','')",
+    "footer": "!!$('.footer').length",
+    "filter": "$('.isvip').remove()",
+    "bookIndexs": "$('ul.float-list > li > a').map((i,v)=>({href:'http://a.ruochu.com/ajax/chapter/content/' + $(v).attr('href').split('/').pop(),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "true",
+    "footer": "true",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "/ajax/i.test($.location()) && JSON.parse($.html()).chapter.htmlContent"
+    }
+  }
+}

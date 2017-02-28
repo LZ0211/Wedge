@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.heiyan\\.co\\/book\\/\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(点击阅读)').attr('href'))",
+    "footer": "!!$('.footer').length",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('.status > h1').text().trim()",
+      "author": "$('.author > a').text().trim()",
+      "classes": "$('.author').next().find('a').text().trim()",
+      "isend": "$('.serial').text()",
+      "cover": "$.location($('.imgbox img').attr('src'))",
+      "brief": "$('.jianjie').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.heiyan\\.co\\/files\\/article\\/html\\/\\d+\\/\\d+\\/index\\.html$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "!!$('.footer').length",
+    "bookIndexs": "$('ul.mulu_list > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.heiyan\\.co\\/files\\/article\\/html\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "!!$('.footer').length",
+    "filter": "$('#htmlContent').find('a,script,div').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#htmlContent').html()"
+    }
+  }
+}

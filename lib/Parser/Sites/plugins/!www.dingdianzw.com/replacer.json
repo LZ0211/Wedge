@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": ["《","》"],
+      "author": ".*者：",
+      "classes": ".*别：",
+      "isend": null,
+      "cover": null,
+      "brief": "【作品简介】：",
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": null,
+      "source": null,
+      "content": [".*最快更新!无广告!"]
+    }
+  }
+}
