@@ -17,6 +17,19 @@ App.updateBooks([dir1,dir2,dir3,...]);
 //合并多个目录并下载
 App.start([url1,url2,url3,...])
 ```
+### 小插件
+```Javascript
+//测试当前页面是否在规则库中
+App.plugins.testRule(url);
+//测试jquery命令
+App.plugins.testSelector(url);
+//发送小说到ireader阅读器
+App.plugins.sendToiReader();
+//发送小说到QQ阅读器
+App.plugins.sendToQQ();
+//深度任务,采集多个页面中的链接并批量新建小说
+App.plugins.deepQuest([urls],selector);
+```
 ### 数据库命令
 ```Javascript
 //primary key，唯一值
