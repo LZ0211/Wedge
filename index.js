@@ -173,6 +173,11 @@ class Wedge extends EventEmitter{
         console.log.apply(console,args);
     }
 
+    cmd(s){
+        child_process.exec('cmd /c ' + s);
+        return this;
+    }
+
     encodeURI(str,charset){
         if (!charset) return encodeURIComponent(str);
         var buffer = decoder.encode(str,charset);
@@ -313,7 +318,7 @@ class Wedge extends EventEmitter{
     refreshBooks(){
         this.parallel(utils.toArray(arguments),(dir,next)=>{
             this.spawn().refreshBook(dir).end(next);
-        });
+        },this.end.bind(this));
     }
 
     updateBook(directory){
@@ -445,6 +450,7 @@ class Wedge extends EventEmitter{
         var author = bookMeta.get("author");
         var uuid = bookMeta.get('uuid');
         var next = this.next.bind(this,fn);
+        if (this.database.query('uuid='+uuid) && title && author) return next();
         var except = new RegExp(Searcher.map(x=>x.name.replace(/\./g,'\\.')).join('|'),'gi');
         if(source.match(except)) return next();
         function like(s1,s2){
