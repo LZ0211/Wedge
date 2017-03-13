@@ -92,6 +92,10 @@
     "name": ".tadu.com"
   },
   {
+    "url": "http://www.kujiang.com/search?keyword=%title%",
+    "name": ".kujiang.com"
+  },
+  {
     "url": "http://xiaoshuo.sogou.com/search/?key=%title%",
     "name": ".sogou.com"
   },

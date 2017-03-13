@@ -5,7 +5,9 @@ const URL = require("url");
 const querystring = require("querystring");
 const EventEmitter = require('events');
 const child_process = require('child_process');
+const readline = require('readline');
 const Random = require('./lib/jsrandom');
+const Log = require("./lib/Log");
 const Hash = require("./lib/Hash");
 const DataBase = require("./lib/database");
 const request = require("./lib/request");
@@ -25,6 +27,7 @@ class Wedge extends EventEmitter{
         super();
         this.init();
         this.chdir(dir);
+        this.initLog();
         this.config
             .get("plugins")
             .filter(plugin=>plugin.activated)
@@ -56,7 +59,8 @@ class Wedge extends EventEmitter{
         function Fork(){
             this.init();
             this.dir = dir;
-            this.config = self.config;
+            this.log = self.log;
+            this.config.set(self.config.valueOf());
             this.config
                 .get("plugins")
                 .filter(plugin=>plugin.activated)
@@ -85,27 +89,29 @@ class Wedge extends EventEmitter{
         }
     }
 
-    terminal(doc,fn){
+    terminal(docs,fn){
+        var rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
         var args = [];
-        var len = Math.max(doc.length,fn.length);
+        var len = Math.max(docs.length,fn.length);
         var ref = 0;
-        if (len == 0)return fn.apply(null,args);
-        process.stdin.setEncoding("utf8");
-        process.stdout.write(doc[ref] || "");
-        var listener = data=>{
-            if(typeof data === 'string'){
-                data = data.trim();
-            }
-            args.push(data);
-            ref += 1;
-            if (ref == len){
-                process.stdin.removeListener("data",listener);
-                fn.apply(null,args);
-            }else {
-                process.stdout.write(doc[ref]);
-            }
+        if (len == 0)return fn.apply(this,args);
+        var listener=()=>{
+            rl.question(docs[ref],input=>{
+                args.push(input);
+                ref += 1;
+                if(ref === len){
+                    rl.close();
+                    return fn.call(this,args);
+                }else{
+                    return listener();
+                }
+            });
         }
-        process.stdin.on("data",listener);
+        listener();
+        return this;
     }
 
     series(fns){
@@ -117,9 +123,10 @@ class Wedge extends EventEmitter{
         var threadLog = this.config.get('thread.log');
         var fn = fn || this.noop;
         var final = final || this.noop;
-        var threadNumber = threadNumber || this.config.get("thread.execute") || 3;
+        var threadNumber = threadNumber || 3;
         var running = 0;
         var sumLength = array.length;
+        array = array.concat();
         var execute = (fn)=>{
             var element = array.shift();
             if (element){
@@ -127,7 +134,7 @@ class Wedge extends EventEmitter{
                 fn(element,()=>{
                     running -= 1;
                     threadLog && this.log(sumLength - array.length - running + " of " + sumLength);
-                    execute(fn);
+                    process.nextTick(()=>execute(fn));
                 });
             }else {
                 if (running == 0) return final();
@@ -166,16 +173,24 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    log(){
-        if(this.config.get('app.log') == false) return;
-        var args = [].slice.call(arguments);
-        args.unshift(this.label);
-        console.log.apply(console,args);
-    }
-
-    cmd(s){
-        child_process.exec('cmd /c ' + s);
-        return this;
+    initLog(){
+        var appLog = this.config.get('app.log');
+        if(appLog === false) {
+            this.log = function(){
+                return this;
+            };
+        };
+        if(appLog === true){
+            this.log = function(){
+                var args = [].slice.call(arguments);
+                args.unshift(this.label);
+                console.log.apply(console,args);
+                return this;
+            }
+        }
+        if('string' === typeof appLog){
+            this.log = new Log(appLog);
+        }
     }
 
     encodeURI(str,charset){
@@ -318,7 +333,7 @@ class Wedge extends EventEmitter{
     refreshBooks(){
         this.parallel(utils.toArray(arguments),(dir,next)=>{
             this.spawn().refreshBook(dir).end(next);
-        },this.end.bind(this));
+        });
     }
 
     updateBook(directory){
@@ -406,7 +421,7 @@ class Wedge extends EventEmitter{
                 }
                 return this.next(fn);
             }
-        },()=>this.getBookMeta(fn));
+        },()=>this.end());
         return this;
     }
     //创建书籍
@@ -432,6 +447,7 @@ class Wedge extends EventEmitter{
                     }
                     return this.next(fn);
                 }else {//不换源
+                    //console.log(source)
                     this.url = source;
                     this.log("origin...");
                     this.log(this.url);
@@ -450,7 +466,7 @@ class Wedge extends EventEmitter{
         var author = bookMeta.get("author");
         var uuid = bookMeta.get('uuid');
         var next = this.next.bind(this,fn);
-        if (this.database.query('uuid='+uuid) && title && author) return next();
+        //if (this.database.query('uuid='+uuid) && title && author) return next();
         var except = new RegExp(Searcher.map(x=>x.name.replace(/\./g,'\\.')).join('|'),'gi');
         if(source.match(except)) return next();
         function like(s1,s2){
@@ -542,7 +558,7 @@ class Wedge extends EventEmitter{
             if (!bookIndex) return this.end();
             this.bookIndex = bookIndex;
             return this.next(fn);
-        },()=>this.getBookIndex(fn));;
+        },()=>this.end());;
         return this;
     }
     //合并书籍目录
