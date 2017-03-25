@@ -119,9 +119,9 @@ App.config.set('book.imagelocalization',false);
 //建议开启，当下载网站不在规则库中能够辅助搜集书籍信息
 App.config.set('book.searchmeta',true);
 //深度下载，如果章节内容中存在超链接，将下载该链接内容
-App.config.set("deepdownload",true);
+App.config.set("book.deepdownload",true);
 //设置最大下载深度
-App.config.set("maxdeep",2);
+App.config.set("book.maxdeep",2);
 ```
 
 #### 书籍加载器参数
