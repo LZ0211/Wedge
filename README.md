@@ -134,6 +134,7 @@ App.config.set('loader.sync',false);
 App.config.set('loader.check.add',true);
 //自动从目录中移除已被删除的章节
 App.config.set('loader.check.remove',true);
+```
 
 #### App参数
 ```Javascript
