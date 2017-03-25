@@ -32,19 +32,26 @@ module.exports = function (Ip,Files){
         });
     }
 
-    if (Ip && Files) return this.parallel(Files,post,this.noop,1);
+    var formatIp = (ip)=>{
+        var regexp = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/g;
+        var found = ip.match(regexp);
+        if (!found){
+            console.log("IP地址不正确");
+            return getIP(fn);
+        }
+        Ip = 'http://' + found[0] + ':5299/upload';
+    }
+
+    if (Ip && Files){
+        formatIp(Ip);
+        return this.parallel(Files,post,this.noop,1);
+    }
 
     var self = this;
 
     var getIP = fn=>{
         return self.terminal(["请输入IP地址："],function (ip){
-            var regexp = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/g;
-            var found = ip.match(regexp);
-            if (!found){
-                console.log("IP地址不正确");
-                return getIP(fn);
-            }
-            Ip = 'http://' + found[0] + ':5299/upload';
+            formatIp(ip);
             return fn();
         });
     }

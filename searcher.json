@@ -36,6 +36,19 @@
     "name": ".hongshu.com"
   },
   {
+    "url": "http://search.faloo.com/cse/search?s=8180149771949009960&entry=1&q=%title%",
+    "charset": "gbk",
+    "name": ".faloo.com"
+  },
+  {
+    "url": "http://so.ihuaben.com/search?keyword=%title%",
+    "name": ".ihuaben.com"
+  },
+  {
+    "url": "http://so.kanshu.com/search/searchlist.php?&keys=%title%&sort=1",
+    "name": ".kanshu.com"
+  },
+  {
     "url": "http://zhannei.baidu.com/cse/search?s=13602090313724893225&entry=1&q=%title%",
     "name": ".xs8.cn"
   },
@@ -67,12 +80,14 @@
     "name": ".360.cn"
   },
   {
-    "url": "http://www.heiyan.com/search/?queryString=%title%",
-    "name": ".heiyan.com"
+    "url": "http://a.heiyan.com/jsonp/search/?queryString=%title%&objectType=2&page=1",
+    "name": ".heiyan.com",
+    "parse": "json.voRF.items.map(o=>['http://www.heiyan.com'+o.object.url,o.object.name])"
   },
   {
-    "url": "http://www.ruochu.com/search/?queryString=%title%",
-    "name": ".ruochu.com"
+    "url": "http://a.ruochu.com/jsonp/search/?queryString=%title%&objectType=2&page=1",
+    "name": ".ruochu.com",
+    "parse": "json.voRF.items.map(o=>['http://www.heiyan.com'+o.object.url,o.object.name])"
   },
   {
     "url": "http://book.km.com/search.html?keyword=%title%",

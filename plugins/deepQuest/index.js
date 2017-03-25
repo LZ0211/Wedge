@@ -1,8 +1,9 @@
 module.exports = function (urls,selector){
+    this.debug('deepQuest');
     var Quests = [];
     var fun = new Function("$","return "+selector);
     if (!Array.isArray(urls)) urls = [urls];
-    this.parallel(urls,(url,then)=>{
+    this.Thread((url,then)=>{
         var fn = ()=>{
             this.getRawData({href:url},data=>{
                 var $ = this.Parser(data,url).$;
@@ -18,5 +19,5 @@ module.exports = function (urls,selector){
     },()=>{
         this.lib.fs.writeFile("Quests.txt",JSON.stringify(Quests));
         this.newBooks(Quests);
-    },5);
+    },5)(urls);
 }

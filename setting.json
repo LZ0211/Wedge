@@ -38,9 +38,10 @@
   ],
   "request": {
     "reconnect": 5,
-    "timeout": 5000,
-    "image": true,
     "imagereconnect": 3,
+    "timeout": 5000,
+    "proxy": false,
+    "image": true,
     "script": false,
     "scriptreconnect": 3,
     "css": false,
@@ -63,15 +64,7 @@
     "sync": false,
     "thread": 3
   },
-  "reader": {},
-  "parser": {
-    "filter": {},
-    "selector": {},
-    "replacer": {},
-    "decoder": {}
-  },
   "thread": {
-    "batch": 3,
     "execute": 10,
     "new": 3,
     "update": 3,
@@ -84,10 +77,23 @@
     "override": false,
     "imagelocalization": false,
     "searchmeta": true,
+    "deepdownload": false,
+    "maxdeep": 0,
     "localization": true
   },
   "database": {
     "primary": "uuid"
+  },
+  "app": {
+    "log": false,
+    "debug": false,
+    "retry": {
+      "meta": 3,
+      "index": 3,
+      "cover": 3,
+      "chapter": 3,
+      "image": 3
+    }
   },
   "formation": {
     "meta": {

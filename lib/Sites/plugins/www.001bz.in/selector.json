@@ -10,7 +10,7 @@
       "author": "$('div.info a').eq(0).text()",
       "classes": "$('div.info a').eq(1).text()",
       "isend": "$('li.wj').text()",
-      "cover": "$.location($('div.pic img').attr('src'))",
+      "cover": "$.location($('div.pic img').attr('src')) + '?jdfwkey=' + parseInt(Math.random() * 100000000).toString(36)",
       "brief": "$('div.words').html()"
     }
   },
@@ -19,6 +19,12 @@
     "infoPage": "$.location()",
     "footer": "$('.Layout.ft').length > 0",
     "bookIndexs": "$('div.list_box a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "redirectPage": {
+    "match": "$.raw.match('window.location')",
+    "footer": "true",
+    "indexPage": "$.location($('h3 a').attr('href'))",
+    "infoPage": "$.location($('h3 a').attr('href'))"
   },
   "contentPage": {
     "match": "true",

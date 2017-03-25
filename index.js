@@ -12,11 +12,15 @@ const Hash = require("./lib/Hash");
 const DataBase = require("./lib/database");
 const request = require("./lib/request");
 const utils = require("./lib/utils");
+const Thread = require("./lib/thread");
+const Cache = require("./lib/Cache");
 const setting = require("./setting");
 const Searcher = require("./searcher");
+const Engine = require("./lib/Engine");
 const loader = require("./lib/loader");
 const decoder = require("./lib/parser/decoder");
 const Parser = require("./lib/parser");
+const Sites = require("./lib/Sites");
 const Attributes = require("./lib/attributes");
 const Chapter = require('./lib/book/chapter');
 const MetaData = require("./lib/book/metadata");
@@ -25,9 +29,10 @@ const objectUtils = require('./lib/utils/object');
 class Wedge extends EventEmitter{
     constructor(dir){
         super();
-        this.init();
+        this.config = new Hash(setting);
         this.chdir(dir);
-        this.initLog();
+        this.init();
+        this.plugins = {};
         this.config
             .get("plugins")
             .filter(plugin=>plugin.activated)
@@ -35,9 +40,10 @@ class Wedge extends EventEmitter{
     }
 
     init(){
-        this.plugins = {};
-        this.config = new Hash(setting);
         this.label = Random.uuid(10,16);
+        this.config.get('thread.log') && this.Thread.LOG.on();
+        this.newBooks = Thread((url,next)=>this.spawn().newBook(url).end(next),()=>this.end(),this.config.get("thread.new"));
+        this.updateBooks = Thread((url,next)=>this.spawn().updateBook(url).end(next),()=>this.end(),this.config.get("thread.update"));
         return this;
     }
 
@@ -57,10 +63,10 @@ class Wedge extends EventEmitter{
         dir = Path.resolve(this.dir,dir);
         var self = this;
         function Fork(){
-            this.init();
+            this.config = new Hash(setting);
             this.dir = dir;
-            this.log = self.log;
             this.config.set(self.config.valueOf());
+            this.init();
             this.config
                 .get("plugins")
                 .filter(plugin=>plugin.activated)
@@ -71,22 +77,14 @@ class Wedge extends EventEmitter{
     }
 
     install(plugin){
-        var self = this;
-        this.plugins[plugin.name] = require(plugin.func).bind(self);
-        return self;
+        try{
+            this.plugins[plugin.name] = require(plugin.func).bind(this);
+        }catch (e){}
+        return this;
     }
 
     range(template,start,end){
         return Array(end-start+1).fill(start).map((x,y)=>x+y).map(x=>template.replace(/\*/g,x));
-    }
-
-    batch(fun,thread){
-        var self = this;
-        var thread = thread || this.config.get("thread.batch");
-        return (array,next)=>{
-            next = next || self.noop;
-            self.parallel(array,(item,next)=>fun.call(self.spawn(),item,next),next,thread);
-        }
     }
 
     terminal(docs,fn){
@@ -104,7 +102,7 @@ class Wedge extends EventEmitter{
                 ref += 1;
                 if(ref === len){
                     rl.close();
-                    return fn.call(this,args);
+                    return fn.apply(this,args);
                 }else{
                     return listener();
                 }
@@ -147,7 +145,8 @@ class Wedge extends EventEmitter{
     }
 
     //绑定或触发end事件
-    end(fn){
+    end(){
+        var fn = arguments[0];
         if (undefined == fn){
             this.log("end...");
             this.emit("end");
@@ -169,19 +168,19 @@ class Wedge extends EventEmitter{
         if (typeof fn !== "function"){
             fn = this.noop;
         }
-        fn.apply(this,args);
+        setImmediate(()=>fn.apply(this,args));
         return this;
     }
 
     initLog(){
         var appLog = this.config.get('app.log');
-        if(appLog === false) {
-            this.log = function(){
+        if(appLog == false) {
+            this.log = Wedge.prototype.log = function(){
                 return this;
             };
         };
         if(appLog === true){
-            this.log = function(){
+            this.log = Wedge.prototype.log = function(){
                 var args = [].slice.call(arguments);
                 args.unshift(this.label);
                 console.log.apply(console,args);
@@ -189,8 +188,19 @@ class Wedge extends EventEmitter{
             }
         }
         if('string' === typeof appLog){
-            this.log = new Log(appLog);
+            this.log = Wedge.prototype.log = new Log(appLog);
         }
+    }
+
+    log(){
+        this.initLog();
+        this.log.apply(this,arguments);
+        return this;
+    }
+
+    debug(){
+        this.config.get('app.debug') && this.log.apply(this,arguments);
+        return this;
     }
 
     encodeURI(str,charset){
@@ -234,25 +244,20 @@ class Wedge extends EventEmitter{
     fuzzysearchBook(title,fn){
         var self = this;
         var links = [];
-        function final(){
-            var hash = {};
-            links.forEach(link=>hash[link[0]]=link[1]);
-            var array = [];
-            for (var x in hash){
-                array.push([x,hash[x]]);
-            }
-            return fn(array);
-        }
-        function Search(site,next){
+
+        Thread((site,next)=>{
             if (!site) return next();
             if (!site.url) return next();
             var url = site.url.replace('%title%',self.encodeURI(title,site.charset));
             var method = (site.method || "get").toUpperCase();
             var data = site.data && site.data.replace('%title%',title);
             function success(data){
-                var $ = Parser(data,url).$;
-                $('a').filter((i,v)=>$(v).text().indexOf(title) > -1)
-                    .each((i,v)=>links.push([$.location($(v).attr('href')),$(v).text().trim()]));
+                if (site.parse){
+                    links = links.concat(new Function('json','try{return (' + site.parse + ')}catch(e){return []}')(data));
+                }else {
+                    var $ = Parser(data,url).$;
+                    $('a').filter((i,v)=>$(v).text().indexOf(title) > -1).each((i,v)=>links.push([$.location($(v).attr('href')),$(v).text().trim()]));
+                }
                 return next();
             }
             return request.ajax({
@@ -262,9 +267,15 @@ class Wedge extends EventEmitter{
                 success:success,
                 error:next
             });
-        }
-
-        this.parallel(Searcher.concat(),Search,final,2);
+        },()=>{
+            var hash = {};
+            links.forEach(link=>hash[link[0]]=link[1]);
+            var array = [];
+            for (var x in hash){
+                array.push([x,hash[x]]);
+            }
+            return fn(array);
+        })(Searcher,3);
         return this;
     }
 
@@ -275,40 +286,29 @@ class Wedge extends EventEmitter{
         });
     }
 
+    CMD(pipeline){
+        var self = this;
+        return pipeline.split(' > ').map(fnName=>{
+            var fn = self[fnName];
+            if (!fn.length){
+                return next=>{
+                    fn.call(self);
+                    return next();
+                }
+            }else {
+                return fn.bind(self);
+            }
+        });
+    }
+
     updateBookCMD(){
-        this.series([
-            next=>this.saveBook(next),
-            next=>this.checkBookCover(next),
-            next=>this.getBookIndex(next),
-            next=>this.mergeBookIndex(next),
-            next=>this.filterBookIndex(next),
-            next=>this.getChapters(next),
-            next=>this.saveBook(next),
-            next=>this.sendToDataBase(next),
-            next=>this.generateEbook(next),
-            next=>this.end()
-        ]);
+        this.series(this.CMD('saveBook > checkBookCover > getBookIndex > mergeBookIndex > filterBookIndex > getChapters > saveBook > sendToDataBase > generateEbook > end'));
         return this;
     }
 
     //新建书籍
     newBookCMD(){
-        this.series([
-            next=>this.getBookMeta(next),
-            next=>this.searchBookMeta(next),
-            next=>this.createBook(next),
-            next=>this.updateBookMeta(next),
-            next=>this.getBookCover(next),
-            next=>this.saveBook(next),
-            next=>this.getBookIndex(next),
-            next=>this.mergeBookIndex(next),
-            next=>this.filterBookIndex(next),
-            next=>this.getChapters(next),
-            next=>this.saveBook(next),
-            next=>this.sendToDataBase(next),
-            next=>this.generateEbook(next),
-            next=>this.end()
-        ]);
+        this.series(this.CMD('getBookMeta > searchBookMeta > createBook > updateBookMeta > getBookCover > saveBook > getBookIndex > mergeBookIndex > filterBookIndex > getChapters > saveBook > sendToDataBase > generateEbook > end'));
         return this;
     }
 
@@ -317,15 +317,7 @@ class Wedge extends EventEmitter{
             if (error) return this.end();
             this.book = book;
             this.bookMeta = book.meta;
-            this.series([
-                next=>this.searchBookMeta(next),
-                next=>this.updateBookMeta(next),
-                next=>this.getBookCover(next),
-                next=>this.saveBook(next),
-                next=>this.sendToDataBase(next),
-                next=>this.generateEbook(next),
-                next=>this.end()
-            ]);
+            this.series(this.CMD('searchBookMeta > updateBookMeta > getBookCover > saveBook > sendToDataBase > generateEbook > end'));
         });
         return this;
     }
@@ -334,9 +326,11 @@ class Wedge extends EventEmitter{
         this.parallel(utils.toArray(arguments),(dir,next)=>{
             this.spawn().refreshBook(dir).end(next);
         });
+        return this;
     }
 
     updateBook(directory){
+        this.debug('updateBook');
         this.loadBook(directory,(error,book)=>{
             if (error){//书籍不存在
                 if (!this.url){
@@ -353,25 +347,16 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    updateBooks(){
-        return this.parallel(utils.toArray(arguments),(dir,then)=>{
-            this.spawn().updateBook(dir).end(then);
-        },this.end.bind(this),this.config.get("thread.new"));
-    }
-
     newBook(url){
+        this.debug('newBook');
         this.log(url);
         this.url = url;
-        return this.newBookCMD();
-    }
-
-    newBooks(){
-        return this.parallel(utils.toArray(arguments),(url,then)=>{
-            this.spawn().newBook(url).end(then);
-        },this.end.bind(this),this.config.get("thread.new"));
+        this.newBookCMD();
+        return this;
     }
 
     loadBook(dir,fn){
+        this.debug('loadBook');
         if (typeof dir == "function"){
             fn = dir;
             dir = this.bookdir;
@@ -385,19 +370,25 @@ class Wedge extends EventEmitter{
     //获取书籍信息
     getBookMeta(fn){
         if (!this.url) return this.error("No URL...");
+        this.debug('getBookMeta');
         var link = this.formatLink(this.url);
         this.getRawData(link,data=>{
             var parser = Parser(data,link.href);
             var parsedData = parser.getParsedData();
             var infoPage = parsedData.infoPage;
             var indexPage = parsedData.indexPage;
+            var redirectPage = parsedData.redirectPage;
             if (!infoPage){
                 if (!indexPage){
-                    //console.log(parser.$.raw)
-                    return this.error("this url is Not infoPage or request failed");
+                    if (!redirectPage){
+                        this.debug(parser.$.raw);
+                        return this.error("this url is Not infoPage or request failed");
+                    }
+                    this.url = redirectPage.infoPage || redirectPage.indexPage;
+                    return setImmediate(()=>this.getBookMeta(fn));
                 }else {
                     this.url = indexPage.infoPage;
-                    return this.getBookMeta(fn);
+                    return setImmediate(()=>this.getBookMeta(fn));
                 }
             }else {
                 //初始化MetaData
@@ -421,12 +412,13 @@ class Wedge extends EventEmitter{
                 }
                 return this.next(fn);
             }
-        },()=>this.end());
+        },()=>this.end(),this.config.get('app.retry.meta'));
         return this;
     }
     //创建书籍
     createBook(fn){
         if (!this.bookMeta) return this.error("No bookMeta...");
+        this.debug('createBook');
         //书籍目录
         this.bookdir = Path.join(this.dir,this.bookMeta.get("uuid"));
         utils.mkdirsSync(this.bookdir);
@@ -469,6 +461,7 @@ class Wedge extends EventEmitter{
         //if (this.database.query('uuid='+uuid) && title && author) return next();
         var except = new RegExp(Searcher.map(x=>x.name.replace(/\./g,'\\.')).join('|'),'gi');
         if(source.match(except)) return next();
+        this.debug('searchBookMeta');
         function like(s1,s2){
             s1 = s1.replace(/[:：？\?,；，,\.。!！_—\-]/g,'');
             s2 = s2.replace(/[:：？\?,；，,\.。!！_—\-]/g,'');
@@ -477,8 +470,7 @@ class Wedge extends EventEmitter{
             return false;
         }
         this.searchBook(title,links=>{
-            if (links.length == 0) return next();
-            this.parallel(links.map(link=>link[0]),(link,nextFn)=>{
+            Thread((link,nextFn)=>{
                 var app = this.spawn();
                 app.url = link;
                 app.getBookMeta(()=>{
@@ -493,7 +485,7 @@ class Wedge extends EventEmitter{
                     bookMeta.set(meta);
                     return next();
                 }).end(nextFn);
-            },next,1);
+            },next)(links.map(link=>link[0]))
         });
         return this;
     }
@@ -501,6 +493,7 @@ class Wedge extends EventEmitter{
     updateBookMeta(fn){
         if (!this.bookMeta) return this.error("No bookMeta...");
         if (!this.book) return this.error("No book...");
+        this.debug('updateBookMeta');
         this.book.meta.set(this.bookMeta.valueOf());
         this.book.meta.set("uuid",[this.book.meta.get("author"),this.book.meta.get("title")].join(" - "));
         return this.next(fn);
@@ -510,12 +503,13 @@ class Wedge extends EventEmitter{
         var next = this.next.bind(this,fn);
         var coverSrc = this.book.meta.get("cover");
         if (!/^http/i.test(coverSrc)) return next();
+        this.debug('getBookCover');
         var link = this.formatLink(coverSrc);
         this.getImageData(link,data=>{
             this.book.meta.set("cover",data);
             this.hasNewChapter = true;
             fs.writeFile(Path.join(this.bookdir,"cover.jpg"),data,next);
-        },next);
+        },next,this.config.get('app.retry.cover'));
         return this;
     }
     //检查封面图片是否存在
@@ -542,15 +536,17 @@ class Wedge extends EventEmitter{
     }
     //保存书籍
     saveBook(fn){
+        this.debug('saveBook');
         var next = this.next.bind(this,fn);
         if (!this.book) return this.error("No Book...");
         if (!this.bookdir) return this.error("No BookDir...");
         this.book.meta.set("date",+new Date());
-        fs.writeFile(Path.join(this.bookdir,"index.book"),this.book.toString(),next);
+        this.book.localization(this.bookdir,next);
         return this;
     }
     //获取书籍目录
     getBookIndex(fn){
+        this.debug('getBookIndex');
         var link = this.formatLink(this.url);
         this.getRawData(link,data=>{
             var parser = Parser(data,link.href);
@@ -558,14 +554,15 @@ class Wedge extends EventEmitter{
             if (!bookIndex) return this.end();
             this.bookIndex = bookIndex;
             return this.next(fn);
-        },()=>this.end());;
+        },()=>this.end(),this.config.get('app.retry.index'));;
         return this;
     }
     //合并书籍目录
     mergeBookIndex(fn){
+        this.debug('mergeBookIndex');
         var next = this.next.bind(this,fn);
         if (!this.otherUrls) return next();
-        this.parallel(this.otherUrls,(url,then)=>{
+        var mergeIndex = (url,then)=>{
             var link = this.formatLink(url);
             this.getRawData(link,data=>{
                 var parser = Parser(data,link.href);
@@ -574,55 +571,66 @@ class Wedge extends EventEmitter{
                     bookIndex.forEach(link=>this.bookIndex.push(link));
                 }
                 return this.next(then);
-            },()=>this.next(then));
-        },next,this.config.get("thread.merge"));
+            },()=>this.next(then),this.config.get('app.retry.index'));
+        }
+        Thread(mergeIndex,next)(this.otherUrls,this.config.get("thread.merge"));
         return this;
     }
     //过滤书籍目录
     filterBookIndex(fn){
+        this.debug('filterBookIndex');
         var Id = this.Types.id();
         this.bookIndex.forEach((link,index)=>{
             link.id = Id.val(link.id || index).val();
         });
-        var hash = this.book.list.hash("id");
-        this.bookIndex = this.bookIndex.filter(link=>!hash[link.id]);
-        if (this.bookIndex.length){
-            this.hasNewChapter = true;
-            return this.next(fn);
-        }
-        this.saveBook();
-        this.sendToDataBase();
-        return this.end();
+        var idHash = this.book.list.hash("id");
+        var srcHash = this.book.list.hash("source");
+        this.bookIndex = this.bookIndex.filter(link=>!idHash[link.id]).filter(link=>!srcHash[link.href]);
+        this.next(fn);
+        return this;
     }
+
+    chapterCMD(chapter,fn){
+        this.series([
+            then=>this.mergeChapter(chapter,then),
+            (chapter,then)=>this.getDeepChapter(chapter,then),
+            (chapter,then)=>this.getChapterImages(chapter,then),
+            (chapter,then)=>this.formatChapter(chapter,then),
+            (chapter,then)=>this.saveChapter(chapter,then),
+            (chapter,then)=>this.saveChapterIndex(chapter,fn)
+        ]);
+        return this;
+    }
+
     getChapters(fn){
-        this.parallel(this.bookIndex,(ele,next)=>{
-            this.series([
-                (then)=>this.getChapter(ele,then),
-                (chapter,then)=>this.mergeChapter(chapter,then),
-                (chapter,then)=>this.getChapterImages(chapter,then),
-                (chapter,then)=>this.formatChapter(chapter,then),
-                (chapter,then)=>this.saveChapter(chapter,next),
-            ]);
-        },this.next.bind(this,fn),this.config.get("thread.execute"));
+        this.debug('getChapters');
+        Thread((link,next)=>{
+            this.getChapter(link,chapter=>this.chapterCMD(chapter,next));
+        },()=>this.next(fn))(this.bookIndex,this.config.get("thread.execute"));
+        return this;
     }
     //获取章节内容
     getChapter(link,fn){
+        this.debug('getChapter');
+        //this.debug(link);
         this.getRawData(link,data=>{
             var parser = Parser(data,link.href);
             var thisChapter = parser.getChapterContent();
             if (!thisChapter) return this.next(fn,null);
+            thisChapter.deep = link.deep || 0;
             thisChapter.id = thisChapter.id || link.id;
             thisChapter.source = thisChapter.source || link.href;
             thisChapter.title = thisChapter.title || link.text;
             return this.next(fn,thisChapter);
-        },()=>this.next(fn,null));
+        },()=>this.next(fn,null),this.config.get('app.retry.chapter'));
         return this;
     }
 
     mergeChapter(chapter,fn){
-        if (!chapter)return this.next(fn,chapter);
+        if (!chapter)return this.next(fn,null);
         chapter.content = chapter.content || "";
         if (chapter.ajax){
+            this.debug('ajax...');
             this.request.ajax(chapter.ajax).then(data=>{
                 if (chapter.content){
                     chapter.content += "\n";
@@ -631,18 +639,44 @@ class Wedge extends EventEmitter{
                 return this.next(fn,chapter);
             });
         }else if (chapter.nextPage){
+            if (chapter.nextPage == chapter.source) return this.next(fn,chapter);
             var link = {href:chapter.nextPage};
-            this.getRawData(link,data=>{
-                var parser = Parser(data,link.href);
-                var thisChapter = parser.getChapterContent();
-                if (!thisChapter) return this.next(fn,chapter);
-                if (chapter.content){
+            this.debug('mergeChapter');
+            this.getChapter(link,nextChapter=>this.mergeChapter(nextChapter,nextChapter=>{
+                if (!nextChapter) return this.next(fn,null);
+                if (nextChapter.id && nextChapter.id !== chapter.id){
+                    return this.chapterCMD(nextChapter,fn);
+                }
+                if (chapter.content && chapter.content == nextChapter.content){
+                    return  this.next(fn,chapter);
+                }
+                if (chapter && chapter.content && nextChapter.content){
                     chapter.content += "\n";
                 }
-                chapter.content += thisChapter.content;
-                chapter.nextPage = thisChapter.nextPage;
-                return this.mergeChapter(chapter,fn);
-            });
+                chapter.content += nextChapter.content;
+                return this.next(fn,chapter);
+            }));
+        }else if (chapter.nextPages){
+            var sourceHash = this.book.list.hash("source");
+            var links = chapter.nextPages.filter(link=>!sourceHash[link.href]);
+            if (!links.length) return this.next(fn,chapter);
+            this.debug('mergeChapters');
+            Thread((link,next)=>{
+                this.getChapter(link,nextChapter=>{
+                    if (!nextChapter){
+                        chapter = null;
+                        return next();
+                    }
+                    if (nextChapter.id && nextChapter.id !== chapter.id){
+                        return this.chapterCMD(nextChapter,next);
+                    }
+                    if (chapter && chapter.content && nextChapter.content){
+                        chapter.content += "\n";
+                    }
+                    chapter.content += nextChapter.content;
+                    return next();
+                });
+            },()=>this.next(fn,chapter))(links);
         }else {
             return this.next(fn,chapter);
         }
@@ -652,12 +686,14 @@ class Wedge extends EventEmitter{
         if (!chapter)return this.next(fn,chapter);
         var parser = Parser(chapter.content,chapter.source);
         var imgs = parser.getImageLinks();
+        imgs = imgs.filter(img=>img.href);
         if (!imgs.length){
             return this.next(fn,chapter);
         }
         if (!this.config.get("book.imagelocalization")){
             return this.next(fn,chapter);
         }
+        this.debug('getChapterImages');
         parser.convertImageLink();
         var content = parser.$.html();
         var Id = this.Types.id();
@@ -667,6 +703,9 @@ class Wedge extends EventEmitter{
         utils.mkdirsSync(imgFolder);
         imgs.forEach(img=>{
             var extname = Path.extname(URL.parse(img.href).pathname);
+            if(!extname.match(/^(.html|.png|.gif|.png|.tif|.webp|.bmp|.tga|.ppm|.pgm|.jpeg|.pbm|.pcx|.jpm|.jng)$/i)){
+                extname = '.jpg';
+            }
             var basename = Id.val(img.index).val();
             var filename = basename + extname;
             var imgDir = id + '/' + filename;
@@ -683,8 +722,8 @@ class Wedge extends EventEmitter{
                 isEmpty = false;
                 content = content.replace("{%img=" + img.index + "%}",'<img src="'+img.src+'">');
             });
-            imgs = imgs.filter(img=>!hash[img.name]);
-            this.parallel(imgs,(img,then)=>{
+            imgs = imgs.filter(img=>(!hash[img.name] && !img.file.match(/\.html$/i)));
+            Thread((img,then)=>{
                 this.getImageData(img,data=>{
                     fs.writeFile(img.file,data,()=>{
                         content = content.replace("{%img=" + img.index + "%}",'<img src="'+img.src+'">');
@@ -696,19 +735,47 @@ class Wedge extends EventEmitter{
                     this.log(img.src,img.href);
                     content = content.replace("{%img=" + img.index + "%}",'<img src="'+img.href+'">');
                     return this.next(then);
-                });
+                },this.config.get('app.retry.image'));
             },()=>{
                 isEmpty && utils.rmdirs(imgFolder);
-                if (!chapter) return this.next(fn,chapter);
+                if (!chapter) return this.next(fn,null);
                 chapter.content = content;
                 return this.next(fn,chapter);
-            },this.config.get("thread.image"));
+            })(imgs,this.config.get("thread.image"));
         });
         return this;
     }
 
+    getDeepChapter(chapter,fn){
+        if (!chapter)return this.next(fn,null);
+        if (!this.config.get("book.deepdownload")){
+            return this.next(fn,chapter);
+        }
+        var maxdeep = this.config.get("book.maxdeep") || 1;
+        var deepnow = chapter.deep;
+        if (deepnow >= maxdeep) return this.next(fn,chapter);
+        var parser = Parser(chapter.content,chapter.source);
+        var links = parser.getHrefLinks();
+        deepnow += 1;
+        var hash = this.book.list.hash("source");
+        links.forEach(link=>link.id = chapter.id + '_' + link.index);
+        links.forEach(link=>link.deep = deepnow);
+        links = links.filter(link=>link.href).filter(link=>!hash[link.href]);
+        if (!links.length) return this.next(fn,chapter);
+        this.debug(links)
+        this.debug('getDeepChapter');
+        Thread((link,next)=>{
+            this.getChapter(link,thisChapter=>this.chapterCMD(thisChapter,data=>{
+                if (!data) chapter = null;
+                return next();
+            }));
+        },()=>this.next(fn,chapter))(links);
+        return this;
+    }
+
     formatChapter(chapter,fn){
-        if (!chapter)return this.next(fn,chapter);
+        if (!chapter) return this.next(fn,null);
+        this.debug('formatChapter');
         var parser = Parser("","");
         chapter = new Chapter(chapter).config(this.config.get("formation.json"));
         var content = chapter.get("content");
@@ -721,43 +788,101 @@ class Wedge extends EventEmitter{
     }
 
     saveChapter(chapter,fn){
-        if (!chapter)return this.next(fn,chapter);
         if (!this.config.get("book.localization")) return this.next(fn,chapter);
-        var list = chapter.valueOf();
-        var file = list.id + ".json";
-        list.file = file;
-        fs.writeFile(Path.join(this.bookdir,file),chapter.toString(),()=>{
-            this.book.list.push(list);
-            return this.next(fn);
+        if (!chapter)return this.next(fn,null);
+        if (!chapter.get('content')) return this.next(fn,chapter);
+        this.debug('saveChapter');
+        fs.writeFile(Path.join(this.bookdir,chapter.get('id') + ".json"),chapter.toString(),()=>{
+            this.hasNewChapter = true;
+            this.next(fn,chapter);
         });
         return this;
     }
 
-    getImageData(link,success,failure){
+    saveChapterIndex(chapter,fn){
+        if (!chapter)return this.next(fn,null);
+        this.debug('saveChapterIndex');
+        var list = chapter.valueOf();
+        list.file = list.id + ".json";
+        this.book.list.push(list);
+        this.book.localization(this.bookdir,()=>this.next(fn,chapter));
+        return this;
+    }
+
+    getImageData(link,success,failure,retryTimes){
+        var count = 0;
+        var retryTimes = retryTimes || 0;
         var options = {
             url:link.href || link.url || link.src,
             method:link.method,
             dataType:'image',
             timeout:this.config.get("request.timeout"),
             reconnect:this.config.get("request.imagereconnect"),
+            proxy:this.config.get('request.proxy'),
+            proxyAuth:this.config.get('request.proxyAuth'),
             success:success || link.success,
             error:failure || link.error
         }
-        this.request.ajax(options);
+        var label = options.url;
+        var success = options.success;
+        var error = options.error;
+        var data = this.cache.get(label);
+        if (data){
+            this.debug('getCache...');
+            success(data);
+        }else {
+            options.success = data =>{
+                this.cache.set(label,data);
+                return success(data);
+            }
+            options.error = err=>{
+                count += 1;
+                if (count > retryTimes){
+                    return error(err)
+                }
+                this.request.ajax(options);
+            }
+            this.request.ajax(options);
+        }
         return this;
     }
     //获取数据
-    getRawData(link,success,failure){
+    getRawData(link,success,failure,retryTimes){
+        var count = 0;
+        var retryTimes = retryTimes || 0;
         var options = {
             url:link.href || link.url || link.src,
             method:link.method,
             data:link.data,
             timeout:this.config.get("request.timeout"),
             reconnect:this.config.get("request.reconnect"),
+            proxy:this.config.get('request.proxy'),
+            proxyAuth:this.config.get('request.proxyAuth'),
             success:success || link.success,
             error:failure || link.error
         }
-        this.request.ajax(options);
+        var label = options.url;
+        var success = options.success;
+        var error = options.error;
+        var data = this.cache.get(label);
+        if (data){
+            //this.debug(label);
+            this.debug('getCache...');
+            success(data);
+        }else {
+            options.success = data =>{
+                this.cache.set(label,data);
+                return success(data);
+            }
+            options.error = err=>{
+                count += 1;
+                if (count >= retryTimes){
+                    return error(err)
+                }
+                this.request.ajax(options);
+            }
+            this.request.ajax(options);
+        }
         return this;
     }
 
@@ -770,6 +895,7 @@ class Wedge extends EventEmitter{
             need = true;
         }
         if (!need) return this.next(fn);
+        this.debug('generateEbook');
         var work = child_process.fork(Path.join(__dirname,"lib/ebook/generator.js"),{cwd:process.cwd()});
         var options = {
             directory:this.config.get("ebook.directory"),
@@ -794,10 +920,12 @@ class Wedge extends EventEmitter{
             }
             this.next(fn);
         });
+        return this;
     }
 
     sendToDataBase(fn){
         if (!this.book) return this.next(fn);
+        this.debug('sendToDataBase');
         var meta = this.book.meta.valueOf();
         delete meta.cover;
         this.log(meta);
@@ -828,15 +956,39 @@ class Wedge extends EventEmitter{
             return this.start(args);
         }
     }
+
+    injectRule(rule){
+        var Sitesdir = Path.join(__dirname,'./lib/Sites/plugins');
+        var host = rule.host;
+        var ruledir = Path.join(Sitesdir,host);
+        utils.mkdirsSync(ruledir);
+        var main = {
+            host:rule.host,
+            match:rule.match,
+            charset:rule.charset,
+            selector:'require("./selector")',
+            replacer:'require("./replacer")'
+        }
+        fs.writeFileSync(ruledir+'/index.js','module.exports = '+JSON.stringify(main,null,4));
+        fs.writeFileSync(ruledir+'/selector.json',JSON.stringify(rule.selector,null,4));
+        fs.writeFileSync(ruledir+'/replacer.json',JSON.stringify(rule.replacer,null,4));
+        return this;
+    }
 }
 
 Wedge.prototype.request = request;
 Wedge.prototype.Loader = loader;
 Wedge.prototype.Decoder = decoder;
 Wedge.prototype.Parser = Parser;
+Wedge.prototype.Sites = Sites;
 Wedge.prototype.Attributes = Attributes;
 Wedge.prototype.Types = Attributes.classes;
+Wedge.prototype.Thread = Thread;
 Wedge.prototype.noop = function(){};
+Wedge.prototype.share = new Hash();
+Wedge.prototype.database = new DataBase();
+Wedge.prototype.cache = new Cache(8*1024*1024);
+Wedge.prototype.searchEngine = new Engine('360');
 Wedge.prototype.lib = {
     utils:utils,
     fs:fs,
@@ -846,7 +998,5 @@ Wedge.prototype.lib = {
     url:URL,
     Random:Random
 }
-Wedge.prototype.share = new Hash();
-Wedge.prototype.database = new DataBase();
 
 module.exports = Wedge;

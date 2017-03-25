@@ -17,19 +17,6 @@ App.updateBooks([dir1,dir2,dir3,...]);
 //合并多个目录并下载
 App.start([url1,url2,url3,...])
 ```
-### 小插件
-```Javascript
-//测试当前页面是否在规则库中
-App.plugins.testRule(url);
-//测试jquery命令
-App.plugins.testSelector(url);
-//发送小说到ireader阅读器
-App.plugins.sendToiReader();
-//发送小说到QQ阅读器
-App.plugins.sendToQQ();
-//深度任务,采集多个页面中的链接并批量新建小说
-App.plugins.deepQuest([urls],selector);
-```
 ### 数据库命令
 ```Javascript
 //primary key，唯一值
@@ -79,6 +66,11 @@ App.database.query('classes=奇幻玄幻&classes=历史军事&isend=true');
 App.config.set('request.reconnect',5);
 //请求超时时间
 App.config.set('request.timeout',5000);
+//设置代理
+App.config.set('request.proxy','127.0.0.1:8087');
+App.config.set('request.proxy',{host:'localhost',port:'8087'});
+//设置代理认证
+App.config.set('request.proxyAuth',{username:'###',password:'###'});
 ```
 
 #### 电子书参数
@@ -126,9 +118,41 @@ App.config.set('book.imagelocalization',false);
 //是否从起点等原创网站搜索书籍信息
 //建议开启，当下载网站不在规则库中能够辅助搜集书籍信息
 App.config.set('book.searchmeta',true);
+//深度下载，如果章节内容中存在超链接，将下载该链接内容
+App.config.set("deepdownload",true);
+//设置最大下载深度
+App.config.set("maxdeep",2);
+```
+
+#### 书籍加载器参数
+```Javascript
+//同步加载
+App.config.set('loader.sync',true);
+//异步加载
+App.config.set('loader.sync',false);
+//自动向目录中添加已有的章节信息
+App.config.set('loader.check.add',true);
+//自动从目录中移除已被删除的章节
+App.config.set('loader.check.remove',true);
+
+#### App参数
+```Javascript
+//输出运行日志
+App.config.set('app.log',true);
+//输出运行日志到本地文件
+App.config.set('app.log','LOG.txt');
+//输出线程信息
+App.Thread.LOG.on();
+//关闭线程信息
+App.Thread.LOG.off();
+//输出debug信息
+App.config.set('app.debug',true);
 ```
 
 ### 添加网站规则
+#### 临时添加
+App.Sites,inject(rule);
+#### 永久添加
 在wedge/lib/parser/sites路径下
 defaut为原创小说网站，
 plugins为盗链网站
