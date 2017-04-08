@@ -4,6 +4,7 @@
     "indexPage": "$.location()+'/chapter'",
     "footer": "!!$('.footer').length",
     "bookInfos": {
+      "origin": "$.location()",
       "title": "$('h2').eq(0).text().trim()",
       "author": "$('a.name strong').text().trim()",
       "classes": "$('.cate > a').text()",

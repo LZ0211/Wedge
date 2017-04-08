@@ -4,6 +4,7 @@
     "indexPage": "$.location($('.full a').attr('href'))",
     "footer": "$('.rightbanner').length > 0",
     "bookInfos": {
+      "origin": "$.location()",
       "source": "$.location()",
       "title": "$('#detail_title h1').text()",
       "author": "$('#detail_title h1').find('span').text()",

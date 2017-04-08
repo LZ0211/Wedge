@@ -31,48 +31,38 @@
       "func": "./plugins/sendToQQ"
     },
     {
-      "name": "sendToQidian",
+      "name": "searchEngine",
       "activated": true,
-      "func": "./plugins/sendToQidian"
+      "func": "./plugins/searchEngine"
+    },
+    {
+      "name": "start",
+      "activated": true,
+      "func": "./plugins/start"
     }
   ],
   "request": {
     "reconnect": 5,
     "imagereconnect": 3,
     "timeout": 5000,
-    "proxy": false,
-    "image": true,
-    "script": false,
-    "scriptreconnect": 3,
-    "css": false,
-    "cssreconnect": 3,
-    "frame": false,
-    "framereconnect": 1
+    "proxy": false
   },
   "ebook": {
-    "activated": "auto",
+    "activated": true,
     "formation": "epub",
     "directory": "E:/MyBooks/Library/ebook",
     "opendirectory": false,
     "openebookfile": false
   },
-  "loader": {
-    "check": {
-      "add": true,
-      "remove": true
-    },
-    "sync": false,
-    "thread": 3
-  },
   "thread": {
     "execute": 10,
     "new": 3,
     "update": 3,
-    "merge": 3,
-    "request": 3,
     "image": 2
   },
   "book": {
+    "check": true,
+    "sync": false,
     "changesource": true,
     "override": false,
     "imagelocalization": false,
@@ -93,77 +83,6 @@
       "cover": 3,
       "chapter": 3,
       "image": 3
-    }
-  },
-  "formation": {
-    "meta": {
-      "title": {
-        "type": "path"
-      },
-      "author": {
-        "type": "path"
-      },
-      "classes": {
-        "type": "text"
-      },
-      "uuid": {
-        "type": "uuid"
-      },
-      "source": {
-        "type": "url"
-      },
-      "isend": {
-        "type": "isend"
-      },
-      "date": {
-        "type": "time"
-      },
-      "brief": {
-        "type": "text"
-      },
-      "cover": {
-        "type": "base64"
-      }
-    },
-    "list": {
-      "title": {
-        "type": "path"
-      },
-      "id": {
-        "type": "id"
-      },
-      "source": {
-        "type": "url"
-      },
-      "date": {
-        "type": "time"
-      },
-      "file": {
-        "type": "path"
-      },
-      "size": {
-        "type": "integer"
-      }
-    },
-    "json": {
-      "title": {
-        "type": "path"
-      },
-      "id": {
-        "type": "id"
-      },
-      "source": {
-        "type": "url"
-      },
-      "date": {
-        "type": "time"
-      },
-      "size": {
-        "type": "integer"
-      },
-      "content": {
-        "type": "text"
-      }
     }
   }
 }

@@ -1,9 +1,9 @@
-module.exports = function (Ip,Files){
+module.exports = function(){
     var fs = this.lib.fs,
         Path = this.lib.Path,
         Random = this.lib.Random,
-        request = this.request;
-
+        request = this.lib.request;
+    var Ip;
     var post = (file,next)=>{
         try{
             var body = fs.readFileSync(file);
@@ -15,9 +15,9 @@ module.exports = function (Ip,Files){
         var filename = Path.basename(file);
         var payload = [];
         var head = '--' + boundary + '\r\n'
-            + 'Content-Disposition: form-data; name="newfile"; filename="' + filename + '"\r\n'
-            + 'Content-Type: application/octet-stream\r\n'
-            + '\r\n';
+        + 'Content-Disposition: form-data; name="newfile"; filename="' + filename + '"\r\n'
+        + 'Content-Type: application/octet-stream\r\n'
+        + '\r\n';
         var tail = '\r\n--' + boundary + '--';
         payload.push(new Buffer(head));
         payload.push(body);
@@ -26,13 +26,16 @@ module.exports = function (Ip,Files){
         request.post(Ip)
         .setHeader('Content-Type', 'multipart/form-data; boundary=' + boundary)
         .send(payload)
-        .end(()=>{
+        .end(err=>{
+            if (err){
+                console.log('连接已断开...');
+                process.exit();
+            }
             console.log(filename + " 上传成功");
             next();
         });
     }
-
-    var formatIp = (ip)=>{
+    var formatIp = (ip,fn)=>{
         var regexp = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/g;
         var found = ip.match(regexp);
         if (!found){
@@ -40,42 +43,31 @@ module.exports = function (Ip,Files){
             return getIP(fn);
         }
         Ip = 'http://' + found[0] + ':5299/upload';
+        return fn();
     }
+    var getIP = fn=>this.prompt(["请输入IP地址："],ip=>formatIp(ip,fn));
 
-    if (Ip && Files){
-        formatIp(Ip);
-        return this.parallel(Files,post,this.noop,1);
-    }
-
-    var self = this;
-
-    var getIP = fn=>{
-        return self.terminal(["请输入IP地址："],function (ip){
-            formatIp(ip);
-            return fn();
-        });
-    }
-
-    var sendBook = ()=>{
-        return self.terminal(["拖动文件到窗口："],dir=>{
-            dir = dir.replace(/^"/,'').replace(/"$/,'');
-            if (dir == '') return process.exit();
-            var stat = fs.statSync(dir);
-            if (stat.isDirectory()){
-                try{
-                    var files = fs.readdirSync(dir);
-                    files = files.map(file=>Path.join(dir,file));
-                    return self.parallel(files,post,sendBook,1);
+    this.sendToQQ = function (ip,Files){
+        if (!ip) return this.prompt(["请输入IP地址："],ip=>this.sendToQQ(ip,Files));
+        if (!Files){
+            return this.prompt(["拖动文件到窗口："],dir=>{
+                dir = dir.replace(/^"/,'').replace(/"$/,'');
+                if (dir == '') return process.exit();
+                var stat = fs.statSync(dir);
+                if (stat.isDirectory()){
+                    try{
+                        var files = fs.readdirSync(dir).map(file=>Path.join(dir,file));
+                        return this.sendToQQ(ip,files);
+                    }
+                    catch (err){
+                        return this.sendToQQ(ip,Files);
+                    }
                 }
-                catch (err){
-                    return sendBook();
+                if (stat.isFile()){
+                    return this.sendToQQ(ip,[dir]);
                 }
-            }
-            if (stat.isFile()){
-                return post(dir,sendBook);
-            }
-            return sendBook();
-        });
+            });
+        }
+        return formatIp(ip,()=>this.Thread(post,this.noop,1)(Files));
     }
-    return getIP(sendBook);
 }

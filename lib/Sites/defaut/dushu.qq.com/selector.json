@@ -4,6 +4,7 @@
     "indexPage": "$.location()",
     "footer": "!!$('.footer').length",
     "bookInfos": {
+      "origin": "$.location()",
       "source": "$.location()",
       "title": "$('.book_info > h3 > a').text().trim()",
       "author": "$('dd > a').eq(0).text().trim()",

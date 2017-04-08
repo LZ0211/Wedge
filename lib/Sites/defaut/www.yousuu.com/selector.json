@@ -4,6 +4,7 @@
     "indexPage": "$.location()",
     "footer": "!!$('.footer').length",
     "bookInfos": {
+      "origin": "$.location()",
       "source": "$.location()",
       "title": "$('.media').prev().find('span').text()",
       "author": "$('li:contains(作者:)').find('a').text()",

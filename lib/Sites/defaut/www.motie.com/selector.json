@@ -4,6 +4,7 @@
     "indexPage": "$.location()+'/chapter'",
     "footer": "$('#bookReply').length > 0",
     "bookInfos": {
+      "origin": "$.location()",
       "source": "$.location()",
       "title": "$('h1.p-title a').text()",
       "author": "$('.author-info .rtext a').first().text()",

@@ -4,6 +4,7 @@
     "indexPage": "$.location($('#htmlmulu').attr('href'))",
     "footer": "!!$('#footer').length",
     "bookInfos": {
+      "origin": "$.location()",
       "source": "$.location()",
       "title": "$('#htmltimu').text().trim()",
       "author": "$('#htmlzuozhe').text().trim()",

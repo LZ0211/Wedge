@@ -11,20 +11,16 @@ const Log = require("./lib/Log");
 const Hash = require("./lib/Hash");
 const DataBase = require("./lib/database");
 const request = require("./lib/request");
-const utils = require("./lib/utils");
+const util = require("./lib/util");
 const Thread = require("./lib/thread");
 const Cache = require("./lib/Cache");
 const setting = require("./setting");
 const Searcher = require("./searcher");
-const Engine = require("./lib/Engine");
-const loader = require("./lib/loader");
-const decoder = require("./lib/parser/decoder");
-const Parser = require("./lib/parser");
+const decoder = require("./lib/decoder");
 const Sites = require("./lib/Sites");
-const Attributes = require("./lib/attributes");
-const Chapter = require('./lib/book/chapter');
-const MetaData = require("./lib/book/metadata");
-const objectUtils = require('./lib/utils/object');
+const Parser = require("./lib/Parser");
+const Book = require("./lib/Book");
+const classes = require("./lib/classes");
 
 class Wedge extends EventEmitter{
     constructor(dir){
@@ -32,25 +28,16 @@ class Wedge extends EventEmitter{
         this.config = new Hash(setting);
         this.chdir(dir);
         this.init();
-        this.plugins = {};
-        this.config
-            .get("plugins")
-            .filter(plugin=>plugin.activated)
-            .forEach(plugin=>this.install(plugin));
-    }
-
-    init(){
-        this.label = Random.uuid(10,16);
-        this.config.get('thread.log') && this.Thread.LOG.on();
-        this.newBooks = Thread((url,next)=>this.spawn().newBook(url).end(next),()=>this.end(),this.config.get("thread.new"));
-        this.updateBooks = Thread((url,next)=>this.spawn().updateBook(url).end(next),()=>this.end(),this.config.get("thread.update"));
-        return this;
+        this.plugins();
     }
 
     chdir(dir){
-        utils.mkdirsSync(dir);
-        process.chdir(dir);
+        if (!dir){
+            dir = Path.join(process.env.USERPROFILE,'./Documents/Wedge-Library');
+        }
         this.dir = Path.resolve(dir);
+        fs.mkdirsSync(this.dir);
+        process.chdir(this.dir);
         this.config.file("setting.json");
         this.database.close();
         this.database.file(Path.join(this.dir,"metadatas.json"));
@@ -58,36 +45,50 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    spawn(dir){
-        dir = dir || this.dir;
-        dir = Path.resolve(this.dir,dir);
-        var self = this;
-        function Fork(){
-            this.config = new Hash(setting);
-            this.dir = dir;
-            this.config.set(self.config.valueOf());
-            this.init();
-            this.config
-                .get("plugins")
-                .filter(plugin=>plugin.activated)
-                .forEach(plugin=>this.install(plugin));
-        }
-        Fork.prototype=Wedge.prototype;
-        return new Fork();
-    }
-
-    install(plugin){
-        try{
-            this.plugins[plugin.name] = require(plugin.func).bind(this);
-        }catch (e){}
+    init(){
+        this.label = Random.uuid(10,16);
+        this.book = new Book();
+        this.bookdir = null;
+        this.Log();
+        this.addFunction();
         return this;
     }
 
-    range(template,start,end){
-        return Array(end-start+1).fill(start).map((x,y)=>x+y).map(x=>template.replace(/\*/g,x));
+    plugins(){
+        var install = plugin=>require(plugin.func).call(this);
+        this.config.get("plugins").filter(plugin=>plugin.activated).forEach(install);
+        return this;
     }
 
-    terminal(docs,fn){
+    Log(){
+        if (this.log) return this.log;
+        var appLog = this.config.get('app.log');
+        if(appLog == false) {
+            this.log = this.noop;
+            return;
+        }
+        if(appLog === true){
+            this.log = console.log;
+            return;
+        }
+        this.log = new Log(String(appLog));
+    }
+
+    spawn(){
+        var setting = this.config.valueOf();
+        function Fork(){
+            EventEmitter.call(this);
+            this.config = new Hash();
+            this.config.set(setting);
+            this.book = new Book();
+            this.bookdir = null;
+            this.label = Random.uuid(10,16);
+        }
+        Fork.prototype=this;
+        return new Fork();
+    }
+
+    prompt(docs,fn){
         var rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout
@@ -112,39 +113,6 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    series(fns){
-        utils.async.thread().series(fns);
-        return this;
-    }
-
-    parallel(array,fn,final,threadNumber){
-        var threadLog = this.config.get('thread.log');
-        var fn = fn || this.noop;
-        var final = final || this.noop;
-        var threadNumber = threadNumber || 3;
-        var running = 0;
-        var sumLength = array.length;
-        array = array.concat();
-        var execute = (fn)=>{
-            var element = array.shift();
-            if (element){
-                running += 1;
-                fn(element,()=>{
-                    running -= 1;
-                    threadLog && this.log(sumLength - array.length - running + " of " + sumLength);
-                    process.nextTick(()=>execute(fn));
-                });
-            }else {
-                if (running == 0) return final();
-            }
-        }
-        for (var index=0;index<threadNumber;index++){
-            execute(fn);
-        }
-        return this;
-    }
-
-    //绑定或触发end事件
     end(){
         var fn = arguments[0];
         if (undefined == fn){
@@ -158,44 +126,15 @@ class Wedge extends EventEmitter{
     }
 
     error(msg){
-        this.log(msg);
+        this.emit('error',new Error(msg));
         return this.end();
     }
 
-    next(){
-        var args = [].slice.call(arguments);
-        var fn = args.shift();
+    next(fn){
         if (typeof fn !== "function"){
-            fn = this.noop;
+            return ()=>this.end();
         }
-        setImmediate(()=>fn.apply(this,args));
-        return this;
-    }
-
-    initLog(){
-        var appLog = this.config.get('app.log');
-        if(appLog == false) {
-            this.log = Wedge.prototype.log = function(){
-                return this;
-            };
-        };
-        if(appLog === true){
-            this.log = Wedge.prototype.log = function(){
-                var args = [].slice.call(arguments);
-                args.unshift(this.label);
-                console.log.apply(console,args);
-                return this;
-            }
-        }
-        if('string' === typeof appLog){
-            this.log = Wedge.prototype.log = new Log(appLog);
-        }
-    }
-
-    log(){
-        this.initLog();
-        this.log.apply(this,arguments);
-        return this;
+        return fn;
     }
 
     debug(){
@@ -203,264 +142,235 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    encodeURI(str,charset){
-        if (!charset) return encodeURIComponent(str);
-        var buffer = decoder.encode(str,charset);
-        var code = '';
-        for (var i=0;i<buffer.length;i++){
-            code += '%';
-            code += buffer[i].toString(16).toUpperCase();
+    request(url,options){
+        if ( typeof url == "object" ) {
+            options = url;
+            url = undefined;
         }
-        return code;
-    }
+        options = options || {};
+        options.url = url || options.url || options.href || options.src;
+        options.method = options.method || options.type || "GET";
+        options.timeout = this.config.get('request.timeout') || 15000;
+        options.reconnect = this.config.get('request.reconnect') || 3;
+        options.proxy = this.config.get('request.proxy');
+        options.proxyAuth = this.config.get('request.proxyAuth');
+        options.success = options.success || this.noop,
+        options.error = options.error || this.noop;
 
-    decodeURI(str,charset){
-        if (!charset) return decodeURIComponent(str);
-        var array = str.split('%').slice(1).map(x=>parseInt(x,16));
-        return decoder.decode(new Buffer(array),charset);
-    }
-
-    encodeBase64(str){
-        return new Buffer(str).toString('base64');
-    }
-
-    decodeBase64(str){
-        return new Buffer(str,'base64').toString();
-    }
-
-    loadJSON(dir){
-        return JSON.parse(fs.readFileSync(dir).toString());
-    }
-
-    formatLink(url){
-        if (typeof url === "string"){
-            return {href:url}
+        if (options.method == "GET"){
+            var data = this.cache.get(options.url);
+            if (data) return options.success(data);
         }
-        url.href = url.href || url.url || url.src;
-        url.method = (url.method || "GET").toUpperCase();
-        return url;
+
+        var req = new request.Request(options.url, options.method);
+        options.timeout && req.timeout(options.timeout);
+        options.reconnect && req.reconnect(options.reconnect);
+        options.proxy && req.proxy(options.proxy);
+        options.proxyAuth && req.proxyAuth(options.proxyAuth);
+        options.dataType && req.accept(options.dataType);
+        options.data && options.method === "POST" && req.send(options.data);
+        options.contentType && req.type(options.contentType);
+        options.headers && req.setHeader(options.headers);
+
+        var connectTimes = 0;
+        var maxConnectTimes = options.reconnect;
+
+        req.end((err,res,data)=>{
+            connectTimes += 1;
+            if (res && /^20.$/.test(res.statusCode) && data){
+                if (options.method == "GET"){
+                    this.cache.set(options.url,data);
+                }
+                return options.success(data);
+            }
+            if (err){
+                if (connectTimes < maxConnectTimes) return req.end();
+                return options.error(err.code);
+            }
+            return options.error(res.statusCode);
+        });
+    }
+
+    pipeLine(line){
+        var compile = name=>{
+            name = name.trim();
+            var protoFun = this[name];
+            if (!protoFun) return this.error('no Function named '+name);
+            var argsLength = protoFun.length;
+            var define = [];
+            if (argsLength){
+                var define = Random.sample('abcdefghijklmnopqrstuvwxyz',argsLength);
+            }
+            define.push('this.'+name+'('+define.join(',')+')');
+            return Function.apply(null,define).bind(this);
+        }
+        return line.split(' > ').map(compile);
+    }
+
+    CMD(line,funArr,args){
+        var func = Thread.series(this.pipeLine(line).concat(funArr||[]));
+        if (!args) return func;
+        return func.call(this,args);
     }
 
     fuzzysearchBook(title,fn){
-        var self = this;
+        fn = this.next(fn);
         var links = [];
-
-        Thread((site,next)=>{
-            if (!site) return next();
-            if (!site.url) return next();
-            var url = site.url.replace('%title%',self.encodeURI(title,site.charset));
-            var method = (site.method || "get").toUpperCase();
+        var push = link=>links.push(link);
+        var endSearch = ()=>fn(links);
+        var search = (site,next)=>{
+            if (!site || !site.url) return next();
+            var url = site.url.replace('%title%',util.encodeURI(title,site.charset));
+            var method = (site.method || "GET").toUpperCase();
             var data = site.data && site.data.replace('%title%',title);
-            function success(data){
-                if (site.parse){
-                    links = links.concat(new Function('json','try{return (' + site.parse + ')}catch(e){return []}')(data));
+            var resolve = data=>{
+                if(site.parse && typeof data == 'object'){
+                    var parser = new Function('json','try{return (' + site.parse + ')}catch(e){return []}');
+                    parser(data).forEach(push);
                 }else {
-                    var $ = Parser(data,url).$;
-                    $('a').filter((i,v)=>$(v).text().indexOf(title) > -1).each((i,v)=>links.push([$.location($(v).attr('href')),$(v).text().trim()]));
+                    var $ = Parser(data,url);
+                    $(':header a').filter((i,v)=>~$(v).text().indexOf(title))
+                    .each((i,v)=>links.push([
+                        $.location($(v).attr('href')),
+                        $(v).text().trim()
+                    ]));
                 }
                 return next();
             }
-            return request.ajax({
+            this.request({
                 url:url,
                 method:method,
                 data:data,
-                success:success,
+                success:resolve,
                 error:next
             });
-        },()=>{
-            var hash = {};
-            links.forEach(link=>hash[link[0]]=link[1]);
-            var array = [];
-            for (var x in hash){
-                array.push([x,hash[x]]);
-            }
-            return fn(array);
-        })(Searcher,3);
+        }
+        Thread(search,endSearch)(Searcher,3);
         return this;
     }
 
     searchBook(title,fn){
+        fn = this.next(fn);
         title = title.replace(/[:：？\?,；，,\.。!！_—\-]/g,'');
-        return this.fuzzysearchBook(title,function (links){
-            fn(links.filter(link=>link[1] === title));
-        });
-    }
-
-    CMD(pipeline){
-        var self = this;
-        return pipeline.split(' > ').map(fnName=>{
-            var fn = self[fnName];
-            if (!fn.length){
-                return next=>{
-                    fn.call(self);
-                    return next();
-                }
-            }else {
-                return fn.bind(self);
-            }
-        });
-    }
-
-    updateBookCMD(){
-        this.series(this.CMD('saveBook > checkBookCover > getBookIndex > mergeBookIndex > filterBookIndex > getChapters > saveBook > sendToDataBase > generateEbook > end'));
-        return this;
-    }
-
-    //新建书籍
-    newBookCMD(){
-        this.series(this.CMD('getBookMeta > searchBookMeta > createBook > updateBookMeta > getBookCover > saveBook > getBookIndex > mergeBookIndex > filterBookIndex > getChapters > saveBook > sendToDataBase > generateEbook > end'));
-        return this;
-    }
-
-    refreshBook(directory){
-        this.loadBook(directory,(error,book)=>{
-            if (error) return this.end();
-            this.book = book;
-            this.bookMeta = book.meta;
-            this.series(this.CMD('searchBookMeta > updateBookMeta > getBookCover > saveBook > sendToDataBase > generateEbook > end'));
-        });
-        return this;
-    }
-
-    refreshBooks(){
-        this.parallel(utils.toArray(arguments),(dir,next)=>{
-            this.spawn().refreshBook(dir).end(next);
-        });
-        return this;
-    }
-
-    updateBook(directory){
-        this.debug('updateBook');
-        this.loadBook(directory,(error,book)=>{
-            if (error){//书籍不存在
-                if (!this.url){
-                    return this.end();
-                }else {
-                    return this.newBook(this.url);
-                }
-            }else {//书籍加载成功
-                this.book = book;
-                this.url = book.meta.get("source");
-                return this.updateBookCMD();
-            }
-        });
-        return this;
-    }
-
-    newBook(url){
-        this.debug('newBook');
-        this.log(url);
-        this.url = url;
-        this.newBookCMD();
+        var filterFun = links=>fn(links.filter(link=>link[1] == title));
+        this.fuzzysearchBook(title,filterFun);
         return this;
     }
 
     loadBook(dir,fn){
-        this.debug('loadBook');
-        if (typeof dir == "function"){
-            fn = dir;
-            dir = this.bookdir;
-        }
-        this.bookdir = Path.resolve(dir || this.bookdir);
-        this.Loader.config(this.config.get("loader"));
-        this.Loader.bookIndex(this.bookdir,fn);
+        fn = this.next(fn);
+        if (!fs.existsSync(dir)) return this.end();
+        this.CMD('loadBookIndex > checkBookIndex',[fn])(dir);
         return this;
     }
 
-    //获取书籍信息
-    getBookMeta(fn){
-        if (!this.url) return this.error("No URL...");
+    loadBookIndex(dir,fn){
+        fn = this.next(fn);
+        if ('string' !== typeof dir) return this.end();
+        this.bookdir = Path.resolve(dir);
+        if (this.config.get('book.sync')){
+            this.book.loadIndexSync(dir);
+            fn();
+            return this;
+        }
+        this.book.loadIndex(dir,fn);
+        return this;
+    }
+
+    checkBookIndex(fn){
+        fn = this.next(fn);
+        if (!this.book.location()) return this;
+        if (!this.config.get('book.localization')) return fn();
+        if (!this.config.get('book.check')) return fn();
+        if (this.config.get('book.sync')){
+            this.book.checkIndexSync();
+            fn();
+            return this;
+        }
+        this.book.checkIndex(fn);
+        return this;
+    }
+
+    getParsedData(data,url){
+        var site = Sites.search(url);
+        var $ = Parser(data,url,site.charset);
+        var filter = util.object.filter;
+        var map = util.object.map;
+        var rule = filter(site.selector,(k,v)=>v.match($) && v.footer($));
+        var apply = (k,v)=>(util.is.isFunction(v) ? v($) : map(v,apply));
+        var replace = (data,rule)=>map(data,(k,v)=>{
+            if(!rule[k]) return v;
+            if(util.is.isObject(v)){
+                if(util.is.isObject(rule[k])) return replace(v,rule[k]);
+                return v;
+            }
+            return util.replace(v,rule[k])
+        });
+        return replace(map(rule,apply),site.replacer);
+    }
+
+    getBookMeta(url,fn){
+        fn = this.next(fn);
+        if(typeof url == 'string'){
+            if (!url || !url.match('http')) return this.error("Invalid URL ...");
+            var links = url.split('|').filter(x=>x).map(link=>{
+                try{return JSON.parse(link)}catch (e){return link}
+            }).map(util.formatLink);
+        }else if(Array.isArray(url)){
+            var links = url.map(util.formatLink);
+        }else{
+            return this.error("Invalid URL ...");
+        }
         this.debug('getBookMeta');
-        var link = this.formatLink(this.url);
-        this.getRawData(link,data=>{
-            var parser = Parser(data,link.href);
-            var parsedData = parser.getParsedData();
+        var link = links[0];
+        var times = parseInt(this.config.get('app.retry.meta'));
+        times = isNaN(times) ? 3 : times;
+        link.success = data=>{
+            var parsedData = this.getParsedData(data,link.url);
             var infoPage = parsedData.infoPage;
             var indexPage = parsedData.indexPage;
             var redirectPage = parsedData.redirectPage;
             if (!infoPage){
                 if (!indexPage){
                     if (!redirectPage){
-                        this.debug(parser.$.raw);
+                        this.debug(data.toString());
                         return this.error("this url is Not infoPage or request failed");
                     }
-                    this.url = redirectPage.infoPage || redirectPage.indexPage;
-                    return setImmediate(()=>this.getBookMeta(fn));
+                    this.debug('redirect...');
+                    url = redirectPage.infoPage || redirectPage.indexPage;
+                    return this.getBookMeta(url,fn);
                 }else {
-                    this.url = indexPage.infoPage;
-                    return setImmediate(()=>this.getBookMeta(fn));
+                    this.debug('switch to infoPage...');
+                    url = indexPage.infoPage;
+                    return this.getBookMeta(url,fn);
                 }
             }else {
-                //初始化MetaData
-                this.bookMeta = new MetaData(infoPage.bookInfos);
-                this.bookMeta.set("uuid",[this.bookMeta.get("author"),this.bookMeta.get("title")].join(" - "));
-                //获取目录页
-                var url = infoPage.indexPage;
-                //多目录页
-                if (Array.isArray(url)){
-                    this.url = url.shift();
-                    this.otherUrls = url;
-                }else {
-                    this.url = url;
-                }
-                //非GET模式
-                if ("object" == typeof this.url){
-                    this.bookMeta.set("source", link.href);
-                }else {
-                    //默认GET模式
-                    this.bookMeta.set("source", this.url);
-                }
-                return this.next(fn);
+                this.book.setMeta(infoPage.bookInfos);
+                this.book.setMeta('source',links.length > 1 ? links : infoPage.indexPage);
+                this.book.setMeta('origin',link);
+                return fn();
             }
-        },()=>this.end(),this.config.get('app.retry.meta'));
+        };
+        link.error = ()=>{
+            if (--times <= 0) return this.end();
+            this.request(link);
+        }
+        this.request(link);
         return this;
     }
-    //创建书籍
-    createBook(fn){
-        if (!this.bookMeta) return this.error("No bookMeta...");
-        this.debug('createBook');
-        //书籍目录
-        this.bookdir = Path.join(this.dir,this.bookMeta.get("uuid"));
-        utils.mkdirsSync(this.bookdir);
-        this.loadBook((error,book)=>{
-            this.book = book;
-            //新书
-            if (error) return this.next(fn);
-            //已存在
-            var source = book.meta.get("source");
-            if (source == this.url){
-                this.log("update...");
-                return this.updateBookCMD();
-            }else {//冲突
-                if (this.config.get("book.changesource")){//换源
-                    this.log("changesource...");
-                    if (this.config.get("book.override")){//覆盖旧章节
-                        book.list.empty();
-                    }
-                    return this.next(fn);
-                }else {//不换源
-                    //console.log(source)
-                    this.url = source;
-                    this.log("origin...");
-                    this.log(this.url);
-                    return this.updateBookCMD();
-                }
-            }
-        });
-        return this;
-    }
-    //搜索书籍信息
-    searchBookMeta(fn){
-        if (this.config.get('book.searchmeta') == false) return fn();
-        var bookMeta = this.bookMeta;
-        var title = bookMeta.get("title");
-        var source = bookMeta.get("source");
-        var author = bookMeta.get("author");
-        var uuid = bookMeta.get('uuid');
-        var next = this.next.bind(this,fn);
-        //if (this.database.query('uuid='+uuid) && title && author) return next();
+
+    updateBookMeta(fn){
+        fn = this.next(fn);
+        if (!this.config.get('book.searchmeta')) return fn();
+        var title = this.book.getMeta("title");
+        var source = this.book.getMeta("source");
+        var author = this.book.getMeta("author");
+        var uuid = this.book.getMeta('uuid');
         var except = new RegExp(Searcher.map(x=>x.name.replace(/\./g,'\\.')).join('|'),'gi');
-        if(source.match(except)) return next();
+        if(source.match(except)){
+            this.book.setMeta('origin',source);
+            return fn();
+        }
         this.debug('searchBookMeta');
         function like(s1,s2){
             s1 = s1.replace(/[:：？\?,；，,\.。!！_—\-]/g,'');
@@ -472,9 +382,8 @@ class Wedge extends EventEmitter{
         this.searchBook(title,links=>{
             Thread((link,nextFn)=>{
                 var app = this.spawn();
-                app.url = link;
-                app.getBookMeta(()=>{
-                    var meta = app.bookMeta.valueOf();
+                app.getBookMeta(link,()=>{
+                    var meta = app.book.metaValue();
                     for (var x in meta){
                         if (meta[x] === '') return nextFn();
                     }
@@ -482,419 +391,360 @@ class Wedge extends EventEmitter{
                     if (!like(meta.author,author)) return nextFn();
                     this.log(meta.source)
                     delete meta.source;
-                    bookMeta.set(meta);
-                    return next();
+                    this.book.setMeta(meta);
+                    return fn();
                 }).end(nextFn);
-            },next)(links.map(link=>link[0]))
+            },fn,1)(links.map(link=>link[0]));
         });
         return this;
     }
-    //更新书籍信息
-    updateBookMeta(fn){
-        if (!this.bookMeta) return this.error("No bookMeta...");
-        if (!this.book) return this.error("No book...");
-        this.debug('updateBookMeta');
-        this.book.meta.set(this.bookMeta.valueOf());
-        this.book.meta.set("uuid",[this.book.meta.get("author"),this.book.meta.get("title")].join(" - "));
-        return this.next(fn);
-    }
-    //获取书籍封面
+
     getBookCover(fn){
-        var next = this.next.bind(this,fn);
-        var coverSrc = this.book.meta.get("cover");
-        if (!/^http/i.test(coverSrc)) return next();
+        fn = this.next(fn);
+        var coverSrc = this.book.getMeta("cover");
+        if (!/^http/i.test(coverSrc)) return fn();
         this.debug('getBookCover');
-        var link = this.formatLink(coverSrc);
-        this.getImageData(link,data=>{
-            this.book.meta.set("cover",data);
-            this.hasNewChapter = true;
-            fs.writeFile(Path.join(this.bookdir,"cover.jpg"),data,next);
-        },next,this.config.get('app.retry.cover'));
+        var times = parseInt(this.config.get('app.retry.cover'));
+        times = isNaN(times) ? 3 : times;
+        var link = util.formatLink(coverSrc);
+        link.contentType = 'image';
+        link.success = data=>{
+            this.book.setMeta("cover",data);
+            fs.writeFile(Path.join(this.bookdir,"cover.jpg"),data,fn);
+        }
+        link.error = ()=>{
+            if (--times <= 0) return fn();
+            this.request(link);
+        }
+        this.request(link);
         return this;
     }
-    //检查封面图片是否存在
+
     checkBookCover(fn){
-        if (!this.bookdir) return this.error("No BookDir...");
-        var coverSrc = this.book.meta.get("cover");
+        this.debug('checkBookCover');
+        fn = this.next(fn);
+        if (!this.bookdir) return this.end();
+        var coverSrc = this.book.getMeta("cover");
         var coverDir = Path.join(this.bookdir,"cover.jpg");
-        var next = this.next.bind(this,fn);
         fs.exists(coverDir,(exist)=>{
             if (exist){
                 fs.readFile(coverDir,(err,data)=>{
-                    this.book.meta.set("cover",data);
-                    return next();
+                    this.book.setMeta("cover",data);
+                    return fn();
                 });
             }else {
-                if (/^http/i.test(coverSrc)){
-                    return this.getBookCover(fn);
-                }else {
-                    fs.writeFile(coverDir,this.book.meta.cover.toBuffer(),next);
-                }
+                if(!coverSrc) return fn();
+                if (/^http/i.test(coverSrc)) return this.getBookCover(fn);
+                fs.writeFile(coverDir,this.book.Meta.cover.toBuffer(),fn);
             }
         });
         return this;
     }
-    //保存书籍
-    saveBook(fn){
-        this.debug('saveBook');
-        var next = this.next.bind(this,fn);
-        if (!this.book) return this.error("No Book...");
-        if (!this.bookdir) return this.error("No BookDir...");
-        this.book.meta.set("date",+new Date());
-        this.book.localization(this.bookdir,next);
-        return this;
-    }
-    //获取书籍目录
-    getBookIndex(fn){
-        this.debug('getBookIndex');
-        var link = this.formatLink(this.url);
-        this.getRawData(link,data=>{
-            var parser = Parser(data,link.href);
-            var bookIndex = objectUtils.get(parser.getParsedData(),"indexPage.bookIndexs");
-            if (!bookIndex) return this.end();
-            this.bookIndex = bookIndex;
-            return this.next(fn);
-        },()=>this.end(),this.config.get('app.retry.index'));;
-        return this;
-    }
-    //合并书籍目录
-    mergeBookIndex(fn){
-        this.debug('mergeBookIndex');
-        var next = this.next.bind(this,fn);
-        if (!this.otherUrls) return next();
-        var mergeIndex = (url,then)=>{
-            var link = this.formatLink(url);
-            this.getRawData(link,data=>{
-                var parser = Parser(data,link.href);
-                var bookIndex = objectUtils.get(parser.getParsedData(),"indexPage.bookIndexs");
-                if (bookIndex){
-                    bookIndex.forEach(link=>this.bookIndex.push(link));
-                }
-                return this.next(then);
-            },()=>this.next(then),this.config.get('app.retry.index'));
-        }
-        Thread(mergeIndex,next)(this.otherUrls,this.config.get("thread.merge"));
-        return this;
-    }
-    //过滤书籍目录
-    filterBookIndex(fn){
-        this.debug('filterBookIndex');
-        var Id = this.Types.id();
-        this.bookIndex.forEach((link,index)=>{
-            link.id = Id.val(link.id || index).val();
+
+    createBook(fn){
+        fn = this.next(fn);
+        var uuid = this.book.getMeta('uuid');
+        this.debug('createBook');
+        this.bookdir = Path.resolve(uuid);
+        fs.mkdirsSync(this.bookdir);
+        var thisMeta = this.book.metaValue();
+        this.loadBook(this.bookdir,()=>{
+            var newURL = this.book.getMeta('source');
+            if (thisMeta.source == newURL) return fn();
+            if (!this.config.get("book.changesource")) return fn();
+            this.debug('changesource');
+            if (this.config.get("book.override")){
+                this.debug('override');
+                this.book.emptyList();
+            }
+            this.book.setMeta(thisMeta);
+            return fn();
         });
-        var idHash = this.book.list.hash("id");
-        var srcHash = this.book.list.hash("source");
-        this.bookIndex = this.bookIndex.filter(link=>!idHash[link.id]).filter(link=>!srcHash[link.href]);
-        this.next(fn);
         return this;
     }
 
-    chapterCMD(chapter,fn){
-        this.series([
-            then=>this.mergeChapter(chapter,then),
-            (chapter,then)=>this.getDeepChapter(chapter,then),
-            (chapter,then)=>this.getChapterImages(chapter,then),
-            (chapter,then)=>this.formatChapter(chapter,then),
-            (chapter,then)=>this.saveChapter(chapter,then),
-            (chapter,then)=>this.saveChapterIndex(chapter,fn)
-        ]);
+    saveBook(fn){
+        fn = this.next(fn);
+        if (!this.bookdir) return this.end();
+        this.book.setMeta("date",+new Date);
+        this.book.localization(this.bookdir,fn);
         return this;
     }
 
-    getChapters(fn){
-        this.debug('getChapters');
-        Thread((link,next)=>{
-            this.getChapter(link,chapter=>this.chapterCMD(chapter,next));
-        },()=>this.next(fn))(this.bookIndex,this.config.get("thread.execute"));
-        return this;
-    }
-    //获取章节内容
-    getChapter(link,fn){
-        this.debug('getChapter');
-        //this.debug(link);
-        this.getRawData(link,data=>{
-            var parser = Parser(data,link.href);
-            var thisChapter = parser.getChapterContent();
-            if (!thisChapter) return this.next(fn,null);
-            thisChapter.deep = link.deep || 0;
-            thisChapter.id = thisChapter.id || link.id;
-            thisChapter.source = thisChapter.source || link.href;
-            thisChapter.title = thisChapter.title || link.text;
-            return this.next(fn,thisChapter);
-        },()=>this.next(fn,null),this.config.get('app.retry.chapter'));
+    getBookIndex(link,fn){
+        fn = this.next(fn);
+        var times = parseInt(this.config.get('app.retry.index'));
+        times = isNaN(times) ? 3 : times;
+        link = util.formatLink(link);
+        link.success = data=>{
+            var parsedData = this.getParsedData(data,link.url);
+            if (parsedData.indexPage && parsedData.indexPage.bookIndexs && Array.isArray(parsedData.indexPage.bookIndexs)) return fn(parsedData.indexPage.bookIndexs);
+            return fn([]);
+        }
+        link.error = ()=>{
+            if (--times <= 0) return fn([]);
+            this.request(link);
+        }
+        this.request(link);
         return this;
     }
 
-    mergeChapter(chapter,fn){
-        if (!chapter)return this.next(fn,null);
-        chapter.content = chapter.content || "";
+    getBookIndexs(fn){
+        fn = this.next(fn);
+        this.debug('getBookIndexs');
+        var links = this.book.getMeta('source');
+        links = links.split('|').filter(x=>x);
+        links = links.map(link=>{
+            try{
+                return JSON.parse(link);
+            }catch (e){
+                return {url:link}
+            }
+        });
+        var indexs = [];
+        var push = item=>indexs.push(item);
+        Thread((link,next)=>this.getBookIndex(link,items=>{
+            items.forEach(push);
+            return next();
+        }),()=>fn(this.filterBookIndex(indexs)))(links,1);
+        return this;
+    }
+
+    filterBookIndex(indexs){
+        if (!Array.isArray(indexs)) return [];
+        var Ids = this.book.hashBy('id');
+        var Sources = this.book.hashBy('source');
+        var startNum = Math.max.apply(Math,Object.keys(Ids).map(parseInt).filter(x=>!isNaN(x)).concat([0]));
+        var SelfIds = {};
+        var SelfSources = {};
+        var newIndexs = [];
+        indexs = indexs.map(util.formatLink);
+        indexs.forEach((item,index)=>item.id = classes.Id(item.id || index+startNum).val());
+        indexs = indexs.filter(index=>!Ids[index.id]);
+        indexs = indexs.filter(index=>!Sources[index.url]);
+        indexs = indexs.filter(index=>index.url && !~index.url.indexOf("#") && !~index.url.indexOf("javascript:"));
+        indexs.forEach(index=>{
+            if (index.id in SelfIds) return;
+            if (index.url in SelfSources) return;
+            SelfIds[index.id] = true;
+            SelfSources[index.url] = true;
+            newIndexs.push(index);
+        });
+        return newIndexs;
+    }
+
+    getChapterContent(link,fn){
+        fn = this.next(fn);
+        this.debug('getChapterContent');
+        var times = parseInt(this.config.get('app.retry.chapter'));
+        times = isNaN(times) ? 3 : times;
+        link.success = data=>{
+            var parsedData = this.getParsedData(data,link.url);
+            var chapter = parsedData.contentPage && parsedData.contentPage.chapterInfos;
+            if (!chapter) return fn(null);
+            chapter.deep = link.deep || 0;
+            chapter.id = chapter.id || link.id;
+            chapter.source = chapter.source || link.url;
+            chapter.title = chapter.title || link.text;
+            chapter.content = chapter.content || "";
+            return fn(chapter)
+        }
+        link.error = ()=>{
+            if (--times <= 0) return fn([]);
+            this.request(link);
+        }
+        this.request(link);
+        return this;
+    }
+
+    mergeChapterContent(chapter,fn){
+        fn = this.next(fn);
+        if (!chapter)return fn(null);
         if (chapter.ajax){
             this.debug('ajax...');
-            this.request.ajax(chapter.ajax).then(data=>{
+            var options = chapter.ajax;
+            var resolve = options.success;
+            var times = parseInt(this.config.get('app.retry.chapter'));
+            times = isNaN(times) ? 3 : times;
+            options.success = data=>{
                 if (chapter.content){
                     chapter.content += "\n";
                 }
-                chapter.content += data;
-                return this.next(fn,chapter);
-            });
-        }else if (chapter.nextPage){
-            if (chapter.nextPage == chapter.source) return this.next(fn,chapter);
-            var link = {href:chapter.nextPage};
-            this.debug('mergeChapter');
-            this.getChapter(link,nextChapter=>this.mergeChapter(nextChapter,nextChapter=>{
-                if (!nextChapter) return this.next(fn,null);
-                if (nextChapter.id && nextChapter.id !== chapter.id){
-                    return this.chapterCMD(nextChapter,fn);
+                chapter.content += resolve(data);
+                return fn(chapter);
+            }
+            options.error = ()=>{
+                if (--times <= 0) return fn(null);
+                this.request(options);
+            };
+            options.headers = options.headers || {};
+            options.headers["X-Requested-With"] = "XMLHttpRequest";
+            return this.request(options);
+        }
+        var mergeContentCMD = [
+            this.getChapterContent.bind(this),
+            this.mergeChapterContent.bind(this),
+            (nextChapter,next)=>{
+                if(!nextChapter) return fn(null);
+                if (nextChapter.id !== chapter.id){
+                    Thread.series([
+                        this.getChapterImages.bind(this),
+                        this.saveChapter.bind(this),
+                        ()=>next(chapter)
+                    ])(nextChapter);
                 }
-                if (chapter.content && chapter.content == nextChapter.content){
-                    return  this.next(fn,chapter);
-                }
+                if (chapter.content && chapter.content == nextChapter.content) return fn(chapter);
                 if (chapter && chapter.content && nextChapter.content){
                     chapter.content += "\n";
                 }
                 chapter.content += nextChapter.content;
-                return this.next(fn,chapter);
-            }));
-        }else if (chapter.nextPages){
-            var sourceHash = this.book.list.hash("source");
-            var links = chapter.nextPages.filter(link=>!sourceHash[link.href]);
-            if (!links.length) return this.next(fn,chapter);
+                return next(chapter);
+            }
+        ];
+        if (chapter.nextPages){
+            var links = chapter.nextPages.map(util.formatLink).filter(link=>link.url !== chapter.source);
+            links.forEach(link=>link.id=chapter.id);
+            links = this.filterBookIndex(links);
+            if (!links.length) return fn(chapter);
             this.debug('mergeChapters');
-            Thread((link,next)=>{
-                this.getChapter(link,nextChapter=>{
-                    if (!nextChapter){
-                        chapter = null;
-                        return next();
-                    }
-                    if (nextChapter.id && nextChapter.id !== chapter.id){
-                        return this.chapterCMD(nextChapter,next);
-                    }
-                    if (chapter && chapter.content && nextChapter.content){
-                        chapter.content += "\n";
-                    }
-                    chapter.content += nextChapter.content;
-                    return next();
-                });
-            },()=>this.next(fn,chapter))(links);
-        }else {
-            return this.next(fn,chapter);
+            Thread((link,next)=>Thread.series(mergeContentCMD.concat([next]))(link),()=>fn(chapter),1)(links);
+            return this;
         }
+        if (chapter.nextPage){
+            var links = [chapter.nextPage].map(util.formatLink).filter(link=>link.url !== chapter.source);
+            links.forEach(link=>link.id=chapter.id);
+            links = this.filterBookIndex(links);
+            if (!links.length) return fn(chapter);
+            this.debug('mergeChapter');
+            Thread.series(mergeContentCMD.concat([fn]))(links[0]);
+            return this;
+        }
+        return fn(chapter);
     }
 
     getChapterImages(chapter,fn){
-        if (!chapter)return this.next(fn,chapter);
-        var parser = Parser(chapter.content,chapter.source);
-        var imgs = parser.getImageLinks();
-        imgs = imgs.filter(img=>img.href);
-        if (!imgs.length){
-            return this.next(fn,chapter);
-        }
-        if (!this.config.get("book.imagelocalization")){
-            return this.next(fn,chapter);
-        }
+        fn = this.next(fn);
+        if (!chapter)return fn(null);
+        if (!this.config.get("book.imagelocalization")) return fn(chapter);
+        var content = chapter.content;
+        var $ = Parser(content,chapter.source);
+        var $imgs = $('img');
+        var imgs = $imgs.map((i,v)=>({url:$.location($(v).attr('src')),index:i})).toArray();
+        if (!imgs.length) return fn(chapter);
         this.debug('getChapterImages');
-        parser.convertImageLink();
-        var content = parser.$.html();
-        var Id = this.Types.id();
-        var id = Id.val(chapter.id).val();
+        var repImg = img=>$imgs.eq(img.index).replaceWith('<img src="'+img.src+'" />');
+        var ChapterId = classes.Id(chapter.id).val();
+        var imgFolder = Path.join(this.bookdir,ChapterId);
         var isEmpty = true;
-        var imgFolder = Path.join(this.bookdir,id);
-        utils.mkdirsSync(imgFolder);
-        imgs.forEach(img=>{
-            var extname = Path.extname(URL.parse(img.href).pathname);
-            if(!extname.match(/^(.html|.png|.gif|.png|.tif|.webp|.bmp|.tga|.ppm|.pgm|.jpeg|.pbm|.pcx|.jpm|.jng)$/i)){
+        var isImgFile = ext=>/^(.png|.gif|.png|.tif|.webp|.bmp|.tga|.ppm|.pgm|.jpeg|.pbm|.pcx|.jpm|.jng)$/.test(ext);
+        var getImgFile = (img,then)=>{
+            var times = parseInt(this.config.get('app.retry.image'));
+            times = isNaN(times) ? 3 : times;
+            img.success = data=>{
+                fs.writeFile(img.file,data,then);
+                repImg(img);
+                isEmpty = false;
+            }
+            img.error = ()=>{
+                if (--times <= 0){
+                    chapter = null;
+                    $imgs.eq(img.index).replaceWith('<img src="'+img.url+'" />');
+                    return then();
+                }
+                this.request(img);
+            };
+            this.request(img);
+        }
+        var final = ()=>{
+            if (!chapter) return fn(null);
+            chapter.content = $.html();
+            isEmpty && fs.rmdirsSync(imgFolder);
+            return fn(chapter);
+        }
+        imgs.forEach((img,index)=>{
+            img.id = classes.Id(index).val();
+            var extname = Path.extname(URL.parse(img.url).pathname);
+            if (!isImgFile(extname)){
                 extname = '.jpg';
             }
-            var basename = Id.val(img.index).val();
-            var filename = basename + extname;
-            var imgDir = id + '/' + filename;
-            var imgFile = Path.join(imgFolder,filename);
-            img.file = imgFile;
-            img.src = imgDir;
-            img.name = filename;
+            img.name = img.id + extname;
+            img.src = ChapterId + '/' + img.name;
+            img.file = Path.join(imgFolder,img.name);
         });
+        fs.mkdirsSync(imgFolder);
         fs.readdir(imgFolder,(err,files)=>{
             if(err) files = [];
             var hash = {};
             files.forEach(file=>hash[file]=true);
-            imgs.filter(img=>hash[img.name]).forEach(img=>{
+            var hasFiles = imgs.filter(img=>hash[img.name]);
+            var noFiles = imgs.filter(img=>!hash[img.name]);
+            if (hasFiles.length){
                 isEmpty = false;
-                content = content.replace("{%img=" + img.index + "%}",'<img src="'+img.src+'">');
-            });
-            imgs = imgs.filter(img=>(!hash[img.name] && !img.file.match(/\.html$/i)));
-            Thread((img,then)=>{
-                this.getImageData(img,data=>{
-                    fs.writeFile(img.file,data,()=>{
-                        content = content.replace("{%img=" + img.index + "%}",'<img src="'+img.src+'">');
-                        isEmpty = false;
-                        return this.next(then);
-                    });
-                },()=>{
-                    chapter = null;
-                    this.log(img.src,img.href);
-                    content = content.replace("{%img=" + img.index + "%}",'<img src="'+img.href+'">');
-                    return this.next(then);
-                },this.config.get('app.retry.image'));
-            },()=>{
-                isEmpty && utils.rmdirs(imgFolder);
-                if (!chapter) return this.next(fn,null);
-                chapter.content = content;
-                return this.next(fn,chapter);
-            })(imgs,this.config.get("thread.image"));
+                hasFiles.forEach(repImg);
+            }
+            Thread(getImgFile,final)(noFiles,this.config.get('thread.image'));
         });
         return this;
     }
 
     getDeepChapter(chapter,fn){
-        if (!chapter)return this.next(fn,null);
-        if (!this.config.get("book.deepdownload")){
-            return this.next(fn,chapter);
-        }
+        fn = this.next(fn);
+        if (!chapter)return fn(null);
+        if (!this.config.get("book.deepdownload")) return fn(chapter);
         var maxdeep = this.config.get("book.maxdeep") || 1;
         var deepnow = chapter.deep;
-        if (deepnow >= maxdeep) return this.next(fn,chapter);
-        var parser = Parser(chapter.content,chapter.source);
-        var links = parser.getHrefLinks();
+        if (deepnow >= maxdeep) return fn(chapter);
+        var $ = Parser(chapter.content,chapter.source);
+        var links = $('a').map((i,v)=>({url:$.location($(v).attr('href'))})).toArray();
+        links.filter(link=>link.url);
+        links = this.filterBookIndex(links);
         deepnow += 1;
-        var hash = this.book.list.hash("source");
-        links.forEach(link=>link.id = chapter.id + '_' + link.index);
         links.forEach(link=>link.deep = deepnow);
-        links = links.filter(link=>link.href).filter(link=>!hash[link.href]);
-        if (!links.length) return this.next(fn,chapter);
+        links.forEach((link,index)=>link.id = chapter.id + index);
+        if (!links.length) return fn(chapter);
         this.debug(links)
         this.debug('getDeepChapter');
-        Thread((link,next)=>{
-            this.getChapter(link,thisChapter=>this.chapterCMD(thisChapter,data=>{
-                if (!data) chapter = null;
-                return next();
-            }));
-        },()=>this.next(fn,chapter))(links);
+        Thread(this.getChapter.bind(this),()=>fn(chapter))(links);
         return this;
-    }
-
-    formatChapter(chapter,fn){
-        if (!chapter) return this.next(fn,null);
-        this.debug('formatChapter');
-        var parser = Parser("","");
-        chapter = new Chapter(chapter).config(this.config.get("formation.json"));
-        var content = chapter.get("content");
-        content = parser.Tools.toSimple(content).val();
-        content = parser.Tools.mergeLine(content).val();
-        chapter.set("content",content);
-        chapter.set("size",content.length);
-        chapter.set("date",+new Date());
-        return this.next(fn,chapter);
     }
 
     saveChapter(chapter,fn){
-        if (!this.config.get("book.localization")) return this.next(fn,chapter);
-        if (!chapter)return this.next(fn,null);
-        if (!chapter.get('content')) return this.next(fn,chapter);
+        fn = this.next(fn);
+        if (!chapter)return fn(null);
+        if (!chapter.content) return fn(chapter);
         this.debug('saveChapter');
-        fs.writeFile(Path.join(this.bookdir,chapter.get('id') + ".json"),chapter.toString(),()=>{
-            this.hasNewChapter = true;
-            this.next(fn,chapter);
-        });
+        chapter.date = +new Date;
+        this.book.pushList(chapter);
+        if (!this.config.get("book.localization")) return fn(chapter);
+        this.book.pushChapter(chapter,fn);
         return this;
     }
 
-    saveChapterIndex(chapter,fn){
-        if (!chapter)return this.next(fn,null);
-        this.debug('saveChapterIndex');
-        var list = chapter.valueOf();
-        list.file = list.id + ".json";
-        this.book.list.push(list);
-        this.book.localization(this.bookdir,()=>this.next(fn,chapter));
+    getChapter(link,fn){
+        fn = this.next(fn);
+        this.debug('getChapter');
+        Thread.series([
+            this.getChapterContent.bind(this),
+            this.mergeChapterContent.bind(this),
+            this.getDeepChapter.bind(this),
+            this.getChapterImages.bind(this),
+            this.saveChapter.bind(this),
+            fn,
+        ])(link);
         return this;
     }
 
-    getImageData(link,success,failure,retryTimes){
-        var count = 0;
-        var retryTimes = retryTimes || 0;
-        var options = {
-            url:link.href || link.url || link.src,
-            method:link.method,
-            dataType:'image',
-            timeout:this.config.get("request.timeout"),
-            reconnect:this.config.get("request.imagereconnect"),
-            proxy:this.config.get('request.proxy'),
-            proxyAuth:this.config.get('request.proxyAuth'),
-            success:success || link.success,
-            error:failure || link.error
-        }
-        var label = options.url;
-        var success = options.success;
-        var error = options.error;
-        var data = this.cache.get(label);
-        if (data){
-            this.debug('getCache...');
-            success(data);
-        }else {
-            options.success = data =>{
-                this.cache.set(label,data);
-                return success(data);
-            }
-            options.error = err=>{
-                count += 1;
-                if (count > retryTimes){
-                    return error(err)
-                }
-                this.request.ajax(options);
-            }
-            this.request.ajax(options);
-        }
-        return this;
-    }
-    //获取数据
-    getRawData(link,success,failure,retryTimes){
-        var count = 0;
-        var retryTimes = retryTimes || 0;
-        var options = {
-            url:link.href || link.url || link.src,
-            method:link.method,
-            data:link.data,
-            timeout:this.config.get("request.timeout"),
-            reconnect:this.config.get("request.reconnect"),
-            proxy:this.config.get('request.proxy'),
-            proxyAuth:this.config.get('request.proxyAuth'),
-            success:success || link.success,
-            error:failure || link.error
-        }
-        var label = options.url;
-        var success = options.success;
-        var error = options.error;
-        var data = this.cache.get(label);
-        if (data){
-            //this.debug(label);
-            this.debug('getCache...');
-            success(data);
-        }else {
-            options.success = data =>{
-                this.cache.set(label,data);
-                return success(data);
-            }
-            options.error = err=>{
-                count += 1;
-                if (count >= retryTimes){
-                    return error(err)
-                }
-                this.request.ajax(options);
-            }
-            this.request.ajax(options);
-        }
+    getChapters(links,fn){
+        fn = this.next(fn);
+        this.debug('getChapters');
+        Thread(this.getChapter.bind(this),fn,this.config.get('thread.execute'))(links);
         return this;
     }
 
     generateEbook(fn){
-        var need = false;
-        if (this.config.get("ebook.activated") == "auto" && this.hasNewChapter){
-            need = true;
-        }
-        if (this.config.get("ebook.activated") == true){
-            need = true;
-        }
-        if (!need) return this.next(fn);
+        fn = this.next(fn);
+        if (!this.config.get("ebook.activated")) return fn();
+        if (!this.book.changed && this.config.get("ebook.activated") !== true) return fn();
         this.debug('generateEbook');
         var work = child_process.fork(Path.join(__dirname,"lib/ebook/generator.js"),{cwd:process.cwd()});
         var options = {
@@ -902,9 +752,9 @@ class Wedge extends EventEmitter{
             formation:this.config.get("ebook.formation"),
             bookdir:this.bookdir
         };
-        utils.mkdirsSync(options.directory);
+        fs.mkdirsSync(options.directory);
         work.send(options);
-        var ebookfile = this.book.meta.get("author") + " - " + this.book.meta.get("title") + "." + this.config.get("ebook.formation");
+        var ebookfile = this.book.getMeta("author") + " - " + this.book.getMeta("title") + "." + this.config.get("ebook.formation");
         this.log("generating ebook >>> " + ebookfile);
         work.on("message",msg=>{
             if (msg.msg == "success"){
@@ -918,19 +768,20 @@ class Wedge extends EventEmitter{
             }else {
                 this.log("ebook generation failed...");
             }
-            this.next(fn);
+            return fn();
         });
         return this;
     }
 
     sendToDataBase(fn){
-        if (!this.book) return this.next(fn);
+        fn = this.next(fn);
+        var meta = this.book.metaValue();
+        if (!meta.title || !meta.author) return fn();
         this.debug('sendToDataBase');
-        var meta = this.book.meta.valueOf();
         delete meta.cover;
         this.log(meta);
         this.database.push(meta);
-        return this.next(fn);
+        return fn();
     }
 
     openDir(dir){
@@ -938,65 +789,72 @@ class Wedge extends EventEmitter{
         child_process.exec('start "" "' + dir + '"');
     }
 
-    start(){
-        var args = [].slice.call(arguments);
-        if (args.length == 0) return this.end();
-        if (args.length == 1){
-            if (Array.isArray(args[0])){
-                var urls = args[0].concat();;
-                this.url = urls.shift();
-                this.otherUrls = urls;
-                return this.newBookCMD();
-            }
-            if (typeof args[0] == "string"){
-                return this.newBook(args[0]);
-            }
-        }
-        if (args.length > 1){
-            return this.start(args);
-        }
+    newBook(url){
+        this.CMD('getBookMeta > updateBookMeta > createBook > checkBookCover > saveBook > getBookIndexs > getChapters > sendToDataBase > generateEbook > end')(url);
+        return this;
     }
 
-    injectRule(rule){
-        var Sitesdir = Path.join(__dirname,'./lib/Sites/plugins');
-        var host = rule.host;
-        var ruledir = Path.join(Sitesdir,host);
-        utils.mkdirsSync(ruledir);
-        var main = {
-            host:rule.host,
-            match:rule.match,
-            charset:rule.charset,
-            selector:'require("./selector")',
-            replacer:'require("./replacer")'
-        }
-        fs.writeFileSync(ruledir+'/index.js','module.exports = '+JSON.stringify(main,null,4));
-        fs.writeFileSync(ruledir+'/selector.json',JSON.stringify(rule.selector,null,4));
-        fs.writeFileSync(ruledir+'/replacer.json',JSON.stringify(rule.replacer,null,4));
+    updateBook(dir){
+        this.CMD('loadBook > checkBookCover > getBookIndexs > getChapters > sendToDataBase > generateEbook > end')(dir);
         return this;
+    }
+
+    refreshBook(dir){
+        this.CMD('loadBook > updateBookMeta > checkBookCover > saveBook > getChapters > sendToDataBase > generateEbook > end')(dir);
+        return this;
+    }
+
+    addFunction(){
+        this.newBooks = Thread((url,next)=>this.spawn().newBook(url).end(next),this.config.get('thread.new'));
+        this.updateBooks = Thread((dir,next)=>this.spawn().updateBook(dir).end(next),this.config.get('thread.update'));
+        this.refreshBooks = Thread((dir,next)=>this.spawn().refreshBook(dir).end(next),this.config.get('thread.update'));
     }
 }
 
-Wedge.prototype.request = request;
-Wedge.prototype.Loader = loader;
 Wedge.prototype.Decoder = decoder;
 Wedge.prototype.Parser = Parser;
 Wedge.prototype.Sites = Sites;
-Wedge.prototype.Attributes = Attributes;
-Wedge.prototype.Types = Attributes.classes;
 Wedge.prototype.Thread = Thread;
 Wedge.prototype.noop = function(){};
 Wedge.prototype.share = new Hash();
 Wedge.prototype.database = new DataBase();
 Wedge.prototype.cache = new Cache(8*1024*1024);
-Wedge.prototype.searchEngine = new Engine('360');
 Wedge.prototype.lib = {
-    utils:utils,
     fs:fs,
+    request:request,
     querystring:querystring,
     Path:Path,
     child_process:child_process,
     url:URL,
-    Random:Random
+    Random:Random,
+    classes:classes,
+    util:util
 }
 
 module.exports = Wedge;
+
+util.encodeURI = function (str,charset){
+    if (!charset) return encodeURIComponent(str);
+    var buffer = decoder.encode(str,charset);
+    var code = '';
+    for (var i=0;i<buffer.length;i++){
+        code += '%';
+        code += buffer[i].toString(16).toUpperCase();
+    }
+    return code;
+}
+
+util.decodeURI = function (str,charset){
+    if (!charset) return decodeURIComponent(str);
+    var array = str.split('%').slice(1).map(x=>parseInt(x,16));
+    return decoder.decode(new Buffer(array),charset);
+}
+
+util.formatLink = function (link){
+    if (typeof link === "string"){
+        return {url:link}
+    }
+    link.url = link.href || link.url || link.src || link.source;
+    link.method = (link.method || "GET").toUpperCase();
+    return link;
+}

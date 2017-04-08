@@ -4,6 +4,7 @@
     "indexPage": "$.location($('a:contains(点击阅读)').attr('href'))",
     "footer": "!!$('#qidianmm_footer').length",
     "bookInfos": {
+      "origin": "$.location()",
       "source": "$.location()",
       "title": "$('.title strong').text().trim()",
       "author": "$('.title > span > a > span').text().trim()",

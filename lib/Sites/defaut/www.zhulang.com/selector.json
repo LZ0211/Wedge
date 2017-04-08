@@ -4,6 +4,7 @@
     "indexPage": "$.location($('.cover-btn a').attr('href'))",
     "footer": "$('.footer').length > 0",
     "bookInfos": {
+      "origin": "$.location()",
       "source": "$.location()",
       "title": "$('.cover-tit h2').text()",
       "author": "$('.cover-tit h2').find('span').text()",

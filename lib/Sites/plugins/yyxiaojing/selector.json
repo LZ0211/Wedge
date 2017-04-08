@@ -18,7 +18,7 @@
     "infoPage": "$.location()",
     "footer": "!!$('.footer').length",
     "filter": "$('.listbox > ul > li').remove()",
-    "bookIndexs": "$('.listbox > ul > ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text(),id:($(v).attr('href').match(/(\\d+)\\.html/)||[0])[0]})).toArray()"
+    "bookIndexs": "$('.listbox > ul > ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text(),id:($(v).attr('href').match(/(\\d+)\\.html/)||[0,0])[1]})).toArray()"
   },
   "contentPage": {
     "match": "!!$('.content').length",

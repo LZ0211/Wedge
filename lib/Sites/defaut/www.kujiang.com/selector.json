@@ -4,6 +4,7 @@
     "indexPage": "$.location()+'/catalog'",
     "footer": "$('.footer').length > 0",
     "bookInfos": {
+      "origin": "$.location()",
       "source": "$.location()",
       "title": "$('.book_title').text().trim()",
       "author": "$('.book_author > a').text().trim()",

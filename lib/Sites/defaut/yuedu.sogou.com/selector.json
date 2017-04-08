@@ -4,6 +4,7 @@
     "indexPage": "$.location().replace(/\\?.*/g,'').replace('book/info','ajax/book/info')",
     "footer": "$('#footer').length > 0",
     "bookInfos": {
+      "origin": "$.location()",
       "source": "$.location()",
       "title": "$('h1.detail-tit').text()",
       "author": "$('td:contains(作者：)').text()",

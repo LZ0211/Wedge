@@ -4,6 +4,7 @@
     "indexPage": "$.location($('a:contains(点击阅读)').attr('href'))",
     "footer": "$('.Footer').length > 0",
     "bookInfos": {
+      "origin": "$.location()",
       "source": "$.location()",
       "title": "$('div.Info > h1').text()",
       "author": "$('div.author > a.name').text()",

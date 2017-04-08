@@ -4,6 +4,7 @@
     "indexPage": "$.location($('.ope .on').attr('href'))",
     "footer": "$('.footer').length > 0",
     "bookInfos": {
+      "origin": "$.location()",
       "title": "$('.book_top_r h2').text().trim()",
       "author": "$('.author a').text().trim()",
       "classes": "$('p.fl a').eq(-1).text()",

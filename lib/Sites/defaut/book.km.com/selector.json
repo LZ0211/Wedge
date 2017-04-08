@@ -4,6 +4,7 @@
     "indexPage": "$.location($('a:contains(查看目录)').attr('href'))",
     "footer": "!!$('.footer').length",
     "bookInfos": {
+      "origin": "$.location()",
       "title": "$('h2.tit').text().trim()",
       "author": "$('.author a').text().trim()",
       "classes": "$('.type').eq(2).next().text()",

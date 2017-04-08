@@ -109,6 +109,12 @@ App.config.set('thread.image',5);
 
 #### 书籍参数
 ```Javascript
+//同步加载
+App.config.set('book.sync',true);
+//异步加载
+App.config.set('book.sync',false);
+//自动检查目录，添加已有的章节信息或移除已被删除的章节
+App.config.set('book.check',true);
 //如果存在相同小说时，是否切换新的的源
 App.config.set('book.changesource',false);
 //切换新的的源后是否覆盖旧章节
@@ -122,18 +128,6 @@ App.config.set('book.searchmeta',true);
 App.config.set("book.deepdownload",true);
 //设置最大下载深度
 App.config.set("book.maxdeep",2);
-```
-
-#### 书籍加载器参数
-```Javascript
-//同步加载
-App.config.set('loader.sync',true);
-//异步加载
-App.config.set('loader.sync',false);
-//自动向目录中添加已有的章节信息
-App.config.set('loader.check.add',true);
-//自动从目录中移除已被删除的章节
-App.config.set('loader.check.remove',true);
 ```
 
 #### App参数

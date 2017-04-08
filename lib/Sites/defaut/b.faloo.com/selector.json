@@ -5,6 +5,7 @@
     "footer": "$('.tail').length > 0",
     "filter": "$('.ni_13 a').replaceWith($('.ni_13 a').html())",
     "bookInfos": {
+      "origin": "$.location()",
       "title": "$('h1').eq(0).text().trim()",
       "author": "$('h1').next('a').text().trim()",
       "classes": "$('.nav a').eq(-1).text()",

@@ -6,6 +6,7 @@
     "filter": "$('#novelintro').find('a').each((i,v)=>$(v).replaceWith($(v).html()))",
     "filter2": "$('#novelintro').find('img').remove()",
     "bookInfos": {
+      "origin": "$.location()",
       "source": "$.location()",
       "title": "$('h1[itemprop=\"name\"]').text().trim()",
       "author": "$('span[itemprop=\"author\"]').text().trim()",
