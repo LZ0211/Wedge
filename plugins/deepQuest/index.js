@@ -2,15 +2,14 @@ module.exports = function (){
     this.deepQuest = function (urls,selector){
         this.debug('deepQuest');
         var Quests = [];
-        var parser = new Function("$","return "+selector);
         var push = link=>Quests.push(link);
         if (!Array.isArray(urls)) urls = [urls];
         var getLinks = (url,then)=>{
             var options = {
                 url:url,
                 success:data=>{
-                    var $ = this.Parser(data,url).$;
-                    parser($).forEach(push);
+                    var $ = this.Parser(data,url);
+                    $(selector).map((i,v)=>$.location($(v).attr('href'))).toArray().forEach(push);
                     return then();
                 },
                 error:()=>this.request(options)
@@ -18,6 +17,8 @@ module.exports = function (){
             this.request(options);
         }
         var final = ()=>{
+            var source = this.database.hashBy('source');
+            Quests = Quests.filter(x=>!source[x]);
             this.lib.fs.writeFile("Quests.txt",JSON.stringify(Quests));
             this.newBooks(Quests);
         }

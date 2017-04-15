@@ -1,0 +1,34 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.fmx\\.cn\\/info\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(目录)').attr('href'))",
+    "footer": "$('#footer').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "source": "$.location($('a:contains(目录)').attr('href'))",
+      "title": "$('h1 > span').eq(0).text().trim()",
+      "author": "$('h1 > span').eq(1).text().trim()",
+      "classes": "$('span:contains(作品类型)').find('a').text()",
+      "isend": "$('span:contains(完结状态)').find('em').text()",
+      "cover": "$.location($('.syw187 > img').attr('src'))",
+      "brief": "$('#zjp').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/files\\/article\\/html\\/.*\\/index\\.html$/i.test($.location())",
+    "infoPage": "$.location($('.art_topnav a').eq(-1).attr('href'))",
+    "footer": "$('#footer').length > 0",
+    "bookIndexs": "$('.art_fnlistbox a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/files\\/article\\/html\\/.*\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#bottomTool').length > 0",
+    "filter": "$('#content a').parent('p').remove()",
+    "filter2": "$('#content script').remove()",
+    "chapterInfos": {
+      "title": "$('.story_title').text()",
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

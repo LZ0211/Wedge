@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/Book\\/\\d+\\/Index.aspx/i.test($.location())",
+    "indexPage": "$.location($('a.yd').attr('href'))",
+    "footer": "$('#PageCom_Number').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "source": "$.location($('a.yd').attr('href'))",
+      "title": "$('.tit a').text().trim()",
+      "author": "$('.author span.h').text().trim()",
+      "classes": "$('.nav_sub > a').eq(-1).text()",
+      "isend": "$('ul.zp').text()",
+      "cover": "$.location($('.img img').attr('src'))",
+      "brief": "$('.nr').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.ycread\\.com\\/Html\\/Book\\/\\d+\\/\\d+\\/Index\\.shtm$/i.test($.location())",
+    "infoPage": "$.location($('a:contains(返回书页)').attr('href'))",
+    "footer": "$('.id_C_con01').length > 0",
+    "bookIndexs": "$('ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.ycread\\.com\\/Html\\/Book\\/\\d+\\/\\d+\\/\\d+\\.shtm$/i.test($.location())",
+    "footer": "$('.id_C_con01').length > 0",
+    "filter": "$('#content div').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

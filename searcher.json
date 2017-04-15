@@ -133,5 +133,25 @@
   {
     "url": "https://book.douban.com/subject_search?search_text=%title%",
     "name": ".douban.com"
+  },
+  {
+    "url": "http://so.fmx.cn/so/?q=%title%&f=articlename",
+    "charset": "gbk",
+    "name": ".fmx.cn"
+  },
+  {
+    "url": "http://www.ycread.com/Book/Search.aspx?SearchKey=%title%&SearchClass=1",
+    "name": ".ycread.com"
+  },
+  {
+    "url": "http://www.ycsd.cn/book/search.aspx?searchTxt=%title%",
+    "name": ".ycsd.cn"
+  },
+  {
+    "url": "http://www.longyuedu.com/modules/article/search.php",
+    "method": "post",
+    "charset": "gbk",
+    "data": "ecmsfrom=9&searchtype=all&classid=1&searchkey=%title%&t_btnsearch=%CB%D1%CB%F7",
+    "name": ".longyuedu.com"
   }
 ]

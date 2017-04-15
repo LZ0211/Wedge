@@ -17,7 +17,7 @@ const Engines = {
 }
 
 module.exports = function(){
-    var Engine = Engines['360'];
+    var Engine = Engines['sogou'];
     var setEngine = name=>{
         Engine = Engines[name];
         return this;

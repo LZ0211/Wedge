@@ -126,7 +126,8 @@ class Wedge extends EventEmitter{
     }
 
     error(msg){
-        this.emit('error',new Error(msg));
+        //this.emit('error',new Error(msg));
+        this.log(new Error(msg));
         return this.end();
     }
 
@@ -222,7 +223,7 @@ class Wedge extends EventEmitter{
             if (!site || !site.url) return next();
             var url = site.url.replace('%title%',util.encodeURI(title,site.charset));
             var method = (site.method || "GET").toUpperCase();
-            var data = site.data && site.data.replace('%title%',title);
+            var data = site.data && site.data.replace('%title%',site.charset ? util.encodeURI(title,site.charset) : title);
             var resolve = data=>{
                 if(site.parse && typeof data == 'object'){
                     var parser = new Function('json','try{return (' + site.parse + ')}catch(e){return []}');
@@ -366,17 +367,17 @@ class Wedge extends EventEmitter{
         var source = this.book.getMeta("source");
         var author = this.book.getMeta("author");
         var uuid = this.book.getMeta('uuid');
+        if(this.database.query('uuid='+uuid).length) return fn();
+        if(!title) return this.end();
         var except = new RegExp(Searcher.map(x=>x.name.replace(/\./g,'\\.')).join('|'),'gi');
-        if(source.match(except)){
-            this.book.setMeta('origin',source);
-            return fn();
-        }
+        if(source.match(except)) return fn();
         this.debug('searchBookMeta');
         function like(s1,s2){
-            s1 = s1.replace(/[:：？\?,；，,\.。!！_—\-]/g,'');
-            s2 = s2.replace(/[:：？\?,；，,\.。!！_—\-]/g,'');
-            if (s1.indexOf(s2)>-1) return true;
-            if (s2.indexOf(s1)>-1) return true;
+            var reFilter = /[:：？\?,；，,\.。!！_—\-]/g;
+            s1 = s1.replace(reFilter,'');
+            s2 = s2.replace(reFilter,'');
+            if (~s1.indexOf(s2)) return true;
+            if (~s2.indexOf(s1)) return true;
             return false;
         }
         this.searchBook(title,links=>{
@@ -455,7 +456,8 @@ class Wedge extends EventEmitter{
             this.debug('changesource');
             if (this.config.get("book.override")){
                 this.debug('override');
-                this.book.emptyList();
+                this.config.set('book.unique.id',false);
+                this.end(()=>this.config.set('book.unique.id',true));
             }
             this.book.setMeta(thisMeta);
             return fn();
@@ -514,20 +516,31 @@ class Wedge extends EventEmitter{
         if (!Array.isArray(indexs)) return [];
         var Ids = this.book.hashBy('id');
         var Sources = this.book.hashBy('source');
+        var Titles = this.book.hashBy('title');
         var startNum = Math.max.apply(Math,Object.keys(Ids).map(parseInt).filter(x=>!isNaN(x)).concat([0]));
         var SelfIds = {};
         var SelfSources = {};
+        var SelfTitles = {};
         var newIndexs = [];
         indexs = indexs.map(util.formatLink);
         indexs.forEach((item,index)=>item.id = classes.Id(item.id || index+startNum).val());
-        indexs = indexs.filter(index=>!Ids[index.id]);
-        indexs = indexs.filter(index=>!Sources[index.url]);
         indexs = indexs.filter(index=>index.url && !~index.url.indexOf("#") && !~index.url.indexOf("javascript:"));
+        indexs = indexs.filter(index=>!Sources[index.url]);
+        var titleUnique = this.config.get('book.unique.title');
+        var idUnique = this.config.get('book.unique.id');
+        if (idUnique){
+            indexs = indexs.filter(index=>!Ids[index.id]);
+        }
+        if (titleUnique){
+            indexs = indexs.filter(index=>!Titles[index.text]);
+        }
         indexs.forEach(index=>{
-            if (index.id in SelfIds) return;
             if (index.url in SelfSources) return;
+            if (index.id in SelfIds && idUnique) return;
+            if (index.text in SelfTitles && titleUnique) return;
             SelfIds[index.id] = true;
             SelfSources[index.url] = true;
+            SelfTitles[index.text] = true;
             newIndexs.push(index);
         });
         return newIndexs;
@@ -567,10 +580,15 @@ class Wedge extends EventEmitter{
             var times = parseInt(this.config.get('app.retry.chapter'));
             times = isNaN(times) ? 3 : times;
             options.success = data=>{
+                data = resolve(data);
+                if(typeof data == 'object'){
+                    chapter.ajax = data;
+                    return this.mergeChapterContent(chapter,fn);
+                }
                 if (chapter.content){
                     chapter.content += "\n";
                 }
-                chapter.content += resolve(data);
+                chapter.content += data;
                 return fn(chapter);
             }
             options.error = ()=>{
@@ -625,7 +643,7 @@ class Wedge extends EventEmitter{
     getChapterImages(chapter,fn){
         fn = this.next(fn);
         if (!chapter)return fn(null);
-        if (!this.config.get("book.imagelocalization")) return fn(chapter);
+        if (!this.config.get("book.imageLocalization")) return fn(chapter);
         var content = chapter.content;
         var $ = Parser(content,chapter.source);
         var $imgs = $('img');
@@ -636,7 +654,7 @@ class Wedge extends EventEmitter{
         var ChapterId = classes.Id(chapter.id).val();
         var imgFolder = Path.join(this.bookdir,ChapterId);
         var isEmpty = true;
-        var isImgFile = ext=>/^(.png|.gif|.png|.tif|.webp|.bmp|.tga|.ppm|.pgm|.jpeg|.pbm|.pcx|.jpm|.jng)$/.test(ext);
+        var isImgFile = ext=>/^\.(jpg|png|gif|png|tif|webp|bmp|tga|ppm|pgm|jpeg|pbm|pcx|jpm|jng|ico)$/gi.test(ext);
         var getImgFile = (img,then)=>{
             var times = parseInt(this.config.get('app.retry.image'));
             times = isNaN(times) ? 3 : times;
@@ -656,18 +674,18 @@ class Wedge extends EventEmitter{
             this.request(img);
         }
         var final = ()=>{
+            isEmpty && fs.rmdirsSync(imgFolder);
             if (!chapter) return fn(null);
             chapter.content = $.html();
-            isEmpty && fs.rmdirsSync(imgFolder);
             return fn(chapter);
         }
+        imgs.forEach(img=>img.path = URL.parse(img.url).pathname);
+        imgs = imgs.filter(img=>img.path);
+        imgs.forEach(img=>img.ext = Path.extname(img.path));
+        imgs = imgs.filter(img=>isImgFile(img.ext));
         imgs.forEach((img,index)=>{
             img.id = classes.Id(index).val();
-            var extname = Path.extname(URL.parse(img.url).pathname);
-            if (!isImgFile(extname)){
-                extname = '.jpg';
-            }
-            img.name = img.id + extname;
+            img.name = img.id + img.ext;
             img.src = ChapterId + '/' + img.name;
             img.file = Path.join(imgFolder,img.name);
         });
@@ -691,9 +709,9 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         if (!chapter)return fn(null);
         if (!this.config.get("book.deepdownload")) return fn(chapter);
-        var maxdeep = this.config.get("book.maxdeep") || 1;
+        var maxDepth = this.config.get("book.maxDepth") || 1;
         var deepnow = chapter.deep;
-        if (deepnow >= maxdeep) return fn(chapter);
+        if (deepnow >= maxDepth) return fn(chapter);
         var $ = Parser(chapter.content,chapter.source);
         var links = $('a').map((i,v)=>({url:$.location($(v).attr('href'))})).toArray();
         links.filter(link=>link.url);
@@ -805,9 +823,9 @@ class Wedge extends EventEmitter{
     }
 
     addFunction(){
-        this.newBooks = Thread((url,next)=>this.spawn().newBook(url).end(next),this.config.get('thread.new'));
-        this.updateBooks = Thread((dir,next)=>this.spawn().updateBook(dir).end(next),this.config.get('thread.update'));
-        this.refreshBooks = Thread((dir,next)=>this.spawn().refreshBook(dir).end(next),this.config.get('thread.update'));
+        this.newBooks = Thread((url,next)=>this.spawn().newBook(url).end(next),this.next(),this.config.get('thread.new'));
+        this.updateBooks = Thread((dir,next)=>this.spawn().updateBook(dir).end(next),this.next(),this.config.get('thread.update'));
+        this.refreshBooks = Thread((dir,next)=>this.spawn().refreshBook(dir).end(next),this.next(),this.config.get('thread.update'));
     }
 }
 
@@ -828,7 +846,8 @@ Wedge.prototype.lib = {
     url:URL,
     Random:Random,
     classes:classes,
-    util:util
+    util:util,
+    Log:Log
 }
 
 module.exports = Wedge;
