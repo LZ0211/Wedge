@@ -50,7 +50,6 @@ class Wedge extends EventEmitter{
         this.book = new Book();
         this.bookdir = null;
         this.Log();
-        this.addFunction();
         return this;
     }
 
@@ -246,7 +245,14 @@ class Wedge extends EventEmitter{
                 error:next
             });
         }
-        Thread(search,endSearch)(Searcher,3);
+        new Thread()
+        .use(search)
+        .queue(Searcher)
+        .setThread(3)
+        .end(endSearch)
+        .log(this.log)
+        .label('fuzzysearchBook')
+        .start();
         return this;
     }
 
@@ -381,7 +387,8 @@ class Wedge extends EventEmitter{
             return false;
         }
         this.searchBook(title,links=>{
-            Thread((link,nextFn)=>{
+            new Thread()
+            .use((link,nextFn)=>{
                 var app = this.spawn();
                 app.getBookMeta(link,()=>{
                     var meta = app.book.metaValue();
@@ -395,7 +402,12 @@ class Wedge extends EventEmitter{
                     this.book.setMeta(meta);
                     return fn();
                 }).end(nextFn);
-            },fn,1)(links.map(link=>link[0]));
+            })
+            .end(fn)
+            .log(this.log)
+            .label('fuzzysearchBook')
+            .queue(links.map(link=>link[0]))
+            .start();
         });
         return this;
     }
@@ -505,10 +517,17 @@ class Wedge extends EventEmitter{
         });
         var indexs = [];
         var push = item=>indexs.push(item);
-        Thread((link,next)=>this.getBookIndex(link,items=>{
+        new Thread()
+        .use((link,next)=>this.getBookIndex(link,items=>{
             items.forEach(push);
             return next();
-        }),()=>fn(this.filterBookIndex(indexs)))(links,1);
+        }))
+        .end(()=>fn(this.filterBookIndex(indexs)))
+        .queue(links)
+        .log(this.log)
+        .label('getBookIndexs')
+        .setThread(this.config.get('thread.index'))
+        .start();
         return this;
     }
 
@@ -625,7 +644,13 @@ class Wedge extends EventEmitter{
             links = this.filterBookIndex(links);
             if (!links.length) return fn(chapter);
             this.debug('mergeChapters');
-            Thread((link,next)=>Thread.series(mergeContentCMD.concat([next]))(link),()=>fn(chapter),1)(links);
+            new Thread()
+            .use((link,next)=>Thread.series(mergeContentCMD.concat([next]))(link))
+            .end(()=>fn(chapter))
+            .queue(links)
+            .log(this.log)
+            .label('mergeChapters')
+            .start();
             return this;
         }
         if (chapter.nextPage){
@@ -700,7 +725,14 @@ class Wedge extends EventEmitter{
                 isEmpty = false;
                 hasFiles.forEach(repImg);
             }
-            Thread(getImgFile,final)(noFiles,this.config.get('thread.image'));
+            new Thread()
+            .use(getImgFile)
+            .end(final)
+            .setThread(this.config.get('thread.image'))
+            .queue(noFiles)
+            .label('getChapterImages')
+            .log(this.log)
+            .start();
         });
         return this;
     }
@@ -722,7 +754,13 @@ class Wedge extends EventEmitter{
         if (!links.length) return fn(chapter);
         this.debug(links)
         this.debug('getDeepChapter');
-        Thread(this.getChapter.bind(this),()=>fn(chapter))(links);
+        new Thread()
+        .use(this.getChapter.bind(this))
+        .end(()=>fn(chapter))
+        .queue(links)
+        .log(this.log)
+        .label('getDeepChapter')
+        .start();
         return this;
     }
 
@@ -755,7 +793,14 @@ class Wedge extends EventEmitter{
     getChapters(links,fn){
         fn = this.next(fn);
         this.debug('getChapters');
-        Thread(this.getChapter.bind(this),fn,this.config.get('thread.execute'))(links);
+        new Thread()
+        .use(this.getChapter.bind(this))
+        .end(fn)
+        .queue(links)
+        .log(this.log)
+        .setThread(this.config.get('thread.execute'))
+        .label('getChapters')
+        .start();
         return this;
     }
 
@@ -795,6 +840,7 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         var meta = this.book.metaValue();
         if (!meta.title || !meta.author) return fn();
+        if (!this.book.changed && ~this.database.indexOf(meta.uuid)) return fn();
         this.debug('sendToDataBase');
         delete meta.cover;
         this.log(meta);
@@ -822,10 +868,37 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    addFunction(){
-        this.newBooks = Thread((url,next)=>this.spawn().newBook(url).end(next),this.next(),this.config.get('thread.new'));
-        this.updateBooks = Thread((dir,next)=>this.spawn().updateBook(dir).end(next),this.next(),this.config.get('thread.update'));
-        this.refreshBooks = Thread((dir,next)=>this.spawn().refreshBook(dir).end(next),this.next(),this.config.get('thread.update'));
+    newBooks(urls){
+        new Thread()
+        .use((url,next)=>this.spawn().newBook(url).end(next))
+        .end(this.next())
+        .queue(urls)
+        .log(this.log)
+        .label('newBooks')
+        .setThread(this.config.get('thread.new'))
+        .start();
+    }
+
+    updateBooks(dirs){
+        new Thread()
+        .use((dir,next)=>this.spawn().updateBook(dir).end(next))
+        .end(this.next())
+        .queue(dirs)
+        .log(this.log)
+        .label('updateBooks')
+        .setThread(this.config.get('thread.update'))
+        .start();
+    }
+
+    refreshBooks(dirs){
+        new Thread()
+        .use((dir,next)=>this.spawn().refreshBook(dir).end(next))
+        .end(this.next())
+        .queue(dirs)
+        .log(this.log)
+        .label('refreshBooks')
+        .setThread(this.config.get('thread.update'))
+        .start();
     }
 }
 

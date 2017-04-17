@@ -22,6 +22,6 @@ module.exports = function (){
             this.lib.fs.writeFile("Quests.txt",JSON.stringify(Quests));
             this.newBooks(Quests);
         }
-        this.Thread(getLinks,final)(urls,5);
+        this.Thread(getLinks,final)(urls,10);
     }
 }
