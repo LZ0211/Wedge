@@ -260,3 +260,19 @@ module.exports = {
   }
 }
 ```
+#### 全局替换器
+./lib/classes/Filter.json
+```Javascript
+{
+    "chapterTitle":[],//全局章节标题过滤规则
+    "chapterBeforeFilter":[],//内置过滤前的原始html文件的过滤规则
+    "chapterAfterFilter":[
+        "readx();",
+        "天才壹秒记住.*为您提供精彩小说阅读。",
+        "天才一秒记住.*为您提供精彩小说阅读。",
+        "^<<",
+        "手机用户请浏览.*",
+        "公告：本站推荐一款免费小说APP.*"
+    ]//内置过滤后进一步的过滤
+}
+```
