@@ -140,8 +140,8 @@ App.config.set('app.log','LOG.txt');
 App.config.set('app.debug',true);
 ```
 
-### 小插件plugins
-```Javascrit
+### plugins小插件
+```Javascript
 //启用或添加插件
 //修改工作路径的setting.json文件后重启程序
 {
