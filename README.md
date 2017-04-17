@@ -142,12 +142,19 @@ App.config.set('app.debug',true);
 
 ### 小插件plugins
 ```Javascrit
+//启用或添加插件
+//修改工作路径的setting.json文件后重启程序
+{
+  "name": "5sing",
+  "activated": false,//未启动
+  "func": "./plugins/5sing"//插件脚本路径
+}
 //将书籍文件发送到手机阅读器；参数不齐全时自动进入终端界面提示输入
 //QQ阅读器（默认开启）
-App.sendToQQ(ip,[files])；
-App.sendToQQ()；
+App.sendToQQ(ip,[files]);
+App.sendToQQ();
 //iReader阅读器（默认开启）
-App.sendToiReader()；
+App.sendToiReader();
 //搜索引擎（默认开启）
 App.Engine.search(title,callback);
 //设置搜索引擎;默认为sogou
