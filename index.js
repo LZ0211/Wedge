@@ -852,6 +852,7 @@ class Wedge extends EventEmitter{
     openDir(dir){
         dir = Path.resolve(this.dir,dir);
         child_process.exec('start "" "' + dir + '"');
+        return this;
     }
 
     newBook(url){
@@ -869,37 +870,40 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    newBooks(urls){
+    newBooks(urls,thread){
         new Thread()
         .use((url,next)=>this.spawn().newBook(url).end(next))
         .end(this.next())
         .queue(urls)
         .log(this.log)
         .label('newBooks')
-        .setThread(this.config.get('thread.new'))
+        .setThread(thread || this.config.get('thread.new'))
         .start();
+        return this;
     }
 
-    updateBooks(dirs){
+    updateBooks(dirs,thread){
         new Thread()
         .use((dir,next)=>this.spawn().updateBook(dir).end(next))
         .end(this.next())
         .queue(dirs)
         .log(this.log)
         .label('updateBooks')
-        .setThread(this.config.get('thread.update'))
+        .setThread(thread || this.config.get('thread.update'))
         .start();
+        return this;
     }
 
-    refreshBooks(dirs){
+    refreshBooks(dirs,thread){
         new Thread()
         .use((dir,next)=>this.spawn().refreshBook(dir).end(next))
         .end(this.next())
         .queue(dirs)
         .log(this.log)
         .label('refreshBooks')
-        .setThread(this.config.get('thread.update'))
+        .setThread(thread || this.config.get('thread.refresh'))
         .start();
+        return this;
     }
 }
 
