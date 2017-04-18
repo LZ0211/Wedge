@@ -12,9 +12,9 @@ module.exports = function (){
                     }catch (e){
                         console.log('\x1B[31m' + e + '\x1B[39m');
                     }
-                    this.prompt(["\x1B[36m>>>\x1B[39m"],sandBox);
+                    this.prompt(["\x1B[36m>\x1B[39m"],sandBox);
                 }
-                this.prompt(["\x1B[36m>>>\x1B[39m"],sandBox);
+                this.prompt(["\x1B[36m>\x1B[39m"],sandBox);
             },
             error:e=>console.log('\x1B[31mFailed to load resource: net::'+e+'\x1B[39m')
         }

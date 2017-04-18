@@ -6,7 +6,7 @@ module.exports = function (){
             if (!Array.isArray(argv)){
                 argv = [argv];
             }
-            this.Thread((argv,next)=>{
+            this.Thread().use((argv,next)=>{
                 if (argv.match(/http/i)) return this.spawn().newBook(argv).end(next);
                 if (this.lib.fs.existsSync(argv)) return this.spawn().updateBook(argv).end(next);
                 if (!this.Engine) return next();
@@ -15,7 +15,7 @@ module.exports = function (){
                     if (inSites.length >= 1) return this.spawn().newBook(inSites[0]).end(next);
                     this.spawn().newBook(list[0]).end(next);
                 });
-            })(argv);
+            }).queue(argv).start();
         }else {
             start(args);
         }

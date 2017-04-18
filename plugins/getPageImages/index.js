@@ -31,7 +31,7 @@ module.exports = function (){
             });
             var extReg = new RegExp('\\.('+options.ext+')$','gi');
             images = images.filter(image=>image.ext.match(extReg));
-            this.Thread((image,next)=>{
+            this.Thread().use((image,next)=>{
                 var link = {url:image.src};
                 link.error = next;
                 link.success = data => {
@@ -40,7 +40,7 @@ module.exports = function (){
                     return next();
                 }
                 this.request(link);
-            },()=>{
+            }).end(()=>{
                 images = images.filter(image=>image.buffer);
                 images = images.filter(image=>image.size > options.size);
                 images.forEach((image,index)=>image.index = index);
@@ -54,13 +54,13 @@ module.exports = function (){
                         image.rename = options.prefix.slice(0,sublength) + image.rename;
                     }
                 });
-                this.Thread((image,next)=>{
+                this.Thread().use((image,next)=>{
                     var filename = this.lib.Path.resolve(options.location,image.rename);
                     var dirname = this.lib.Path.dirname(filename);
                     this.lib.fs.mkdirsSync(dirname);
                     this.lib.fs.writeFile(filename,image.buffer,next);
-                })(images,6);
-            })(images,3);
+                }).queue(images).setThread(6).start();
+            }).queue(images).setThread(3).start();
         }
         this.request(link);
     }

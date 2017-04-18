@@ -73,6 +73,6 @@ module.exports = function(){
                 }
             });
         }
-        return formatIp(ip,()=>this.Thread(post,this.noop,1)(Files));
+        return formatIp(ip,()=>this.Thread().use(post).queue(Files).start());
     }
 }

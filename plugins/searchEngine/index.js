@@ -39,7 +39,7 @@ module.exports = function(){
                         urls.push(href);
                     }
                 });
-                this.Thread((link,next)=>{
+                this.Thread().use((link,next)=>{
                     this.request({
                         url:link,
                         headers:{referer:link},
@@ -52,7 +52,7 @@ module.exports = function(){
                         },
                         error:next
                     });
-                },()=>fn(urls))(links,3);
+                }).end(()=>fn(urls)).queue(links).setThread(3).start();
             },
             error:()=>fn(urls)
         });

@@ -591,7 +591,7 @@ class Wedge extends EventEmitter{
 
     mergeChapterContent(chapter,fn){
         fn = this.next(fn);
-        if (!chapter)return fn(null);
+        if (!chapter) return fn(null);
         if (chapter.ajax){
             this.debug('ajax...');
             var options = chapter.ajax;
@@ -766,7 +766,7 @@ class Wedge extends EventEmitter{
 
     saveChapter(chapter,fn){
         fn = this.next(fn);
-        if (!chapter)return fn(null);
+        if (!chapter) return fn(null);
         if (!chapter.content) return fn(chapter);
         this.debug('saveChapter');
         chapter.date = +new Date;
