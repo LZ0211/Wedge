@@ -542,8 +542,8 @@ class Wedge extends EventEmitter{
         var SelfTitles = {};
         var newIndexs = [];
         indexs = indexs.map(util.formatLink);
-        indexs.forEach((item,index)=>item.id = classes.Id(item.id || index).val());
         indexs = indexs.filter(index=>index.url && !~index.url.indexOf("#") && !~index.url.indexOf("javascript:"));
+        indexs.forEach((item,index)=>item.id = classes.Id(item.id || index).val());
         indexs = indexs.filter(index=>!Sources[index.url]);
         var titleUnique = this.config.get('book.unique.title');
         var idUnique = this.config.get('book.unique.id');
@@ -831,8 +831,9 @@ class Wedge extends EventEmitter{
             }else {
                 this.log("ebook generation failed...");
             }
-            return fn();
         });
+        work.on("exit",fn);
+        work.on("err",this.log);
         return this;
     }
 

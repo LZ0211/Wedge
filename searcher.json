@@ -153,5 +153,9 @@
     "charset": "gbk",
     "data": "ecmsfrom=9&searchtype=all&classid=1&searchkey=%title%&t_btnsearch=%CB%D1%CB%F7",
     "name": ".longyuedu.com"
+  },
+  {
+    "url": "http://www.hbooker.com/index/get_search_book_list/%title%",
+    "name": ".hbooker.com"
   }
 ]
