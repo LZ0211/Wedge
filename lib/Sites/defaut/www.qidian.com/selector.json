@@ -23,7 +23,7 @@
     "bookIndexs": "$('div.volume').find('ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
-    "match": "/^http:\\/\\/read.qidian.com\\/chapter\\/\\w+\\/\\w+$/i.test($.location())",
+    "match": "/^http:\\/\\/read.qidian.com\\/chapter\\/[\\w\\-]+\\/[\\w\\-]+$/i.test($.location())",
     "footer": "$('.chapter-control').length > 0",
     "chapterInfos": {
       "title": "$('h3.j_chapterName').text()",
