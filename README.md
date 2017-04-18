@@ -127,7 +127,7 @@ App.config.set('book.searchmeta',true);
 //深度下载，如果章节内容中存在超链接，将下载该链接内容
 App.config.set("book.deepdownload",true);
 //设置最大下载深度
-App.config.set("book.maxdeep",2);
+App.config.set("book.maxdepth",2);
 ```
 
 #### App参数
@@ -261,5 +261,21 @@ module.exports = {
       "content": ["看最快更新","一秒记住.*?免费阅读！"]
     }
   }
+}
+```
+#### 全局替换器
+./lib/classes/Filter.json
+```Javascript
+{
+    "chapterTitle":[],//全局章节标题过滤规则
+    "chapterBeforeFilter":[],//内置过滤前的原始html文件的过滤规则
+    "chapterAfterFilter":[
+        "readx();",
+        "天才壹秒记住.*为您提供精彩小说阅读。",
+        "天才一秒记住.*为您提供精彩小说阅读。",
+        "^<<",
+        "手机用户请浏览.*",
+        "公告：本站推荐一款免费小说APP.*"
+    ]//内置过滤后进一步的过滤
 }
 ```
