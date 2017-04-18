@@ -19,7 +19,8 @@
     "match": "/^http:\\/\\/book.qidian.com\\/info\\/\\d+$/i.test($.location())",
     "infoPage": "$.location()",
     "footer": "$('.footer').length > 0",
-    "bookIndexs": "$('div.volume').find('ul > li > a').filter((i,v)=>!$(v).attr('href').match('vipreader')).map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+    "filter": "!$('.flag').length && $('.iconfont').parent('li').remove()",
+    "bookIndexs": "$('div.volume').find('ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
     "match": "/^http:\\/\\/read.qidian.com\\/chapter\\/\\w+\\/\\w+$/i.test($.location())",

@@ -127,7 +127,7 @@ App.config.set('book.searchmeta',true);
 //深度下载，如果章节内容中存在超链接，将下载该链接内容
 App.config.set("book.deepdownload",true);
 //设置最大下载深度
-App.config.set("book.maxdepth",2);
+App.config.set("book.maxdeep",2);
 ```
 
 #### App参数
@@ -136,56 +136,19 @@ App.config.set("book.maxdepth",2);
 App.config.set('app.log',true);
 //输出运行日志到本地文件
 App.config.set('app.log','LOG.txt');
+//输出线程信息
+App.Thread.LOG.on();
+//关闭线程信息
+App.Thread.LOG.off();
 //输出debug信息
 App.config.set('app.debug',true);
 ```
-
-### plugins小插件
-```Javascript
-//启用或添加插件
-//修改工作路径的setting.json文件后重启程序
-{
-  "name": "5sing",
-  "activated": false,//未启动
-  "func": "./plugins/5sing"//插件脚本路径
-}
-//将书籍文件发送到手机阅读器；参数不齐全时自动进入终端界面提示输入
-//QQ阅读器（默认开启）
-App.sendToQQ(ip,[files]);
-App.sendToQQ();
-//iReader阅读器（默认开启）
-App.sendToiReader();
-//搜索引擎（默认开启）
-App.Engine.search(title,callback);
-//设置搜索引擎;默认为sogou
-App.Engine.setEngine("360");
-App.Engine.setEngine("baidu");
-//测试选择器（默认关闭）
-//进入终端界面，类似于浏览器控制台
-App.testSelector(url);
-//测试站点规则（默认关闭）
-//用于测试站点规则是否有效
-App.testRule(url)
-//深度任务（默认开启）
-//根据输入的地址和选择器获取书籍链接并批量新建下载任务
-App.deepQuest([urls],selector)
-//5sing下载音乐（默认关闭）
-App._5sing(url)
-//下载页面中的图片
-App.getPageImages(url,options);
-//options参数;可选项
-options.ext = 'jpg|png|jpeg|gif'；//筛选符合扩展名的图片
-options.size = 10240; //单位B,筛选大于该数值的图片
-options.location = "./"; 图片保存位置
-options.rename = '<name><ext>'; 图片保存的重命名规则
-```
-
 
 ### 添加网站规则
 #### 临时添加
 App.Sites,inject(rule);
 #### 永久添加
-在wedge/lib/parser/sites路径下
+在wedge/lib/sites路径下
 defaut为原创小说网站，
 plugins为盗链网站
 ![host]命名的为匹配多个网站的规则
@@ -258,21 +221,5 @@ module.exports = {
       "content": ["看最快更新","一秒记住.*?免费阅读！"]
     }
   }
-}
-```
-#### 全局替换器
-./lib/classes/Filter.json
-```Javascript
-{
-    "chapterTitle":[],//全局章节标题过滤规则
-    "chapterBeforeFilter":[],//内置过滤前的原始html文件的过滤规则
-    "chapterAfterFilter":[
-        "readx();",
-        "天才壹秒记住.*为您提供精彩小说阅读。",
-        "天才一秒记住.*为您提供精彩小说阅读。",
-        "^<<",
-        "手机用户请浏览.*",
-        "公告：本站推荐一款免费小说APP.*"
-    ]//内置过滤后进一步的过滤
 }
 ```
