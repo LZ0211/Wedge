@@ -1,9 +1,0 @@
-{
-  "contentPage": {
-    "match": "true",
-    "footer": "true",
-    "chapterInfos": {
-      "content": "$.html()"
-    }
-  }
-}
