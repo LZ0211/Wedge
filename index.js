@@ -6,13 +6,13 @@ const querystring = require("querystring");
 const EventEmitter = require('events');
 const child_process = require('child_process');
 const readline = require('readline');
-const Random = require('./lib/jsrandom');
+const Random = require('./lib/JSrandom');
 const Log = require("./lib/Log");
 const Hash = require("./lib/Hash");
-const DataBase = require("./lib/database");
+const DataBase = require("./lib/DataBase");
 const request = require("./lib/request");
 const util = require("./lib/util");
-const Thread = require("./lib/thread");
+const Thread = require("./lib/Thread");
 const Cache = require("./lib/Cache");
 const setting = require("./setting");
 const Searcher = require("./searcher");
@@ -32,9 +32,7 @@ class Wedge extends EventEmitter{
     }
 
     chdir(dir){
-        if (!dir){
-            dir = Path.join(process.env.USERPROFILE,'./Documents/Wedge-Library');
-        }
+        dir = dir || "./";
         this.dir = Path.resolve(dir);
         fs.mkdirsSync(this.dir);
         process.chdir(this.dir);
