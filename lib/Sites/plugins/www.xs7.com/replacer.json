@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": ["作者.*"],
+      "author": ["作者："],
+      "classes": ["小说分类："],
+      "isend": ["小说状态："],
+      "cover": null,
+      "brief": [".*?最新章节列：小说《.*?》.*?全文阅读","【】","&nbsp;"],
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": null,
+      "source": null,
+      "content": ["本书最新免费章节请访问。","请使用访问本站。","请记住本站的网址：。"]
+    }
+  }
+}

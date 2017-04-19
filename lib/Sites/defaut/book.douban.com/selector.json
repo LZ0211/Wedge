@@ -1,0 +1,16 @@
+{
+  "infoPage": {
+    "match": "true",
+    "footer": "$('#footer').length > 0",
+    "indexPage": "$.location()",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('h1').text().trim()",
+      "author": "$('.pl').eq(0).next().text()",
+      "classes": "$('.tag').map((i,v)=>$(v).text().trim()).toArray().join(',')",
+      "isend": "true",
+      "cover": "$.location($('#mainpic img').attr('src'))",
+      "brief": "$('.intro').eq(-1).html()"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.tadu\\.com\\/book\\/\\d+/i.test($.location())",
+    "indexPage": "$.location().replace('book/','book/catalogue/')",
+    "footer": "!!$('.footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "source": "$.location()",
+      "title": "$('.path a').eq(-1).text().trim()",
+      "author": "$('.book-intro a').eq(0).text().trim()",
+      "classes": "$('.book-intro a').eq(1).text().trim()",
+      "isend": "!!$('.states01-b').length",
+      "cover": "$.location($('img.coverimg').attr('data-src'))",
+      "brief": "$('p:contains(简介：)').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.tadu\\.com\\/book\\/catalogue\\/\\d+/i.test($.location())",
+    "infoPage": "$.location().replace('book/catalogue/','book/')",
+    "footer": "!!$('.footer').length",
+    "filter": "$('.red-vip').parent().remove()",
+    "bookIndexs": "$('.detail-chapters a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text().trim().replace('\t',' ')})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.tadu\\.com\\/book\\/\\d+\\/\\d+/i.test($.location())",
+    "footer": "true",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "unescape($('script').eq(-2).text().replace(/[\\s\\S]*unescape\\(\"(.*)?\"\\)\\);[\\s\\S]*/,'$1'))"
+    }
+  }
+}

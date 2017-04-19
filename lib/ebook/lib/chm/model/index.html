@@ -1,0 +1,30 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN">
+&para;<head>
+&para;&nbsp;<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+&para;&nbsp;<meta name="right" content="该文档由裂章制作，仅供个人交流与学习使用。"/>
+&para;&nbsp;<link rel="stylesheet" type="text/css" href="css/style.css"/>
+&para;&nbsp;<title>封面</title>
+&para;</head>
+&para;<body>
+&para;&nbsp;<div class="main">
+&para;&nbsp;&nbsp;<div style="text-align:center">
+&para;&nbsp;&nbsp;&nbsp;<img class="cover" src="images/cover.jpg"/>
+&para;&nbsp;&nbsp;</div>
+&para;&nbsp;&nbsp;<h1>{{=it.meta.title}}</h1>
+&para;&nbsp;&nbsp;<h2>{{=it.meta.author}}</h2>
+&para;&nbsp;&nbsp;<b>【简介】</b>
+{{~it.meta.brief.split("\n") :value:index}}
+&para;&nbsp;&nbsp;<p>{{=value}}</p>
+{{~}}
+&para;&nbsp;</div>
+&para;&nbsp;<div id="list">
+&para;&nbsp;&nbsp;<<ul>
+{{? it.list && it.list.length > 0}}
+{{~ it.list :value}}
+&para;<li><a href="{{=value.id}}.html">{{=value.title}}</a></li>
+{{~}}
+{{?}}
+&para;&nbsp;&nbsp;</ul>
+&para;&nbsp;</div>
+&para;</body>
+&para;</html>

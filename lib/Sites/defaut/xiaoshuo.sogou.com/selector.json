@@ -1,0 +1,17 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/xiaoshuo\\.sogou\\.com\\/book\\/\\w+\\/$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(查看目录)').attr('href'))",
+    "footer": "$('#footer').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "source": "$.location()",
+      "title": "$('h1 > a').eq(0).text().trim()",
+      "author": "$('.item > a').eq(0).text().trim()",
+      "classes": "$('.item').eq(1).text().trim()",
+      "isend": "false",
+      "cover": "$.location($('a > img').eq(0).attr('src'))",
+      "brief": "$('.descr .text').html()"
+    }
+  }
+}

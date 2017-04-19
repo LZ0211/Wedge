@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": null,
+      "author": null,
+      "classes": null,
+      "isend": null,
+      "cover": null,
+      "brief": null,
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": null,
+      "source": null,
+      "content": ["附件.*您所在的用户组无法下载或查看附件","\\[<i> 本帖最后由.*?编辑 <\\/i>\\]","复制内容到剪贴板","代码:","予人玫瑰<img.*","您的支持<img.*"]
+    }
+  }
+}

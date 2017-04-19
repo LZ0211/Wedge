@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.longyuedu\\.com\\/book\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(目录)').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "filter": "$('.jianjie #casnaizuopin').remove()",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('h1 > a').text().trim()",
+      "author": "$('.shuyeshuju td').eq(-1).text().trim()",
+      "classes": "$('.shuyeshuju a').eq(0).text()",
+      "isend": "/xiaos_08.png/.test($('.xiaoshuo_img img').eq(1).attr('src'))",
+      "cover": "$.location($('.xiaoshuo_img img').eq(0).attr('src'))",
+      "brief": "$('.jianjie').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.longyuedu\\.com\\/html\\/\\d+\\/index\\.html$/i.test($.location())",
+    "infoPage": "$.location($('.mianbaoxian a').eq(-1).attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "filter": "$('span').parent('.muluyelist').remove()",
+    "bookIndexs": "$('.muluyelist a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.longyuedu\\.com\\/html\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.yuedu_text').html()"
+    }
+  }
+}

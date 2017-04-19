@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.shumilou\\.co\\/\\w+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.bottom').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('div.tit > b').eq(0).text()",
+      "author": "$('div.list').text()",
+      "classes": "$('div.list').text()",
+      "isend": "$('div.list').text()",
+      "cover": "$.location($('.list > img').attr('src'))",
+      "brief": "$('div.list').text()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.shumilou\\.co\\/\\w+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.bottom').length > 0",
+    "bookIndexs": "$('ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.shumilou\\.co\\/\\w+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.bottom').length > 0",
+    "chapterInfos": {
+      "title": "$('.title > h2').text()",
+      "source": "$.location()",
+      "content": "$('#content').find('p').html()"
+    }
+  }
+}

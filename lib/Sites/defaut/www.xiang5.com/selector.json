@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/bookinfo/i.test($.location())",
+    "indexPage": "$.location($('a:contains(作品目录)').attr('href'))",
+    "footer": "$('.foot_nav').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('h1').eq(0).text().trim()",
+      "author": "$('.workSecTitle a').eq(0).text().trim()",
+      "classes": "$('.pos > a').eq(-2).text()",
+      "isend": "$('.workSecTitle').text()",
+      "cover": "$.location($('.worksLList img').attr('src'))",
+      "brief": "$('.workSecHit').next().next().html()"
+    }
+  },
+  "indexPage": {
+    "match": "/booklist/i.test($.location())",
+    "infoPage": "$.location($('.pos a').eq(-1).attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "filter": "$('img').parent('td').prev('td').remove()",
+    "bookIndexs": "$('tr > td > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/content/i.test($.location())",
+    "footer": "$('#scrollto').length > 0",
+    "filter": "$('.article').find('*').not('p').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.article').html()"
+    }
+  }
+}

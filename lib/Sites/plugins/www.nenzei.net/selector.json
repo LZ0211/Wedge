@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.nenzei\\.net\\/book\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(全文阅读)').attr('href'))",
+    "footer": "$('#footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('.book-title > h1').text()",
+      "author": "$('.book-title > em').text()",
+      "classes": "$('div.crumbs > a').eq(1).text()",
+      "isend": "$('p.book-stats').text()",
+      "cover": "$.location($('.book-img img').attr('src'))",
+      "brief": "$('p.book-intro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.nenzei\\.net\\/xiaoshuo\\/\\d+\\/\\d+\\/index\\.html$/i.test($.location())",
+    "infoPage": "$.location().replace(/xiaoshuo\\/\\d+/i,'book').replace('/index','')",
+    "footer": "$('#footer').length > 0",
+    "bookIndexs": "$('.chapterlist a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.nenzei\\.net\\/xiaoshuo\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#footer').length > 0",
+    "filter1": "$('#BookText div').not('.divimage').remove()",
+    "filter2": "$('#BookText').find('span,font').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#BookText').html()"
+    }
+  }
+}

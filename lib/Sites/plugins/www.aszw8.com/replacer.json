@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": null,
+      "author": "作者：",
+      "classes": "类别：",
+      "isend": null,
+      "cover": null,
+      "brief": null,
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": ["〔文〕","（.{1,3}更.*?）","（求收藏求推荐求点击）"],
+      "source": null,
+      "content": ["本书红薯网首发,请勿转载!"]
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/\\/bookinfo\\/\\d+\\/\\d+\\.htm$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(点击阅读)').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('#title a').eq(0).text()",
+      "author": "$('#title a').eq(1).text()",
+      "classes": "$('#col1 td').eq(4).text()",
+      "isend": "$('td:contains(文章状态)').text()",
+      "cover": "$.location($('.picborder').attr('src'))",
+      "brief": " $('.rightDiv').children().eq(5).html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/book\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location($('a:contains(返回封面)').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "filter": "$('#xs555').remove()",
+    "bookIndexs": "$('.ccss a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/book\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#copyright').length > 0",
+    "filter": "$('#content').find('div,script,a').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/book\\/\\d+$/i.test($.location())",
+    "indexPage": "$.location()+'/catalog'",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "source": "$.location()",
+      "title": "$('.book_title').text().trim()",
+      "author": "$('.book_author > a').text().trim()",
+      "classes": "$('ul.kjaside-tagslist li').slice(0,2).text()",
+      "isend": "$('meta[property=\"og:novel:status\"]').attr('content')",
+      "cover": "$.location($('.kjbookcover img').attr('src'))",
+      "brief": "$('meta[name=\"description\"]').attr('content')"
+    }
+  },
+  "indexPage": {
+    "match": "/book\\/\\d+\\/catalog$/i.test($.location())",
+    "infoPage": "$.location().replace('/catalog','')",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('.kjlist a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/book\\/\\d+\\/\\d+$/i.test($.location())",
+    "footer": "$('.chapter_page_change').length > 0",
+    "filter": "$('.content').find('span').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.content').html()"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": ["作者.*"],
+      "author": ["作者："],
+      "classes": ["小说分类："],
+      "isend": ["小说状态："],
+      "cover": null,
+      "brief": ["【】","&nbsp;"],
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": null,
+      "source": null,
+      "content": ["玄幻、言情、乡村香艳等小说一览无余！","WwW.LaWenw.CoM辣文网","读精彩原创小说就到澳大免费小说网！网址：","<a[^<>]*?>","辣文网"]
+    }
+  }
+}

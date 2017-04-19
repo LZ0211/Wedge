@@ -1,0 +1,33 @@
+{
+  "infoPage": {
+    "match": "/readnovel\\.com\\/book\\/\\d+/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "!!$('.footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "source": "$.location()",
+      "title": "$('div.book-info > h1 > em').text().trim()",
+      "author": "$('div.book-info > p.author > a').eq(0).text().trim()",
+      "classes": "$('div.book-info span.tag').find('i').last().text()",
+      "isend": "$('p.author').text()",
+      "cover": "$.location($('.book-img img').attr('src'))",
+      "brief": "$('p.intro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/readnovel\\.com\\/book\\/\\d+/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "filter": "$('.iconfont ').parent().remove()",
+    "bookIndexs": "$('div.volume a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/readnovel\\.com\\/chapter/i.test($.location())",
+    "footer": "!!$('.chapter-control').length",
+    "chapterInfos": {
+      "title": "$('h3.j_chapterName').text()",
+      "source": "$.location()",
+      "content": "$('.read-content').html()"
+    }
+  }
+}

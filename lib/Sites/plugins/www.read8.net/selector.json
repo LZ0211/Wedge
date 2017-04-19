@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/\\/txt\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(点击阅读)').attr('href'))",
+    "footer": "$('#divfoot').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('td > h1').text()",
+      "author": "$('.picborder').parent('td').next('td').find('td').eq(11).text()",
+      "classes": "$('.picborder').parent('td').next('td').find('td').eq(1).text()",
+      "isend": "$('.picborder').parent('td').next('td').find('td').eq(3).text()",
+      "cover": "$.location($('img.picborder').attr('src'))",
+      "brief": "$('#CrbsSum').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/dushu\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location($('#tl a').eq(-1).attr('href'))",
+    "footer": "$('.bottom').length > 0",
+    "bookIndexs": "$('dl > dd > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/dushu\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#bottom').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/net\\/\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location($('#title a').attr('href'))",
+    "footer": "$('#foot').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('#title a').eq(0).text()",
+      "author": " $('#title a').eq(1).text()",
+      "classes": "$('.winfo span').eq(0).text()",
+      "isend": "$('#wjico').length",
+      "cover": "$.location($('.bortable img').attr('src'))",
+      "brief": "$('p.Text').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/xiaoshuo\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location($('#crumb a').eq(1).attr('href'))",
+    "footer": "$('#footer').length > 0",
+    "filter": "$('.book').find('h3').first().parent('dt').prevAll().remove()",
+    "bookIndexs": "$('.book a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/xiaoshuo\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#copyRight').length > 0",
+    "filter": "$('.Text').find('div,script,strong,font,a').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.Text').html()"
+    }
+  }
+}

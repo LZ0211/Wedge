@@ -1,0 +1,11 @@
+<snbc>
+&para;&nbsp;<head>
+&para;&nbsp;&nbsp;<title>{{=it.title}}</title>
+&para;&nbsp;</head>
+&para;&nbsp;<body>
+{{~it.content.split("\n") :value:index}}
+&para;&nbsp;&nbsp;<text><![CDATA[　　{{=value}}]]></text>
+{{~}}
+&para;&nbsp;</body>
+&para;</snbc>
+&para;

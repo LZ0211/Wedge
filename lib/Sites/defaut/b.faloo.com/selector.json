@@ -1,0 +1,33 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/b\\.faloo\\.com\\/f\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('.ni_17 a').eq(0).attr('href'))",
+    "footer": "$('.tail').length > 0",
+    "filter": "$('.ni_13 a').replaceWith($('.ni_13 a').html())",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('h1').eq(0).text().trim()",
+      "author": "$('h1').next('a').text().trim()",
+      "classes": "$('.nav a').eq(-1).text()",
+      "isend": "$('.ni_15').text()",
+      "cover": "$.location($('a > img').attr('src'))",
+      "brief": "$('.ni_13').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/b\\.faloo\\.com\\/html\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location($('.tl a').eq(-1).attr('href'))",
+    "footer": "$('.bottom').length > 0",
+    "filter": "$('.list:contains(VIP)').nextAll().remove()",
+    "bookIndexs": "$('ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/b\\.faloo\\.com\\/p\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.tail').length > 0",
+    "filter": "$('.p_content_bottom').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

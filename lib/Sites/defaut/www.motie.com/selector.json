@@ -1,0 +1,34 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.motie\\.com\\/book\\/\\d+$/i.test($.location())",
+    "indexPage": "$.location()+'/chapter'",
+    "footer": "$('#bookReply').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "source": "$.location()",
+      "title": "$('h1.p-title a').text()",
+      "author": "$('.author-info .rtext a').first().text()",
+      "classes": "$('ul.info a').eq(0).text()",
+      "isend": "$('.ico img').attr('alt')",
+      "cover": "$.html().match(/pic: '(.*pic.motieimg.com.*)?'/) && $.html().match(/pic: '(.*pic.motieimg.com.*)?'/)[1]",
+      "brief": "$('div.desc').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.motie\\.com\\/book\\/\\d+\\/chapter$/i.test($.location())",
+    "infoPage": "$.location().replace('/chapter','')",
+    "footer": "$('.side-list').length > 0",
+    "filter": "$('img').parent('a').remove()",
+    "filter1": "$('span.desc').text('')",
+    "bookIndexs": "$('ul.list > li > a').has('span.desc').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text().trim()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.motie\\.com\\/book\\/\\d+_\\d+$/i.test($.location())",
+    "footer": "$('.page-bottom').length > 0",
+    "chapterInfos": {
+      "title": "$('h1').text()",
+      "source": "$.location()",
+      "content": "$('.page-content').map((i,v)=>$(v).text()).toArray().sort((a,b)=>a.length-b.length).pop()"
+    }
+  }
+}

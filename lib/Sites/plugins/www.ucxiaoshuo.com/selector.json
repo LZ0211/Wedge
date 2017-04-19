@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.ucxiaoshuo\\.com\\/book\\/\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('meta[property=\"og:novel:book_name\"]').attr('content')",
+      "author": "$('meta[property=\"og:novel:author\"]').attr('content')",
+      "classes": "$('meta[property=\"og:novel:category\"]').attr('content')",
+      "isend": "false",
+      "cover": "$.location($('meta[property=\"og:image\"]').attr('content'))",
+      "brief": "$('meta[property=\"og:description\"]').attr('content')"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.ucxiaoshuo\\.com\\/book\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('#chapterlist a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.ucxiaoshuo\\.com\\/book\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "chapterInfos": {
+      "title": "$('#mains h1').text()",
+      "source": "$.location()",
+      "content": "$('#book_text').html()"
+    }
+  }
+}

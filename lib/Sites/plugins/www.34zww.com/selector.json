@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/\\/read\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "filter": "$('.js').find('strong,p').remove()",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('.btitle h1').text()",
+      "author": "$('.btitle i').eq(0).text()",
+      "classes": "$('.btitle i').eq(3).text()",
+      "isend": "$('.btitle i').eq(1).text()",
+      "cover": "$.location($('.pic img').attr('src'))",
+      "brief": " $('.js').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/read\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('td.L a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/read\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#a_footer').length > 0",
+    "filter": "$('#contents').find('a,center,script').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#contents').html()"
+    }
+  }
+}

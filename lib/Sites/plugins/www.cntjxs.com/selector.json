@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.cntjxs\\.com\\/info\\/\\d+\\.htm$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(点击阅读)').attr('href'))",
+    "footer": "$('#footer').length > 0",
+    "filter": "$('#description1 > strong').remove()",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('#content h1').text()",
+      "author": "$('.novel_msg a').first().text()",
+      "classes": "$('.novel_msg li').eq(3).text()",
+      "isend": "$('.novel_msg li').eq(2).find('em').text()",
+      "cover": "$.location($('div.novel_img img').attr('src'))",
+      "brief": "$('#description1').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.cntjxs\\.com\\/read\\/\\d+\\/\\d+\\/index\\.html$/i.test($.location())",
+    "infoPage": "$.location($('a:contains(返回书页)').attr('href'))",
+    "footer": "$('#footer').length > 0",
+    "bookIndexs": "$('.novel_list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.cntjxs\\.com\\/read\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('div.novel_content').html()"
+    }
+  }
+}

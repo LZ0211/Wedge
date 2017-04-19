@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.lewen001\\.com\\/html\\/\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "!!$('.footer').length",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('.info > h2').text()",
+      "author": "$('.small span').eq(0).text()",
+      "classes": "$('.small span').eq(1).text()",
+      "isend": "$('.small span').eq(2).text()",
+      "cover": "$.location($('.cover > img').attr('src'))",
+      "brief": "$('.intro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.lewen001\\.com\\/html\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "!!$('.footer').length",
+    "filter": "$('.listmain dt').eq(1).prevAll().remove()",
+    "bookIndexs": "$('.listmain a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.lewen001\\.com\\/html\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "!!$('.footer')",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

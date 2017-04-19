@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.cjzww\\.com\\/book\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(打开目录)').attr('href'))",
+    "footer": "$('.foot').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.c_text > h3 > a').text().trim()",
+      "author": "$('li:contains(作者)').find('a').text().trim()",
+      "classes": "$('li:contains(类型)').text().trim()",
+      "isend": "/all/i.test($('.c_sjzt img').attr('src'))",
+      "cover": "$.location($('.c_img img').attr('src'))",
+      "brief": "$('.tablist > p').eq(0).html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.cjzww\\.com\\/book\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location($('.webguide a').eq(-1).attr('href'))",
+    "footer": "$('.foot').length > 0",
+    "filter": "$('b:contains(VIP)').prev().remove()",
+    "bookIndexs": "$('.mb_content a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/chapter/i.test($.location())",
+    "footer": "$('.foot').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#zoom').html()"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.xxsy\\.net\\/info\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('.full a').attr('href'))",
+    "footer": "$('.rightbanner').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "source": "$.location()",
+      "title": "$('#detail_title h1').text()",
+      "author": "$('#detail_title h1').find('span').text()",
+      "classes": "$('.infolist li').eq(2).text()",
+      "isend": "$('.infolist li').eq(4).text()",
+      "cover": "$.location($('#cover img').attr('src'))",
+      "brief": "$('#summary1').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.xxsy\\.net\\/books\\/\\d+\\/default\\.html$/i.test($.location())",
+    "infoPage": "$.location($('#ccon_load a').last().attr('href'))",
+    "footer": "$('#con_sider').length > 0",
+    "filter": "$('span.vip').parent('li').remove()",
+    "bookIndexs": "$('#catalog_list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.xxsy\\.net\\/books\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#recom_bottom').length > 0",
+    "chapterInfos": {
+      "title": "$('#detail_title h1').html()",
+      "source": "$.location()",
+      "content": "$('#zjcontentdiv').html()"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.xs8\\.cn\\/book\\/\\d+/i.test($.location())",
+    "indexPage": "$.location($('.a_list').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.booktitle > h1 > a').text().trim()",
+      "author": "$('.authorbox a').eq(0).text().trim()",
+      "classes": "$('.info1 a').eq(0).text()",
+      "isend": "$('.state').text()",
+      "cover": "$.location($('.fengmian img').attr('src'))",
+      "brief": "$('#BookIntro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.xs8\\.cn\\/book\\/\\d+\\/readbook\\.html/i.test($.location())",
+    "infoPage": "$.location($('.booktitle > h1 > a').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "filter": "$('li > img').prev().remove()",
+    "bookIndexs": "$('.mod_container a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.xs8\\.cn\\/book\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.chapter_content').html()"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/book\\.zongheng\\.com\\/book\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(目录)').attr('href'))",
+    "footer": "$('.foot').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "source": "$.location()",
+      "title": "$('div.status > h1 > a').text()",
+      "author": "$('div.booksub > a').first().text()",
+      "classes": "$('div.booksub > a').eq(1).text()",
+      "isend": "($('span.end').length ? '已完结' : '连载中')",
+      "cover": "$.location($('div.book_cover img').attr('src'))",
+      "brief": "$('div.info_con').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/book\\.zongheng\\.com\\/showchapter\\/\\d+\\.html$/i.test($.location())",
+    "infoPage": "$.location($('span.nav a').last().attr('href'))",
+    "footer": "$('.foot').length > 0",
+    "filter": "$('em.vip').next('a').remove()",
+    "bookIndexs": "$('.chapterBean a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/book\\.zongheng\\.com\\/chapter\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.foot').length > 0",
+    "chapterInfos": {
+      "title": "$('.txt h1').text()",
+      "source": "$.location()",
+      "content": "$('#chapterContent').html()"
+    }
+  }
+}

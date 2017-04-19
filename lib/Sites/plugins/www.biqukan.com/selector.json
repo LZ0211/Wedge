@@ -1,0 +1,33 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.biqukan\\.com\\/\\d+_\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('.info h2').text()",
+      "author": "$('.info span').eq(0).text()",
+      "classes": "$('.info span').eq(1).text()",
+      "isend": "$('.info span').eq(2).text()",
+      "cover": "$.location($('.cover > img').attr('src'))",
+      "brief": "$('.intro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.biqukan\\.com\\/\\d+_\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "filter": "$('.listmain').find('dt').eq(1).prevAll().remove()",
+    "bookIndexs": "$('.listmain a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.biqukan\\.com\\/\\d+_\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "filter": "$('#content').find('a,script').remove()",
+    "chapterInfos": {
+      "title": "$('.content h1').text()",
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

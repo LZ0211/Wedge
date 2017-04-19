@@ -1,0 +1,33 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.kanshu\\.com\\/artinfo\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(目录)').attr('href'))",
+    "footer": "!!$('.footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "source": "$.location()",
+      "title": "$('h1').text().trim()",
+      "author": "$('.div2 span a').eq(1).text().trim()",
+      "classes": "$('.weizhi_left a').eq(-2).text()",
+      "isend": "!!$('.wanben').length",
+      "cover": "$.location($('.xx_left1 img').attr('src'))",
+      "brief": "$('#articledesc').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.kanshu\\.com\\/files\\/article\\/html\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location($('.weizhi a').eq(-2).attr('href'))",
+    "footer": "!!$('.footer').length",
+    "filter": "$('span:contains(VIP)').parent().remove()",
+    "bookIndexs": "$('.mulu_list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.kanshu\\.com\\/files\\/article\\/html\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "!!$('.footer').length",
+    "filter": "$('#avg_link').nextAll().remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.yd_text2').html()"
+    }
+  }
+}

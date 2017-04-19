@@ -1,0 +1,33 @@
+{
+  "infoPage": {
+    "match": "!!$('#htmlch').length",
+    "indexPage": "$.location($('#htmlmulu').attr('href'))",
+    "footer": "!!$('#footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "source": "$.location()",
+      "title": "$('#htmltimu').text().trim()",
+      "author": "$('#htmlzuozhe').text().trim()",
+      "classes": "$('#htmlpos > a').last().text()",
+      "isend": "$('#htmlquanben').text()",
+      "cover": "$.location($('#htmlfengmiantu').attr('src'))",
+      "brief": "$('#htmljiashao').html()"
+    }
+  },
+  "indexPage": {
+    "match": "!!$('#htmlList').length",
+    "infoPage": "$.location($('#htmltimu').attr('href'))",
+    "footer": "!!$('#footer').length",
+    "filter": "$('.isvip').parent().remove()",
+    "bookIndexs": "$('#htmlList a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "!!$('#htmlContent').length",
+    "footer": "!!$('#footer').length",
+    "filter": "$('font.D49').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#htmlContent').html()"
+    }
+  }
+}

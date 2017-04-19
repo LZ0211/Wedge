@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.ranwenbook\\.com\\/html\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('#divfoot').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('meta[property=\"og:novel:book_name\"]').attr('content')",
+      "author": "$('meta[property=\"og:novel:author\"]').attr('content')",
+      "classes": "$('meta[property=\"og:novel:category\"]').attr('content')",
+      "isend": "$('meta[property=\"og:novel:status\"]').attr('content')",
+      "cover": "$.location($('meta[property=\"og:image\"]').attr('content'))",
+      "brief": "$('meta[property=\"og:description\"]').attr('content')"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.ranwenbook\\.com\\/html\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('#divfoot').length > 0",
+    "bookIndexs": "$('.dccss a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.ranwenbook\\.com\\/html\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#htmlContent').html()"
+    }
+  }
+}

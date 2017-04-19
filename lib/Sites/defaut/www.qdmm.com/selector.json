@@ -1,0 +1,33 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.qdmm\\.com\\/MMWeb\\/\\d+\\.aspx$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(点击阅读)').attr('href'))",
+    "footer": "!!$('#qidianmm_footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "source": "$.location()",
+      "title": "$('.title strong').text().trim()",
+      "author": "$('.title > span > a > span').text().trim()",
+      "classes": "$('span[itemprop=\"genre\"]').text().trim()",
+      "isend": "$('b:contains(写作进程：)').next().text()",
+      "cover": "$.location($('.pic_box > a > img').attr('src'))",
+      "brief": "$('span[itemprop=\"description\"]').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.qdmm\\.com\\/BookReader\\/\\w+\\.aspx$/i.test($.location())",
+    "infoPage": "$.location($('a:contains(返回书页)').attr('href'))",
+    "footer": "$('#qidianmm_footer').length > 0",
+    "filter": "$('.box_title:contains(订阅VIP章节)').nextAll().remove()",
+    "bookIndexs": "$('#content .list').find('li a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "!!$('#chaptercontent').length",
+    "footer": "true",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "",
+      "nextPage": "$('#chaptercontent script').eq(1).attr('src')"
+    }
+  }
+}

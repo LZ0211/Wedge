@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "!!$('.btnlinks > a.read').length",
+    "indexPage": "$.location($('.btnlinks > a.read').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('#content h1').text()",
+      "author": "$('th:contains(作者)').next('td').text()",
+      "classes": "$('th:contains(类别)').next('td').text()",
+      "isend": "$('th:contains(状态)').next('td').text()",
+      "cover": "$.location($('a.hst img').attr('src'))",
+      "brief": " $('p:contains(内容简介)').nextAll('p').html()"
+    }
+  },
+  "indexPage": {
+    "match": "!!$('.tags').length",
+    "infoPage": "$.location($('.bdsub > dl > dt > a').last().attr('href'))",
+    "footer": "!!$('.tags').length",
+    "filter": "$('td:contains(更新重要通告)').remove()",
+    "bookIndexs": "$('td.L a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "!!$('#footlink').length",
+    "footer": "!!$('#footlink').length",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#contents').html()"
+    }
+  }
+}

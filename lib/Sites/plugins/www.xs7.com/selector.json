@@ -1,0 +1,33 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.xs7\\.com\\/info\\-\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('.btopt a').attr('href'))",
+    "footer": "$('.footers').length > 0",
+    "filter": "$('.intro a').remove()",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('h1.f20h').text()",
+      "author": "$('h1.f20h em').text()",
+      "classes": "$('tr[valign=\"top\"]').find('td').eq(0).text()",
+      "isend": "$('tr[valign=\"top\"]').find('td').eq(2).text()",
+      "cover": "$.location($('.pic img').attr('src'))",
+      "brief": "$('.intro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.xs7\\.com\\/shu\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location($('ul.bread-crumbs a').eq(1).attr('href'))",
+    "footer": "$('#bgdiv').length > 0",
+    "bookIndexs": "$('.dccss a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.xs7\\.com\\/shu\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#bgdiv').length > 0",
+    "filter": "$('#content > div').remove()",
+    "chapterInfos": {
+      "title": "$('h2').text()",
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

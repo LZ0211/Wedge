@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.shushu\\d+\\.com\\/\\w+\\.htm$/i.test($.location())",
+    "indexPage": "$.location($('a.diralinks').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('.con_lwrap h1').text()",
+      "author": "$('p.author > span > a').eq(0).text()",
+      "classes": "$('.crumbswrap a').eq(1).text()",
+      "isend": "$('.ywjico').length > 0",
+      "cover": "$.location($('.con_limg > img').attr('src'))",
+      "brief": "$('div.r_cons').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.shushu\\d+\\.com\\/\\w+\\/$/i.test($.location())",
+    "infoPage": "$.location($('.crumbswrap a').eq(-2).attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('div.clearfix a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.shushu\\d+\\.com\\/\\w+\\/\\d+$/i.test($.location())",
+    "footer": "$('#footer').length > 0",
+    "chapterInfos": {
+      "title": "$('.page-body h1').text()",
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "infoPage": {
+    "match": "!!$('.listbox').length",
+    "indexPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('.place a').text()",
+      "author": "'多人'",
+      "classes": "$('.place a').text()",
+      "isend": "false",
+      "cover": "'http://images.17173.com/2011/news/2011/07/27/allan0727ccc_04.jpg'",
+      "brief": ""
+    }
+  },
+  "indexPage": {
+    "match": "!!$('.listbox').length",
+    "infoPage": "$.location()",
+    "footer": "!!$('.footer').length",
+    "filter": "$('.listbox > ul > li').remove()",
+    "bookIndexs": "$('.listbox > ul > ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text(),id:($(v).attr('href').match(/(\\d+)\\.html/)||[0,0])[1]})).toArray()"
+  },
+  "contentPage": {
+    "match": "!!$('.content').length",
+    "footer": "!!$('.footer').length",
+    "filter": "$('.content').find('span,script').remove()",
+    "image": "$('.content img').each((i,v)=>$(v).attr('src',$(v).attr('data-original')))",
+    "chapterInfos": {
+      "id": "/\\d+\\.html/.test($.location()) && $.location().match(/(\\d+)\\.html/)[0]",
+      "title": "$('.title h2').text()",
+      "source": "$.location()",
+      "content": "$('.content').html()"
+    }
+  }
+}

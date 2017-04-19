@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": "全集下载",
+      "author": null,
+      "classes": null,
+      "isend": null,
+      "cover": null,
+      "brief": ["([wW\\.]+)?[bB][xX][wW][xX]\\d*.[Oo][Rr][Gg]","&nbsp;"],
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": null,
+      "source": null,
+      "content": null
+    }
+  }
+}

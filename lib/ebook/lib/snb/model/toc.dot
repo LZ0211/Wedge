@@ -1,0 +1,14 @@
+<toc-snbf>
+&para;&nbsp;<head>
+&para;&nbsp;&nbsp;<chapters>{{=it.length+1}}</chapters>
+&para;&nbsp;</head>
+&para;&nbsp;<body>
+&para;&nbsp;&nbsp;<chapter src="intro.snbc">书籍简介</chapter>
+{{? it && it.length > 0}}
+{{~it :value:index}}
+&para;&nbsp;&nbsp;<chapter src="chapter_{{=value.id}}.snbc">{{=value.title}}</chapter>
+{{~}}
+{{?}}
+&para;&nbsp;</body>
+&para;</toc-snbf>
+&para;
