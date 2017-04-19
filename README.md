@@ -136,10 +136,6 @@ App.config.set("book.maxdepth",2);
 App.config.set('app.log',true);
 //输出运行日志到本地文件
 App.config.set('app.log','LOG.txt');
-//输出线程信息
-App.Thread.LOG.on();
-//关闭线程信息
-App.Thread.LOG.off();
 //输出debug信息
 App.config.set('app.debug',true);
 ```
@@ -186,7 +182,7 @@ options.rename = "<name><ext>"; 图片保存的重命名规则
 
 ### 添加网站规则
 #### 临时添加
-App.Sites,inject(rule);
+App.Sites.inject(rule);
 #### 永久添加
 在wedge/lib/sites路径下
 defaut为原创小说网站，
