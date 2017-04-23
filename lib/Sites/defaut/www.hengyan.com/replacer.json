@@ -10,7 +10,7 @@
       "classes": null,
       "isend": null,
       "cover": null,
-      "brief": "简介：",
+      "brief": "[^<>]*是作者.*倾力创作的.*",
       "keywords": null
     }
   },
@@ -26,11 +26,7 @@
     "chapterInfos": {
       "title": null,
       "source": null,
-      "content": ["<img .*?width=\"14\" height=\"16\" src=\"",".png\" \\/>","http:\\/\\/p..qhimg.com\\/",
-        {
-          "t0128e86653bc63b950":"。",
-          "t012baf5ac91f5b5c6b":"，"
-        }]
+      "content": null
     }
   }
 }

@@ -7,12 +7,12 @@
     },
     {
       "name": "testRule",
-      "activated": false,
+      "activated": true,
       "func": "./plugins/testRule"
     },
     {
       "name": "testSelector",
-      "activated": false,
+      "activated": true,
       "func": "./plugins/testSelector"
     },
     {

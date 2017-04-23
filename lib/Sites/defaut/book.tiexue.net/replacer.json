@@ -5,10 +5,10 @@
     "footer": null,
     "bookInfos": {
       "source": null,
-      "title": ["作者.*"],
-      "author": ["作者："],
-      "classes": ["小说分类："],
-      "isend": ["小说状态："],
+      "title": null,
+      "author": null,
+      "classes": null,
+      "isend": null,
       "cover": null,
       "brief": null,
       "keywords": null

@@ -1,6 +1,6 @@
 {
   "infoPage": {
-    "match": "/^http:\\/\\/www\\.xs8\\.cn\\/book\\/\\d+/i.test($.location())",
+    "match": "/index.html/i.test($.location())",
     "indexPage": "$.location($('.a_list').attr('href'))",
     "footer": "$('.footer').length > 0",
     "bookInfos": {
@@ -14,7 +14,7 @@
     }
   },
   "indexPage": {
-    "match": "/^http:\\/\\/www\\.xs8\\.cn\\/book\\/\\d+\\/readbook\\.html/i.test($.location())",
+    "match": "/readbook.html/i.test($.location())",
     "infoPage": "$.location($('.booktitle > h1 > a').attr('href'))",
     "footer": "$('.footer').length > 0",
     "filter": "$('li > img').prev().remove()",

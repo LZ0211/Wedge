@@ -23,10 +23,6 @@
   "contentPage": {
     "match": "true",
     "footer": "true",
-    "chapterInfos": {
-      "source": "$.location()",
-      "content": "($('.article-body').length ? '' : $.html())",
-      "nextPage": "$.html().match('RP.sign') && $.location().replace('_','&chapter_id=').replace('http://book.km.com/chapter/','http://book.km.com/index.php?c=catch&a=getContent&book_id=').replace('.html','&sign=')+$.html().match(/RP.sign = \"(.{32})?\"/)[1]"
-    }
+    "request": "{url:$.html().match('RP.sign') && $.location().replace('_','&chapter_id=').replace('http://book.km.com/chapter/','http://book.km.com/index.php?c=catch&a=getContent&book_id=').replace('.html','&sign=')+$.html().match(/RP.sign = \"(.{32})?\"/)[1],success:data=>data,headers:{Referer:$.location()}}"
   }
 }

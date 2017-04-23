@@ -1,32 +1,31 @@
 {
   "infoPage": {
-    "match": "!!$('#detail').length",
-    "indexPage": "$.location($('a:contains(查看目录)').attr('href'))",
-    "footer": "!!$('#copyright').length",
+    "match": "/\\/novel\\//i.test($.location())",
+    "indexPage": "$.location($('a:contains(目录)').attr('href'))",
+    "footer": "!!$('footer').length",
     "bookInfos": {
       "origin": "$.location()",
-      "source": "$.location()",
-      "title": "$('.cont h3').eq(0).text().trim()",
-      "author": "$('.info a').eq(0).text().trim()",
-      "classes": "$('.info a').eq(1).text().trim()",
-      "isend": "$('.info').text()",
-      "cover": "$.location($('.pic img').attr('src'))",
-      "brief": "$('#full-intro').html()"
+      "title": "$('.crumb li').eq(-1).text().trim()",
+      "author": "$('.author').eq(0).text().trim()",
+      "classes": "$('.crumb a').eq(1).text().trim()",
+      "isend": "$('.novel_status').attr('data-status') > 1",
+      "cover": "$.location($('.img img').attr('src'))",
+      "brief": "$('.brief').html()"
     }
   },
   "indexPage": {
-    "match": "/xiaoshuo.360.cn\\/chaplist/i.test($.location())",
-    "infoPage": "$.location($('#crumb a').eq(-1).attr('href'))",
-    "footer": "!!$('#doc-ft').length",
+    "match": "/\\/chaplist\\//i.test($.location())",
+    "infoPage": "$.location($('.crumb a').last().attr('href'))",
+    "footer": "!!$('footer').length",
     "filter": "$('.vip').remove()",
-    "bookIndexs": "$('.tlist > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+    "bookIndexs": "$('.chapter-list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
-    "match": "/xiaoshuo.360.cn\\/chapter/i.test($.location())",
+    "match": "/\\/chapter\\//i.test($.location())",
     "footer": "true",
     "chapterInfos": {
       "source": "$.location()",
-      "content": "new Buffer($('#feedback').nextAll('script').eq(2).text().replace(/var c=\"(.*)?\";/,'$1'),'base64').toString()"
+      "content": "new Buffer($('script').filter((i,v)=>$(v).text().match('var c=')).text().replace(/var c=\"(.*)?\";/,'$1'),'base64').toString()"
     }
   }
 }

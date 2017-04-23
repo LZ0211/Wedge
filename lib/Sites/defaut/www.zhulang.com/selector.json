@@ -28,7 +28,7 @@
     "chapterInfos": {
       "title": "$('#read-content h2').text()",
       "source": "$.location()",
-      "content": "$('#read-content p').html()"
+      "content": "$('#read-content p').map((i,v)=>$(v).html()).toArray().join('\\n')"
     }
   }
 }
