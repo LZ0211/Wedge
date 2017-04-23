@@ -346,7 +346,7 @@ class Wedge extends EventEmitter{
         $.decode = util.decode;
         var filter = util.object.filter;
         var map = util.object.map;
-        var rule = filter(site.selector,(k,v)=>v.match($) && v.footer($));
+        var rule = filter(site.selector,(k,v)=>v.match($) && (v.footer($) || /<\/html>/i.test($.raw)));
         var apply = (k,v)=>(util.is.isFunction(v) ? v($) : map(v,apply));
         var replace = (data,rule)=>map(data,(k,v)=>{
             if(!rule[k]) return v;

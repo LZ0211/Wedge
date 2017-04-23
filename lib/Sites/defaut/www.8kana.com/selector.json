@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/\\.8kana\\.com\\/book\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('h2.left').text().trim()",
+      "author": "$('.authorName').text().trim()",
+      "classes": "$('.navTopL_current a').eq(0).text()",
+      "isend": "false",
+      "cover": "$.location($('.bookContainImgBox img').attr('src'))",
+      "brief": "$('a > p').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\.8kana\\.com\\/book\\/\\d+\\.html$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('.nolooking a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\.8kana\\.com\\/read\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.read_last_next').length > 0",
+    "filter": "$('.myContent span').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.myContent').html()"
+    }
+  }
+}

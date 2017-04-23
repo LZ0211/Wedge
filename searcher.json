@@ -218,5 +218,11 @@
     "url": "http://www.hbooker.com/index/get_search_book_list/%title%",
     "name": ".hbooker.com",
     "selector": "p.tit a"
+  },
+  {
+    "url":"http://www.8kana.com/www/search",
+    "query": "keyword=%title%&type=1",
+    "selector": ".results_del_R_book a",
+    "name": ".8kana.com"
   }
 ]
