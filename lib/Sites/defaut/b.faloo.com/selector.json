@@ -16,7 +16,7 @@
   },
   "indexPage": {
     "match": "/^http:\\/\\/b\\.faloo\\.com\\/html\\/\\d+\\/\\d+\\/$/i.test($.location())",
-    "infoPage": "$.location($('.tl a').eq(-1).attr('href'))",
+    "infoPage": "$.location($('#tl a').last().attr('href'))",
     "footer": "$('.bottom').length > 0",
     "filter": "$('.list:contains(VIP)').nextAll().remove()",
     "bookIndexs": "$('ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"

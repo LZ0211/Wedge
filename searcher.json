@@ -1,6 +1,7 @@
 [
   {
-    "url": "http://se.qidian.com/?kw=%title%",
+    "url": "http://se.qidian.com/",
+    "query": "kw=%title%",
     "name": ".qidian.com"
   },
   {
@@ -12,7 +13,8 @@
     "name": ".qq.com"
   },
   {
-    "url": "http://yuedu.sogou.com/search?keyword=%title%",
+    "url": "http://yuedu.sogou.com/search",
+    "query": "keyword=%title%",
     "name": ".sogou.com"
   },
   {
@@ -20,45 +22,68 @@
     "name": ".zongheng.com"
   },
   {
-    "url": "http://search.17k.com/search.xhtml?c.st=0&c.q=%title%",
+    "url": "http://search.17k.com/search.xhtml",
+    "query": "c.st=1&c.q=%title%",
+    "selector": ".textmiddle a",
     "name": ".17k.com"
   },
   {
-    "url": "https://www.readnovel.com/search?kw=%title%",
+    "url": "https://www.readnovel.com/search",
+    "query": "kw=%title%",
     "name": ".readnovel.com"
   },
   {
-    "url": "http://www.motie.com/rest/daguan/?objectType=2&queryString=%title%",
+    "url": "http://www.motie.com/rest/daguan/",
+    "query": "objectType=2&queryString=%title%",
     "name": ".motie.com"
   },
   {
-    "url": "http://www.hongshu.com/bookstore.html?keyword=%title%&keytype=2",
+    "url": "http://www.hongshu.com/homeajax.do",
+    "method": "POST",
+    "dataType": "json",
+    "data": "method=search&Pclassids=&classids=&free=0&finish=0&charnum=0&updatetime=0&keyword=%title%&keywordtype=2&order=0&page=1&pagesize=25",
+    "parse": "json.bookinfo.map(x=>['http://www.hongshu.com/book/'+x.bid+'/',x.catename])",
     "name": ".hongshu.com"
   },
   {
-    "url": "http://search.faloo.com/cse/search?s=8180149771949009960&entry=1&q=%title%",
+    "url": "http://search.faloo.com/cse/search",
+    "query": "s=8180149771949009960&entry=1&q=%title%",
     "charset": "gbk",
     "name": ".faloo.com"
   },
   {
-    "url": "http://so.ihuaben.com/search?keyword=%title%",
+    "url": "http://so.ihuaben.com/search",
+    "query": "keyword=%title%",
     "name": ".ihuaben.com"
   },
   {
-    "url": "http://so.kanshu.com/search/searchlist.php?&keys=%title%&sort=1",
+    "url": "http://so.kanshu.com/search/searchlist.php",
+    "query": "searchtype=0&tn=SE_pshl0004_7x3dksqe&sort=2&keys=%title%",
     "name": ".kanshu.com"
   },
   {
-    "url": "http://zhannei.baidu.com/cse/search?s=13602090313724893225&entry=1&q=%title%",
+    "url": "http://zhannei.baidu.com/cse/search",
+    "query": "s=13602090313724893225&entry=1&q=%title%",
     "name": ".xs8.cn"
   },
   {
-    "url": "http://www.xxsy.net/search.html?s_wd=%title%",
+    "url": "http://www.xxsy.net/search.aspx",
+    "query": "q=%title%&sort=9&rn=22&pn=1&rand=%time%",
+    "dataType": "json",
+    "parse": "JSON.parse(json).booklist.map(x=>['http://www.xxsy.net/info/'+x.bookid+'.html',x.bookname])",
     "name": ".xxsy.net"
   },
   {
-    "url": "https://www.sogou.com/web?query=%title%+%E7%BA%A2%E8%A2%96%E6%B7%BB%E9%A6%99&ie=utf8&_ast=1488053248&_asf=null&w=01029901&cid=&cid=&sut=5558&sst0=1488053317810&lkt=0%2C0%2C0",
-    "name": ".sogou.com"
+    "url": "http://www.jjwxc.net/bookbase.php",
+    "query": "fw0=0&fbsj=3&ycx0=0&xx0=0&sd0=0&lx0=0&fg0=0&collectiontypes=ors&null=0&searchkeywords=%title%",
+    "charset": "gbk",
+    "selector": "tr > td > a",
+    "name": ".jjwxc.net"
+  },
+  {
+    "url": "https://www.sogou.com/web",
+    "query": "query=%title%+%E7%BA%A2%E8%A2%96%E6%B7%BB%E9%A6%99&ie=utf8&_ast=1488053248&_asf=null&w=01029901&cid=&cid=&sut=5558&sst0=1488053317810&lkt=0%2C0%2C0",
+    "name": ".hongxiu.com"
   },
   {
     "url": "http://www.zhulang.com/search/index.html",
@@ -67,38 +92,57 @@
     "name": ".zhulang.com"
   },
   {
-    "url": "http://s.hongxiu.com/searchresult.aspx?query=%title%&iftitle=1",
+    "url": "http://s.hongxiu.com/SearchResult.aspx",
+    "query": "query=%title%&iftitle=5&qb=&vip=&lb=&hidZilei=&px=&pagesize=50&type=1",
+    "headers": {
+      "referer": "http://s.hongxiu.com/SearchResult.aspx"
+    },
+    "selector": ".bookname a",
     "charset": "gbk",
     "name": ".hongxiu.com"
   },
   {
     "url": "http://www.yousuu.com/search/%title%?type=all",
+    "selector": ".title a",
     "name": ".yousuu.com"
   },
   {
-    "url": "http://xiaoshuo.360.cn/search/?kw=%title%",
-    "name": ".360.cn"
+    "url": "http://www.jingyu.com/search/",
+    "query": "kw=%title%",
+    "selector": ".title a",
+    "name": ".jingyu.com"
   },
   {
-    "url": "http://a.heiyan.com/jsonp/search/?queryString=%title%&objectType=2&page=1",
+    "url": "http://www.junshishu.com/SearchResults.aspx",
+    "query": "keywords=%title%&noveltype=1",
+    "charset": "unicode",
+    "name": ".junshishu.com"
+  },
+  {
+    "url": "http://a.heiyan.com/jsonp/search/",
+    "query": "queryString=%title%&objectType=2&page=1",
     "name": ".heiyan.com",
     "parse": "json.voRF.items.map(o=>['http://www.heiyan.com'+o.object.url,o.object.name])"
   },
   {
-    "url": "http://a.ruochu.com/jsonp/search/?queryString=%title%&objectType=2&page=1",
+    "url": "http://a.ruochu.com/jsonp/search/",
+    "query": "queryString=%title%&objectType=2&page=1",
     "name": ".ruochu.com",
-    "parse": "json.voRF.items.map(o=>['http://www.heiyan.com'+o.object.url,o.object.name])"
+    "parse": "json.voRF.items.map(o=>['http://www.ruochu.com'+o.object.url,o.object.name])"
   },
   {
-    "url": "http://book.km.com/search.html?keyword=%title%",
+    "url": "http://book.km.com/search.html",
+    "query": "keyword=%title%",
     "charset": "gbk",
+    "selector": ".info a",
     "name": ".km.com"
   },
   {
-    "url": "http://www.3gsc.com.cn/search/index/show/pic",
+    "url": "http://3gsc.com.cn/search/index/show/pic",
     "method": "post",
-    "data": "keytype=0&search_key=%title%&ver=new",
-    "name": ".3gsc.com.cn"
+    "data": "keytype=1&search_key=%title%&ver=new",
+    "selector": "a.Article",
+    "name": "3gsc.com.cn"
   },
   {
     "url": "http://www.tadu.com/search",
@@ -107,44 +151,54 @@
     "name": ".tadu.com"
   },
   {
-    "url": "http://www.kujiang.com/search?keyword=%title%",
+    "url": "http://www.kujiang.com/search",
+    "query": "keyword=%title%",
     "name": ".kujiang.com"
   },
   {
-    "url": "http://xiaoshuo.sogou.com/search/?key=%title%",
-    "name": ".sogou.com"
-  },
-  {
-    "url": "http://yuedu.163.com/search.do?key=%title%&type=4",
+    "url": "http://yuedu.163.com/search.do",
+    "query": "key=%title%&type=4&docType=json",
+    "parse": "json.data.map(x=>[x.sumUrl,x.title])",
     "name": ".163.com"
   },
   {
-    "url": "http://www.xiang5.com/search.php?keyword=%title%",
+    "url": "http://www.xiang5.com/search.php",
+    "query": "keyword=%title%",
+    "selector": ".textmiddle a",
     "name": ".xiang5.com"
   },
   {
     "url": "http://www.shuhai.com/search/%title%?formhash=f88879d7",
-    "name": ".shuhai.com"
+    "name": ".shuhai.com",
+    "selector": ".name a"
   },
   {
-    "url": "http://www.cjzww.com/search.html?searchType=All&searchKey=%title%",
+    "url": "http://www.cjzww.com/search.html",
+    "query": "searchType=All&searchKey=%title%",
     "name": ".cjzww.com"
   },
   {
-    "url": "https://book.douban.com/subject_search?search_text=%title%",
+    "url": "https://book.douban.com/subject_search",
+    "query": "search_text=%title%",
     "name": ".douban.com"
   },
   {
-    "url": "http://so.fmx.cn/so/?q=%title%&f=articlename",
+    "url": "http://so.fmx.cn/so/",
+    "query": "q=%title%&f=articlename",
     "charset": "gbk",
+    "selector": ".so_text a",
     "name": ".fmx.cn"
   },
   {
-    "url": "http://www.ycread.com/Book/Search.aspx?SearchKey=%title%&SearchClass=1",
+    "url": "http://www.ycread.com/Book/Search.aspx",
+    "query": "SearchKey=%title%&SearchClass=1",
+    "selector": "a.tit",
     "name": ".ycread.com"
   },
   {
-    "url": "http://www.ycsd.cn/book/search.aspx?searchTxt=%title%",
+    "url": "http://www.ycsd.cn/book/search.aspx",
+    "query": "searchTxt=%title%",
+    "selector": "strong > a",
     "name": ".ycsd.cn"
   },
   {
@@ -152,10 +206,23 @@
     "method": "post",
     "charset": "gbk",
     "data": "ecmsfrom=9&searchtype=all&classid=1&searchkey=%title%&t_btnsearch=%CB%D1%CB%F7",
-    "name": ".longyuedu.com"
+    "name": ".longyuedu.com",
+    "selector": ".shuku_z_xq a"
+  },
+  {
+    "url": "http://www.hengyan.com/so/",
+    "query": "key=%title%&s=",
+    "name": ".hengyan.com"
   },
   {
     "url": "http://www.hbooker.com/index/get_search_book_list/%title%",
-    "name": ".hbooker.com"
+    "name": ".hbooker.com",
+    "selector": "p.tit a"
+  },
+  {
+    "url":"http://www.8kana.com/www/search",
+    "query": "keyword=%title%&type=1",
+    "selector": ".results_del_R_book a",
+    "name": ".8kana.com"
   }
 ]

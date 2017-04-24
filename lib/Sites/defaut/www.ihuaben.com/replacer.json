@@ -10,7 +10,7 @@
       "classes": null,
       "isend": null,
       "cover": null,
-      "brief": null,
+      "brief": ["简介：","【本故事纯属虚构】"],
       "keywords": null
     }
   },
@@ -26,7 +26,7 @@
     "chapterInfos": {
       "title": null,
       "source": null,
-      "content": null
+      "content": {"<\\/span>":"："}
     }
   }
 }

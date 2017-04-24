@@ -18,7 +18,7 @@
     "match": "/^http:\\/\\/www\\.17k\\.com\\/list\\/\\d+\\.html$/i.test($.location())",
     "infoPage": "$.location($('a:contains(返回首页)').attr('href'))",
     "footer": "$('.Footer').length > 0",
-    "filter": "$('img[alt=\"vip\"]').parent('a').remove()",
+    "filter": "$('img[alt=\"vip\"]').parents('a').remove()",
     "bookIndexs": "$('dl.Volume > dd > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text().trim()})).toArray()"
   },
   "contentPage": {

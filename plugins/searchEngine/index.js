@@ -20,8 +20,9 @@ module.exports = function(){
     var Engine = Engines['sogou'];
     var setEngine = name=>{
         Engine = Engines[name];
-        return this;
-    }
+        searchEngine.search = search;
+        return searchEngine;
+    };
     var search = (keyword,fn)=>{
         fn = this.next(fn);
         var link = Engine.url.replace('%keyword%',keyword);
@@ -56,9 +57,10 @@ module.exports = function(){
             },
             error:()=>fn(urls)
         });
-    }
-    this.Engine = {
+    };
+    var searchEngine = {
         setEngine:setEngine,
-        search:search
-    }
+        search:(keyword,fn)=>this.searchBook(keyword,list=>fn(list.map(item=>item[0])))
+    };
+    this.searchEngine = searchEngine;
 }

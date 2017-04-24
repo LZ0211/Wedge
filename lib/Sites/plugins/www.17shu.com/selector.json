@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.17shu\\.com\\/book\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('h2.ratitle').text().trim()",
+      "author": "$('h2.ratitle').next().text()",
+      "classes": "$('h2.ratitle').next().text()",
+      "isend": "false",
+      "cover": "$.location($('.divbox.cf img').attr('src'))",
+      "brief": "$('.gray').eq(-1).html()"
+    }
+  },
+  "indexPage": {
+    "match": "/^http:\\/\\/www\\.17shu\\.com\\/book\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('.ccss a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/^http:\\/\\/www\\.17shu\\.com\\/book\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.ccontent').html()"
+    }
+  }
+}

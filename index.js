@@ -1,12 +1,12 @@
-"use strict"
+"use strict";
 const fs = require("fs");
 const Path = require("path");
 const URL = require("url");
 const querystring = require("querystring");
-const EventEmitter = require('events');
-const child_process = require('child_process');
-const readline = require('readline');
-const Random = require('./lib/JSrandom');
+const EventEmitter = require("events");
+const child_process = require("child_process");
+const readline = require("readline");
+const Random = require("./lib/JSrandom");
 const Log = require("./lib/Log");
 const Hash = require("./lib/Hash");
 const DataBase = require("./lib/DataBase");
@@ -51,24 +51,40 @@ class Wedge extends EventEmitter{
         return this;
     }
 
+    install(plugin){
+        require(plugin.func).call(this);
+        return this;
+    }
+
+    getConfig(k){
+        return this.config.get(k);
+    }
+
     plugins(){
-        var install = plugin=>require(plugin.func).call(this);
-        this.config.get("plugins").filter(plugin=>plugin.activated).forEach(install);
+        this.getConfig("plugins").filter(function(plugin){
+            return plugin.activated === true;
+        }).forEach(this.install.bind(this));
         return this;
     }
 
     Log(){
-        if (this.log) return this.log;
-        var appLog = this.config.get('app.log');
-        if(appLog == false) {
+        if (this.log){
+            return this.log;
+        }
+        var appLog = this.getConfig('app.log');
+        if(typeof appLog === "string"){
+            this.log = new Log(appLog);
+            return this.log;
+        }
+        appLog = !!appLog;
+        if(appLog === false) {
             this.log = this.noop;
-            return;
+            return this.log;
         }
         if(appLog === true){
             this.log = console.log;
-            return;
+            return this.log;
         }
-        this.log = new Log(String(appLog));
     }
 
     spawn(){
@@ -93,20 +109,22 @@ class Wedge extends EventEmitter{
         var args = [];
         var len = Math.max(docs.length,fn.length);
         var ref = 0;
-        if (len == 0)return fn.apply(this,args);
-        var listener=()=>{
-            rl.question(docs[ref],input=>{
+        if (len === 0){
+            return fn.apply(null,args);
+        }
+        function listen(){
+            rl.question(docs[ref],function(input){
                 args.push(input);
                 ref += 1;
                 if(ref === len){
                     rl.close();
-                    return fn.apply(this,args);
+                    return fn.apply(null,args);
                 }else{
-                    return listener();
+                    return listen();
                 }
             });
         }
-        listener();
+        listen();
         return this;
     }
 
@@ -130,18 +148,18 @@ class Wedge extends EventEmitter{
 
     next(fn){
         if (typeof fn !== "function"){
-            return ()=>this.end();
+            return this.end.bind(this);
         }
         return fn;
     }
 
     debug(){
-        this.config.get('app.debug') && this.log.apply(this,arguments);
+        this.getConfig('app.debug') && this.log.apply(this,arguments);
         return this;
     }
 
     request(url,options){
-        if ( typeof url == "object" ) {
+        if ( typeof url === "object" ) {
             options = url;
             url = undefined;
         }
@@ -152,10 +170,10 @@ class Wedge extends EventEmitter{
         options.reconnect = this.config.get('request.reconnect') || 3;
         options.proxy = this.config.get('request.proxy');
         options.proxyAuth = this.config.get('request.proxyAuth');
-        options.success = options.success || this.noop,
+        options.success = options.success || this.noop;
         options.error = options.error || this.noop;
 
-        if (options.method == "GET"){
+        if (options.method === "GET"){
             var data = this.cache.get(options.url);
             if (data) return options.success(data);
         }
@@ -176,7 +194,7 @@ class Wedge extends EventEmitter{
         req.end((err,res,data)=>{
             connectTimes += 1;
             if (res && /^20.$/.test(res.statusCode) && data){
-                if (options.method == "GET"){
+                if (options.method === "GET"){
                     this.cache.set(options.url,data);
                 }
                 return options.success(data);
@@ -197,11 +215,11 @@ class Wedge extends EventEmitter{
             var argsLength = protoFun.length;
             var define = [];
             if (argsLength){
-                var define = Random.sample('abcdefghijklmnopqrstuvwxyz',argsLength);
+                define = Random.sample('abcdefghijklmnopqrstuvwxyz',argsLength);
             }
             define.push('this.'+name+'('+define.join(',')+')');
             return Function.apply(null,define).bind(this);
-        }
+        };
         return line.split(' > ').map(compile);
     }
 
@@ -211,38 +229,63 @@ class Wedge extends EventEmitter{
         return func.call(this,args);
     }
 
+    searchInSite(title,site,fn){
+        fn = this.next(fn);
+        if(!site || !site.url) return fn();
+        var links = [];
+        var push = link=>links.push(link);
+        var url = site.url
+            .replace('%title%',util.encodeURI(title,site.charset))
+            .replace('%time%',+new Date())
+            .replace('%random%',Math.random());
+        var query = (site.query || "")
+            .replace('%title%',util.encodeURI(title,site.charset))
+            .replace('%time%',+new Date())
+            .replace('%random%',Math.random());
+        var method = (site.method || "GET").toUpperCase();
+        var data = site.data && site.data.replace('%title%',title);
+        var success = data=>{
+            if(site.parse){
+                var parser = new Function('json','try{return (' + site.parse + ')}catch(e){return []}');
+                parser(data).forEach(push);
+            }else {
+                var $ = Parser(data,url);
+                var selector = site.selector || ':header a';
+                $(selector).filter((i,v)=>~$(v).text().indexOf(title)).each((i,v)=>links.push([
+                    $.location($(v).attr('href')),
+                    $(v).text().trim()
+                ]));
+            }
+            return fn(links);
+        };
+        var options = {
+            url:url+'?'+query,
+            method:method,
+            data:data && util.encode(data,site.charset),
+            dataType:site.dataType,
+            headers:site.headers,
+            success:success,
+            error:()=>fn(links),
+        };
+        if(site.parse){
+            options.headers = {
+                'X-Requested-With':'XMLHttpRequest'
+            };
+        }
+        this.request(options);
+    }
+
     fuzzysearchBook(title,fn){
         fn = this.next(fn);
         var links = [];
         var push = link=>links.push(link);
         var endSearch = ()=>fn(links);
         var search = (site,next)=>{
-            if (!site || !site.url) return next();
-            var url = site.url.replace('%title%',util.encodeURI(title,site.charset));
-            var method = (site.method || "GET").toUpperCase();
-            var data = site.data && site.data.replace('%title%',site.charset ? util.encodeURI(title,site.charset) : title);
-            var resolve = data=>{
-                if(site.parse && typeof data == 'object'){
-                    var parser = new Function('json','try{return (' + site.parse + ')}catch(e){return []}');
-                    parser(data).forEach(push);
-                }else {
-                    var $ = Parser(data,url);
-                    $(':header a').filter((i,v)=>~$(v).text().indexOf(title))
-                    .each((i,v)=>links.push([
-                        $.location($(v).attr('href')),
-                        $(v).text().trim()
-                    ]));
-                }
+            this.searchInSite(title,site,list=>{
+                list.forEach(push);
                 return next();
-            }
-            this.request({
-                url:url,
-                method:method,
-                data:data,
-                success:resolve,
-                error:next
             });
-        }
+        };
         new Thread()
         .use(search)
         .queue(Searcher)
@@ -274,11 +317,10 @@ class Wedge extends EventEmitter{
         if ('string' !== typeof dir) return this.end();
         this.bookdir = Path.resolve(dir);
         if (this.config.get('book.sync')){
-            this.book.loadIndexSync(dir);
-            fn();
-            return this;
+            this.book.loadIndexSync(this.bookdir);
+            return fn();
         }
-        this.book.loadIndex(dir,fn);
+        this.book.loadIndex(this.bookdir,fn);
         return this;
     }
 
@@ -289,8 +331,7 @@ class Wedge extends EventEmitter{
         if (!this.config.get('book.check')) return fn();
         if (this.config.get('book.sync')){
             this.book.checkIndexSync();
-            fn();
-            return this;
+            return fn();
         }
         this.book.checkIndex(fn);
         return this;
@@ -299,9 +340,13 @@ class Wedge extends EventEmitter{
     getParsedData(data,url){
         var site = Sites.search(url);
         var $ = Parser(data,url,site.charset);
+        var cookies = querystring.parse(request.cookies.getCookie(url),'; ');
+        $.getCookie = name=>(cookies[name]||'');
+        $.encode = util.encode;
+        $.decode = util.decode;
         var filter = util.object.filter;
         var map = util.object.map;
-        var rule = filter(site.selector,(k,v)=>v.match($) && v.footer($));
+        var rule = filter(site.selector,(k,v)=>v.match($) && (v.footer($) || /<\/html>/i.test($.raw)));
         var apply = (k,v)=>(util.is.isFunction(v) ? v($) : map(v,apply));
         var replace = (data,rule)=>map(data,(k,v)=>{
             if(!rule[k]) return v;
@@ -309,58 +354,66 @@ class Wedge extends EventEmitter{
                 if(util.is.isObject(rule[k])) return replace(v,rule[k]);
                 return v;
             }
-            return util.replace(v,rule[k])
+            return util.replace(v,rule[k]);
         });
         return replace(map(rule,apply),site.replacer);
     }
 
     getBookMeta(url,fn){
         fn = this.next(fn);
-        if(typeof url == 'string'){
-            if (!url || !url.match('http')) return this.error("Invalid URL ...");
-            var links = url.split('|').filter(x=>x).map(link=>{
-                try{return JSON.parse(link)}catch (e){return link}
-            }).map(util.formatLink);
-        }else if(Array.isArray(url)){
-            var links = url.map(util.formatLink);
-        }else{
-            return this.error("Invalid URL ...");
-        }
+        var links = util.checkUrlValid(url);
+        if (!links) return this.error('Invalid url...'+links);
         this.debug('getBookMeta');
         var link = links[0];
-        var times = parseInt(this.config.get('app.retry.meta'));
-        times = isNaN(times) ? 3 : times;
+        var times = util.parseInteger(this.config.get('app.retry.meta'),3);
+        var indexUrl = null;
+        var setMeta = infos=>{
+            this.book.setMeta(infos);
+            this.book.setMeta('source',links.length > 1 ? links : indexUrl);
+            this.book.setMeta('origin',link);
+            return fn();
+        };
+        var requestInfo = options=>{
+            var success = options.success.bind(options);
+            options.success = data=>{
+                var result = success(data);
+                if (!result) return;
+                if(result.url && result.success){
+                    result.request = result;
+                }
+                if(result.request && !result.bookInfos) {
+                    result.request.headers = {
+                        referer:link.url,
+                        'X-Requested-With':'XMLHttpRequest'
+                    };
+                    return requestInfo(result.request);
+                }
+                if(!result.request && !result.bookInfos) return setMeta(result);
+                return setMeta(result.bookInfos);
+            };
+            options.error = error=>{
+                this.debug(error);
+                if (--times <= 0) return this.end();
+                this.request(options);
+            };
+            return this.request(options);
+        };
         link.success = data=>{
             var parsedData = this.getParsedData(data,link.url);
             var infoPage = parsedData.infoPage;
             var indexPage = parsedData.indexPage;
-            var redirectPage = parsedData.redirectPage;
-            if (!infoPage){
-                if (!indexPage){
-                    if (!redirectPage){
-                        this.debug(data.toString());
-                        return this.error("this url is Not infoPage or request failed");
-                    }
-                    this.debug('redirect...');
-                    url = redirectPage.infoPage || redirectPage.indexPage;
-                    return this.getBookMeta(url,fn);
-                }else {
-                    this.debug('switch to infoPage...');
-                    url = indexPage.infoPage;
-                    return this.getBookMeta(url,fn);
-                }
-            }else {
-                this.book.setMeta(infoPage.bookInfos);
-                this.book.setMeta('source',links.length > 1 ? links : infoPage.indexPage);
-                this.book.setMeta('origin',link);
-                return fn();
+            if (!infoPage && !indexPage){
+                this.error('this url is Not infoPage or request failed');
+                return null;
             }
+            if (!infoPage){
+                this.getBookMeta(indexPage.infoPage,fn);
+                return null;
+            }
+            indexUrl = infoPage.indexPage;
+            return infoPage;
         };
-        link.error = ()=>{
-            if (--times <= 0) return this.end();
-            this.request(link);
-        }
-        this.request(link);
+        requestInfo(link);
         return this;
     }
 
@@ -395,7 +448,7 @@ class Wedge extends EventEmitter{
                     }
                     if (!like(meta.title,title)) return nextFn();
                     if (!like(meta.author,author)) return nextFn();
-                    this.log(meta.source)
+                    this.log(meta.source);
                     delete meta.source;
                     this.book.setMeta(meta);
                     return fn();
@@ -422,11 +475,11 @@ class Wedge extends EventEmitter{
         link.success = data=>{
             this.book.setMeta("cover",data);
             fs.writeFile(Path.join(this.bookdir,"cover.jpg"),data,fn);
-        }
+        };
         link.error = ()=>{
             if (--times <= 0) return fn();
             this.request(link);
-        }
+        };
         this.request(link);
         return this;
     }
@@ -485,19 +538,43 @@ class Wedge extends EventEmitter{
 
     getBookIndex(link,fn){
         fn = this.next(fn);
-        var times = parseInt(this.config.get('app.retry.index'));
-        times = isNaN(times) ? 3 : times;
-        link = util.formatLink(link);
-        link.success = data=>{
-            var parsedData = this.getParsedData(data,link.url);
-            if (parsedData.indexPage && parsedData.indexPage.bookIndexs && Array.isArray(parsedData.indexPage.bookIndexs)) return fn(parsedData.indexPage.bookIndexs);
-            return fn([]);
-        }
-        link.error = ()=>{
-            if (--times <= 0) return fn([]);
-            this.request(link);
-        }
-        this.request(link);
+        var link = util.checkUrlValid(link);
+        var times = util.parseInteger(this.config.get('app.retry.index'),3);
+        var setIndex = bookIndex=>{
+            if(Array.isArray(bookIndex)){
+                fn(bookIndex);
+            }else {
+                fn([]);
+            }
+        };
+        var requestIndex = options=>{
+            var success = options.success.bind(options);
+            options.success = data=>{
+                var result = success(data);
+                if(!result) return setIndex();
+                if(result.url && result.success){
+                    result.request = result;
+                }
+                if(result.request && !result.bookIndexs) {
+                    result.request.headers = {
+                        referer:link.url,
+                        'X-Requested-With':'XMLHttpRequest'
+                    };
+                    return requestIndex(result.request);
+                }
+                if(!result.request && !result.bookIndexs) return setIndex(result);
+                return setIndex(result.bookIndexs);
+            };
+            options.error = error=>{
+                this.debug(error);
+                if (--times <= 0) return setIndex();
+                this.request(options);
+            };
+            return this.request(options);
+        };
+        if (!link) return setIndex();
+        link.success = data=>this.getParsedData(data,link.url).indexPage;
+        requestIndex(link);
         return this;
     }
 
@@ -510,7 +587,7 @@ class Wedge extends EventEmitter{
             try{
                 return JSON.parse(link);
             }catch (e){
-                return {url:link}
+                return {url:link};
             }
         });
         var indexs = [];
@@ -539,24 +616,32 @@ class Wedge extends EventEmitter{
         var SelfSources = {};
         var SelfTitles = {};
         var newIndexs = [];
-        indexs = indexs.map(util.formatLink);
-        indexs = indexs.filter(index=>index.url && !~index.url.indexOf("#") && !~index.url.indexOf("javascript:"));
-        indexs.forEach((item,index)=>item.id = classes.Id(item.id || index).val());
-        indexs = indexs.filter(index=>!Sources[index.url]);
         var titleUnique = this.config.get('book.unique.title');
         var idUnique = this.config.get('book.unique.id');
+        //过滤重复的链接
+        indexs = indexs.map(util.formatLink);
+        indexs = indexs.filter(index=>index.url && !~index.url.indexOf("#") && !~index.url.indexOf("javascript:"));
+        indexs.forEach(index=>{
+            if (index.url in SelfSources) return;
+            SelfSources[index.url] = true;
+            newIndexs.push(index);
+        });
+        //创建ID
+        newIndexs.forEach((item,index)=>item.id = classes.Id(item.id || index).val());
+        //过滤已下载的链接
+        indexs = newIndexs.filter(index=>!Sources[index.url]);
         if (idUnique){
             indexs = indexs.filter(index=>!Ids[index.id]);
         }
         if (titleUnique){
             indexs = indexs.filter(index=>!Titles[index.text]);
         }
+        //过滤Id重复或者标题重复的链接
+        newIndexs = [];
         indexs.forEach(index=>{
-            if (index.url in SelfSources) return;
             if (index.id in SelfIds && idUnique) return;
             if (index.text in SelfTitles && titleUnique) return;
             SelfIds[index.id] = true;
-            SelfSources[index.url] = true;
             SelfTitles[index.text] = true;
             newIndexs.push(index);
         });
@@ -566,56 +651,59 @@ class Wedge extends EventEmitter{
     getChapterContent(link,fn){
         fn = this.next(fn);
         this.debug('getChapterContent');
-        var times = parseInt(this.config.get('app.retry.chapter'));
-        times = isNaN(times) ? 3 : times;
-        link.success = data=>{
-            var parsedData = this.getParsedData(data,link.url);
-            var chapter = parsedData.contentPage && parsedData.contentPage.chapterInfos;
-            if (!chapter) return fn(null);
+        var times = util.parseInteger(this.config.get('app.retry.chapter'),3);
+        var link = util.checkUrlValid(link);
+        if (!link) return fn(null);
+        var setContent = chapter=>{
+            if(!chapter) return fn(null);
+            if(Buffer.isBuffer(chapter)){
+                chapter = decoder.decode(chapter,'gbk');
+            }
+            if(typeof chapter == "string"){
+                chapter = {content:chapter};
+            }
             chapter.deep = link.deep || 0;
             chapter.id = chapter.id || link.id;
             chapter.source = chapter.source || link.url;
             chapter.title = chapter.title || link.text;
             chapter.content = chapter.content || "";
-            return fn(chapter)
-        }
-        link.error = ()=>{
-            if (--times <= 0) return fn([]);
-            this.request(link);
-        }
-        this.request(link);
+            return fn(chapter);
+        };
+        var requestContent = options=>{
+            //console.log(options)
+            var success = options.success.bind(options);
+            options.success = data=>{
+                var result = success(data);
+                if (!result) return setContent();
+                if(result.url && result.success){
+                    result.request = result;
+                }
+                if(result.request && !result.chapterInfos) {
+                    result.request.headers = {
+                        referer:link.url,
+                        'X-Requested-With':'XMLHttpRequest'
+                    };
+                    return requestContent(result.request);
+                }
+                if(!result.request && !result.chapterInfos) return setContent(result);
+                return setContent(result.chapterInfos);
+            };
+            options.error = error=>{
+                this.debug(error);
+                if (--times <= 0) return fn();
+                this.request(options);
+            };
+            return this.request(options);
+        };
+        link.success = data=>this.getParsedData(data,link.url).contentPage;
+        requestContent(link);
         return this;
     }
 
     mergeChapterContent(chapter,fn){
         fn = this.next(fn);
         if (!chapter) return fn(null);
-        if (chapter.ajax){
-            this.debug('ajax...');
-            var options = chapter.ajax;
-            var resolve = options.success;
-            var times = parseInt(this.config.get('app.retry.chapter'));
-            times = isNaN(times) ? 3 : times;
-            options.success = data=>{
-                data = resolve(data);
-                if(typeof data == 'object'){
-                    chapter.ajax = data;
-                    return this.mergeChapterContent(chapter,fn);
-                }
-                if (chapter.content){
-                    chapter.content += "\n";
-                }
-                chapter.content += data;
-                return fn(chapter);
-            }
-            options.error = ()=>{
-                if (--times <= 0) return fn(null);
-                this.request(options);
-            };
-            options.headers = options.headers || {};
-            options.headers["X-Requested-With"] = "XMLHttpRequest";
-            return this.request(options);
-        }
+        var links;
         var mergeContentCMD = [
             this.getChapterContent.bind(this),
             this.mergeChapterContent.bind(this),
@@ -637,7 +725,7 @@ class Wedge extends EventEmitter{
             }
         ];
         if (chapter.nextPages){
-            var links = chapter.nextPages.map(util.formatLink).filter(link=>link.url !== chapter.source);
+            links = chapter.nextPages.map(util.formatLink).filter(link=>link.url !== chapter.source);
             links.forEach(link=>link.id=chapter.id);
             links = this.filterBookIndex(links);
             if (!links.length) return fn(chapter);
@@ -652,7 +740,7 @@ class Wedge extends EventEmitter{
             return this;
         }
         if (chapter.nextPage){
-            var links = [chapter.nextPage].map(util.formatLink).filter(link=>link.url !== chapter.source);
+            links = [chapter.nextPage].map(util.formatLink).filter(link=>link.url !== chapter.source);
             links.forEach(link=>link.id=chapter.id);
             links = this.filterBookIndex(links);
             if (!links.length) return fn(chapter);
@@ -685,7 +773,7 @@ class Wedge extends EventEmitter{
                 fs.writeFile(img.file,data,then);
                 repImg(img);
                 isEmpty = false;
-            }
+            };
             img.error = ()=>{
                 if (--times <= 0){
                     chapter = null;
@@ -695,13 +783,13 @@ class Wedge extends EventEmitter{
                 this.request(img);
             };
             this.request(img);
-        }
+        };
         var final = ()=>{
             isEmpty && fs.rmdirsSync(imgFolder);
             if (!chapter) return fn(null);
             chapter.content = $.html();
             return fn(chapter);
-        }
+        };
         imgs.forEach(img=>img.path = URL.parse(img.url).pathname);
         imgs = imgs.filter(img=>img.path);
         imgs.forEach(img=>img.ext = Path.extname(img.path));
@@ -750,7 +838,7 @@ class Wedge extends EventEmitter{
         links.forEach(link=>link.deep = deepnow);
         links.forEach((link,index)=>link.id = chapter.id + index);
         if (!links.length) return fn(chapter);
-        this.debug(links)
+        this.debug(links);
         this.debug('getDeepChapter');
         new Thread()
         .use(this.getChapter.bind(this))
@@ -818,7 +906,7 @@ class Wedge extends EventEmitter{
         var ebookfile = this.book.getMeta("author") + " - " + this.book.getMeta("title") + "." + this.config.get("ebook.formation");
         this.log("generating ebook >>> " + ebookfile);
         work.on("message",msg=>{
-            if (msg.msg == "success"){
+            if (msg.msg === "success"){
                 this.log("ebook generated successful...");
                 if (this.config.get("ebook.opendirectory") && this.platform.match('win')){
                     this.openDir(options.directory);
@@ -925,11 +1013,13 @@ Wedge.prototype.lib = {
     classes:classes,
     util:util,
     Log:Log
-}
+};
 
 module.exports = Wedge;
 
 util.encodeURI = function (str,charset){
+    if(charset === 'unicode') return str.split('').map(x=>'%u'+x.charCodeAt().toString(16).toUpperCase()).join('');
+    if(charset === 'base64') return new Buffer(str).toString('base64');
     if (!charset) return encodeURIComponent(str);
     var buffer = decoder.encode(str,charset);
     var code = '';
@@ -938,19 +1028,70 @@ util.encodeURI = function (str,charset){
         code += buffer[i].toString(16).toUpperCase();
     }
     return code;
-}
+};
 
 util.decodeURI = function (str,charset){
     if (!charset) return decodeURIComponent(str);
+    if (charset === 'unicode') return str.split('%u').slice(1).map(x=>String.fromCharCode(parseInt(x,16))).join('');
+    if (charset === 'base64') return new Buffer(str,'base64').toString();
     var array = str.split('%').slice(1).map(x=>parseInt(x,16));
     return decoder.decode(new Buffer(array),charset);
-}
+};
+
+util.encode = function(str,charset){
+    if(!charset) return new Buffer(str);
+    if(charset === 'unicode') return str.split('').map(x=>'\\u'+x.charCodeAt().toString(16).toUpperCase()).join('');
+    if(charset === 'base64') return new Buffer(str).toString('base64');
+    if(charset === 'html') return str.split('').map(x=>'&#'+x.charCodeAt().toString() + ';').join('');
+    return decoder.encode(str,charset);
+};
+
+util.decode = function(str,charset){
+    if(charset) return str.toString();
+    if(charset === 'unicode') return str.split('\\u').slice(1).map(x=>String.fromCharCode(parseInt(x,16))).join('');
+    if(charset === 'base64') return new Buffer(str,'base64').toString();
+    if(charset === 'html') return str.replace(/&#(x)?([^&]{1,5});?/ig,function($, $1, $2){
+        return String.fromCharCode(parseInt($2, $1 ? 16 : 10));
+    });
+    return decoder.decode(str,charset);
+};
 
 util.formatLink = function (link){
     if (typeof link === "string"){
-        return {url:link}
+        return {url:link};
     }
     link.url = link.href || link.url || link.src || link.source;
     link.method = (link.method || "GET").toUpperCase();
     return link;
-}
+};
+
+util.parseInteger = function (str,defaut){
+    var times = parseInt(str);
+    if (isNaN(times)) return defaut;
+    return times;
+};
+
+util.checkUrlValid = function (url){
+    var links;
+    if(typeof url === 'string'){
+        if (!url || !url.match('http')) return false;
+        links = url.split('|')
+            .filter(x=>x)
+            .map(link=>{
+                try{
+                    return JSON.parse(link);
+                }catch (e){
+                    return link;
+                }
+            })
+            .map(util.formatLink)
+            .filter(link=>link.url && link.url.indexOf("#")!==0 && !~link.url.indexOf("javascript:"));
+        if (links.length) return links;
+    }else if(Array.isArray(url)){
+        links = url.map(util.formatLink).filter(link=>link.url && link.url.indexOf("#")!==0 && !~link.url.indexOf("javascript:"));
+        if (links.length) return links;
+    }else if (typeof url == 'object'){
+        return util.formatLink(url);
+    }
+    return false;
+};

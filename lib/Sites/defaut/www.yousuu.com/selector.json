@@ -1,11 +1,10 @@
 {
   "infoPage": {
     "match": "/^http:\\/\\/www\\.yousuu\\.com\\/book\\/\\d+$/i.test($.location())",
-    "indexPage": "$.location()",
+    "indexPage": "$.location($('a:contains(开始阅读)').attr('href'))",
     "footer": "!!$('.footer').length",
     "bookInfos": {
       "origin": "$.location()",
-      "source": "$.location()",
       "title": "$('.media').prev().find('span').text()",
       "author": "$('li:contains(作者:)').find('a').text()",
       "classes": "$('#booktag > a.tag').text()",

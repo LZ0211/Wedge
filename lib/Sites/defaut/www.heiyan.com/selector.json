@@ -18,14 +18,11 @@
     "infoPage": "$.location().replace('/chapter','')",
     "footer": "!!$('.footer').length",
     "filter": "$('.isvip').remove()",
-    "bookIndexs": "$('ul.float-list > li > a').map((i,v)=>({href:'http://a.heiyan.com/ajax/chapter/content/' + $(v).attr('href').split('/').pop(),text:$(v).text()})).toArray()"
+    "bookIndexs": "$('ul.float-list > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
-    "match": "true",
+    "match": "/http:\\/\\/www\\.heiyan\\.com\\/book\\/\\d+\\/\\d+/i.test($.location())",
     "footer": "true",
-    "chapterInfos": {
-      "source": "$.location()",
-      "content": "/ajax/i.test($.location()) && JSON.parse($.html()).chapter.htmlContent"
-    }
+    "request": "{url:$.location().replace(/http:\\/\\/www.heiyan.com\\/book\\/\\d+/,'http://a.heiyan.com/ajax/chapter/content'),success:data=>data.chapter.htmlContent}"
   }
 }

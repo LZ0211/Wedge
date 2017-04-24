@@ -19,7 +19,7 @@
     "infoPage": "$.location($('.t h2 a').attr('href'))",
     "footer": "$('footer').length > 0",
     "filter": "$('.ico-vip').parent('li').remove()",
-    "bookIndexs": "$('ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+    "bookIndexs": "$('.list-directory a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
     "match": "/^http:\\/\\/www\\.ycsd\\.cn\\/html\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",

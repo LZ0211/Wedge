@@ -1,7 +1,7 @@
 {
   "infoPage": {
     "match": "!!$('.detail-info').length",
-    "indexPage": "$.location().replace(/\\?.*/g,'').replace('book/info','ajax/book/info')",
+    "indexPage": "$.location()",
     "footer": "$('#footer').length > 0",
     "bookInfos": {
       "origin": "$.location()",
@@ -15,17 +15,14 @@
     }
   },
   "indexPage": {
-    "match": "/ajax\\/book\\/info/i.test($.location())",
-    "infoPage": "$.location().replace('ajax/book/info','book/info')",
-    "footer": "true",
-    "bookIndexs": "this.match($) && JSON.parse($.html()).dir.chapters.filter(v=>!v.lock).map(v=>({href:v.href.replace(/\\/book\\/view\\/(\\w+)\\/(\\w+)/,'http://yuedu.sogou.com/ajax/user/buy/?bkey=$1&ckey=$2'),text:v.name}))"
+    "match": "!!$('.detail-info').length",
+    "indexPage": "$.location()",
+    "footer": "$('#footer').length > 0",
+    "request": "{url:$.location().replace(/\\?.*/g,'').replace('book/info','ajax/book/info'),success:data=>data.dir.chapters.filter(x=>!x.lock).map(x=>({href:$.location(x.href),text:x.name})),headers:{'Referer':$.location(),'X-Requested-With':'XMLHttpRequest'}}"
   },
   "contentPage": {
-    "match": "/ajax\\/user\\/buy/i.test($.location())",
+    "match": "/http:\\/\\/yuedu\\.sogou\\.com\\/book\\/view\\/.*/i.test($.location())",
     "footer": "true",
-    "chapterInfos": {
-      "source": "$.location()",
-      "content": "/user\\/buy/i.test($.location()) && JSON.parse($.html()).detail.content"
-    }
+    "request": "{url:'http://yuedu.sogou.com/ajax/user/buy/?bkey='+$.location().replace('http://yuedu.sogou.com/book/view/','').replace('/','&ckey=')+'&buy=0&auto=0&_=' + (+new Date),success:data=>({content:data.detail.content})}"
   }
 }
