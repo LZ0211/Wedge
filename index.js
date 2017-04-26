@@ -142,7 +142,7 @@ class Wedge extends EventEmitter{
 
     error(msg){
         //this.emit('error',new Error(msg));
-        this.log(new Error(msg));
+        //this.log(new Error(msg));
         return this.end();
     }
 
@@ -153,8 +153,8 @@ class Wedge extends EventEmitter{
         return fn;
     }
 
-    debug(){
-        this.getConfig('app.debug') && this.log.apply(this,arguments);
+    debug(msg){
+        this.getConfig('app.debug') && this.log("["+this.label+"]:"+msg);
         return this;
     }
 
@@ -339,6 +339,7 @@ class Wedge extends EventEmitter{
 
     getParsedData(data,url){
         var site = Sites.search(url);
+        console.log(site)
         var $ = Parser(data,url,site.charset);
         var cookies = querystring.parse(request.cookies.getCookie(url),'; ');
         $.getCookie = name=>(cookies[name]||'');
@@ -448,7 +449,6 @@ class Wedge extends EventEmitter{
                     }
                     if (!like(meta.title,title)) return nextFn();
                     if (!like(meta.author,author)) return nextFn();
-                    this.log(meta.source);
                     delete meta.source;
                     this.book.setMeta(meta);
                     return fn();
@@ -456,7 +456,7 @@ class Wedge extends EventEmitter{
             })
             .end(fn)
             .log(this.log)
-            .label('fuzzysearchBook')
+            .label('searchBookMeta')
             .queue(links.map(link=>link[0]))
             .start();
         });
@@ -918,7 +918,10 @@ class Wedge extends EventEmitter{
                 this.log("ebook generation failed...");
             }
         });
-        work.on("exit",fn);
+        work.on("exit",()=>{
+            work = null;
+            return fn();
+        });
         work.on("err",this.log);
         return this;
     }

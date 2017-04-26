@@ -7,7 +7,7 @@
     },
     {
       "name": "testRule",
-      "activated": false,
+      "activated": true,
       "func": "./plugins/testRule"
     },
     {
