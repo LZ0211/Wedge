@@ -339,7 +339,7 @@ class Wedge extends EventEmitter{
 
     getParsedData(data,url){
         var site = Sites.search(url);
-        console.log(site)
+        //console.log(site)
         var $ = Parser(data,url,site.charset);
         var cookies = querystring.parse(request.cookies.getCookie(url),'; ');
         $.getCookie = name=>(cookies[name]||'');
@@ -375,7 +375,7 @@ class Wedge extends EventEmitter{
             return fn();
         };
         var requestInfo = options=>{
-            var success = options.success.bind(options);
+            var success = (options.success || data=>data).bind(options);
             options.success = data=>{
                 var result = success(data);
                 if (!result) return;
@@ -383,7 +383,7 @@ class Wedge extends EventEmitter{
                     result.request = result;
                 }
                 if(result.request && !result.bookInfos) {
-                    result.request.headers = {
+                    result.request.headers = result.request.headers || {
                         referer:link.url,
                         'X-Requested-With':'XMLHttpRequest'
                     };
@@ -548,7 +548,7 @@ class Wedge extends EventEmitter{
             }
         };
         var requestIndex = options=>{
-            var success = options.success.bind(options);
+            var success = (options.success || data=>data).bind(options);
             options.success = data=>{
                 var result = success(data);
                 if(!result) return setIndex();
@@ -556,7 +556,7 @@ class Wedge extends EventEmitter{
                     result.request = result;
                 }
                 if(result.request && !result.bookIndexs) {
-                    result.request.headers = {
+                    result.request.headers = result.request.headers || {
                         referer:link.url,
                         'X-Requested-With':'XMLHttpRequest'
                     };
@@ -671,7 +671,7 @@ class Wedge extends EventEmitter{
         };
         var requestContent = options=>{
             //console.log(options)
-            var success = options.success.bind(options);
+            var success = (options.success || data=>data).bind(options);
             options.success = data=>{
                 var result = success(data);
                 if (!result) return setContent();
@@ -679,7 +679,7 @@ class Wedge extends EventEmitter{
                     result.request = result;
                 }
                 if(result.request && !result.chapterInfos) {
-                    result.request.headers = {
+                    result.request.headers = result.request.headers || {
                         referer:link.url,
                         'X-Requested-With':'XMLHttpRequest'
                     };
