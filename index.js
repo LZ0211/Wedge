@@ -375,7 +375,7 @@ class Wedge extends EventEmitter{
             return fn();
         };
         var requestInfo = options=>{
-            var success = (options.success || data=>data).bind(options);
+            var success = (options.success || (data=>data)).bind(options);
             options.success = data=>{
                 var result = success(data);
                 if (!result) return;
@@ -548,7 +548,7 @@ class Wedge extends EventEmitter{
             }
         };
         var requestIndex = options=>{
-            var success = (options.success || data=>data).bind(options);
+            var success = (options.success || (data=>data)).bind(options);
             options.success = data=>{
                 var result = success(data);
                 if(!result) return setIndex();
@@ -671,7 +671,7 @@ class Wedge extends EventEmitter{
         };
         var requestContent = options=>{
             //console.log(options)
-            var success = (options.success || data=>data).bind(options);
+            var success = (options.success || (data=>data)).bind(options);
             options.success = data=>{
                 var result = success(data);
                 if (!result) return setContent();
