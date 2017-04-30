@@ -5,8 +5,8 @@
     "footer": null,
     "bookInfos": {
       "source": null,
-      "title": null,
-      "author": null,
+      "title": "",
+      "author": "本书作者：",
       "classes": "本书类别：",
       "isend": null,
       "cover": null,
@@ -26,7 +26,7 @@
     "chapterInfos": {
       "title": null,
       "source": null,
-      "content": "\\[记住网址.*?三五中文网\\]"
+      "content": ["记住网址.*?三五中文网","手机用户请到m.555zw.com阅读。"]
     }
   }
 }
