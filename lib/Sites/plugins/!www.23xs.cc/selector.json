@@ -10,7 +10,7 @@
       "classes": "$('th:contains(类别)').next('td').text()",
       "isend": "$('th:contains(状态)').next('td').text()",
       "cover": "$.location($('a.hst img').attr('src'))",
-      "brief": " $('p:contains(内容简介)').nextAll('p').html()"
+      "brief": "$('#sidename').prev('p').html()"
     }
   },
   "indexPage": {

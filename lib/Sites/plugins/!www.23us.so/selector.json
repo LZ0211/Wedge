@@ -10,7 +10,7 @@
       "classes": "$('th:contains(小说类别)').next('td').text()",
       "isend": "$('th:contains(小说状态)').next('td').text()",
       "cover": "$.location($('a.hst img').attr('src'))",
-      "brief": " $('#sidename').prev('p').html()"
+      "brief": "$('#sidename').prev('p').html()"
     }
   },
   "indexPage": {

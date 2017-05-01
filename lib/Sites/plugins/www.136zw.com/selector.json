@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/\\/book\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$('strong > a').attr('href')",
+    "footer": "$('#footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('h1').text().replace(' 全文阅读','')",
+      "author": "$('#author > a').attr('href').replace('/modules/article/authorarticle.php?author=','')",
+      "classes": "$('#count > span:nth-child(1)').text()",
+      "isend": false,
+      "cover": "$('#bookimg > img').attr('src')",
+      "brief": "$('#bookintro > p').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$('div.tabstit > a:nth-child(4)').attr('href')",
+    "footer": "$('#footer').length > 0",
+    "bookIndexs": "$('#readerlist').find('ul > li > a').map((i,v)=>({href:'http://www.136zw.com'+$(v).attr('href'),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "request": {
+      "url": "'http://www.136zw.com/modules/article/show.php'",
+      "method": "'POST'",
+      "data": "$('#chapterContent script').text().replace('showContent(\"','aid=').replace('\");','&r='+Math.random()).replace('\", \"','&cid=')",
+      "success": "data=>$.decode(data,'gbk')"
+    }
+  }
+}

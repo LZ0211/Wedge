@@ -345,6 +345,7 @@ class Wedge extends EventEmitter{
         $.getCookie = name=>(cookies[name]||'');
         $.encode = util.encode;
         $.decode = util.decode;
+        $.replace = util.replace;
         var filter = util.object.filter;
         var map = util.object.map;
         var rule = filter(site.selector,(k,v)=>v.match($) && (v.footer($) || /<\/html>/i.test($.raw)));
