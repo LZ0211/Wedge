@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/\\/info\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('a.btnlink').attr('href'))",
+    "footer": "$('.m_foot').length > 0",
+    "filter": "$('.jianjie div').remove()",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.grid td').eq(1).text().trim()",
+      "author": "$('.grid td').eq(4).text().trim()",
+      "classes": "$('.grid td').eq(3).text()",
+      "isend": "$('.grid td').eq(8).text()",
+      "cover": "$.location($('.grid img').attr('src'))",
+      "brief": "$('.jianjie').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/files\\/article\\/html\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location($('a:contains(返回书页)').attr('href'))",
+    "footer": "$('#copyright').length > 0",
+    "bookIndexs": "$('dd > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/files\\/article\\/html\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#annote').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#chapter_content').html()"
+    }
+  }
+}

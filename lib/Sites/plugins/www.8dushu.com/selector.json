@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/\\/xiaoshuo\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('#footer').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.rt h1').text()",
+      "author": "$('.msg em').eq(0).text()",
+      "classes": "$('.place a').eq(1).text()",
+      "isend": "$('.msg em').eq(1).text()",
+      "cover": "$.location($('.lf img').attr('src'))",
+      "brief": "$('.intro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/xiaoshuo\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('#footer').length > 0",
+    "bookIndexs": "$('.mulu a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/xiaoshuo\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.yd_text2').html()"
+    }
+  }
+}

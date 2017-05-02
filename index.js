@@ -131,7 +131,7 @@ class Wedge extends EventEmitter{
     end(){
         var fn = arguments[0];
         if (undefined == fn){
-            this.log("end...");
+            this.debug("end...");
             this.emit("end");
         }
         if (typeof fn === "function"){
@@ -142,7 +142,7 @@ class Wedge extends EventEmitter{
 
     error(msg){
         //this.emit('error',new Error(msg));
-        //this.log(new Error(msg));
+        this.debug(new Error(msg));
         return this.end();
     }
 
@@ -291,7 +291,7 @@ class Wedge extends EventEmitter{
         .queue(Searcher)
         .setThread(3)
         .end(endSearch)
-        .log(this.log)
+        .log(this.debug.bind(this))
         .label('fuzzysearchBook')
         .start();
         return this;
@@ -430,7 +430,7 @@ class Wedge extends EventEmitter{
         if(!title) return this.end();
         var except = new RegExp(Searcher.map(x=>x.name.replace(/\./g,'\\.')).join('|'),'gi');
         if(source.match(except)) return fn();
-        this.debug('searchBookMeta');
+        this.debug('updateBookMeta');
         function like(s1,s2){
             var reFilter = /[:：？\?,；，,\.。!！_—\-]/g;
             s1 = s1.replace(reFilter,'');
@@ -443,20 +443,23 @@ class Wedge extends EventEmitter{
             new Thread()
             .use((link,nextFn)=>{
                 var app = this.spawn();
+                app.debug(link);
+                app.end(nextFn);
                 app.getBookMeta(link,()=>{
                     var meta = app.book.metaValue();
                     for (var x in meta){
-                        if (meta[x] === '') return nextFn();
+                        if (meta[x] === '') return app.end();
                     }
-                    if (!like(meta.title,title)) return nextFn();
-                    if (!like(meta.author,author)) return nextFn();
+                    if (!like(meta.title,title)) return app.end();
+                    if (!like(meta.author,author)) return app.end();
                     delete meta.source;
                     this.book.setMeta(meta);
+                    app.debug("updateMeta");
                     return fn();
-                }).end(nextFn);
+                });
             })
             .end(fn)
-            .log(this.log)
+            .log(this.debug.bind(this))
             .label('searchBookMeta')
             .queue(links.map(link=>link[0]))
             .start();
@@ -600,7 +603,7 @@ class Wedge extends EventEmitter{
         }))
         .end(()=>fn(this.filterBookIndex(indexs)))
         .queue(links)
-        .log(this.log)
+        .log(this.debug.bind(this))
         .label('getBookIndexs')
         .setThread(this.config.get('thread.index'))
         .start();
@@ -735,7 +738,7 @@ class Wedge extends EventEmitter{
             .use((link,next)=>Thread.series(mergeContentCMD.concat([next]))(link))
             .end(()=>fn(chapter))
             .queue(links)
-            .log(this.log)
+            .log(this.debug.bind(this))
             .label('mergeChapters')
             .start();
             return this;
@@ -818,7 +821,7 @@ class Wedge extends EventEmitter{
             .setThread(this.config.get('thread.image'))
             .queue(noFiles)
             .label('getChapterImages')
-            .log(this.log)
+            .log(this.debug.bind(this))
             .start();
         });
         return this;
@@ -845,7 +848,7 @@ class Wedge extends EventEmitter{
         .use(this.getChapter.bind(this))
         .end(()=>fn(chapter))
         .queue(links)
-        .log(this.log)
+        .log(this.debug.bind(this))
         .label('getDeepChapter')
         .start();
         return this;
@@ -884,7 +887,7 @@ class Wedge extends EventEmitter{
         .use(this.getChapter.bind(this))
         .end(fn)
         .queue(links)
-        .log(this.log)
+        .log(this.debug.bind(this))
         .setThread(this.config.get('thread.execute'))
         .label('getChapters')
         .start();
@@ -965,7 +968,7 @@ class Wedge extends EventEmitter{
         .use((url,next)=>this.spawn().newBook(url).end(next))
         .end(this.next())
         .queue(urls)
-        .log(this.log)
+        .log(this.debug.bind(this))
         .label('newBooks')
         .setThread(thread || this.config.get('thread.new'))
         .start();
@@ -977,7 +980,7 @@ class Wedge extends EventEmitter{
         .use((dir,next)=>this.spawn().updateBook(dir).end(next))
         .end(this.next())
         .queue(dirs)
-        .log(this.log)
+        .log(this.debug.bind(this))
         .label('updateBooks')
         .setThread(thread || this.config.get('thread.update'))
         .start();
@@ -989,7 +992,7 @@ class Wedge extends EventEmitter{
         .use((dir,next)=>this.spawn().refreshBook(dir).end(next))
         .end(this.next())
         .queue(dirs)
-        .log(this.log)
+        .log(this.debug.bind(this))
         .label('refreshBooks')
         .setThread(thread || this.config.get('thread.refresh'))
         .start();

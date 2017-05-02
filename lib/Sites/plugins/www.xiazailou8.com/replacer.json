@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": null,
+      "author": "作&nbsp;&nbsp;&nbsp; 者：",
+      "classes": "类&nbsp;&nbsp;&nbsp; 别：",
+      "isend": null,
+      "cover": null,
+      "brief": ["下载楼\\(.*?\\)为您奉献.*","xiazailou.la","--"]
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": null,
+      "source": null,
+      "content": ["【手机看小说.*】","\\.xiazailou\\.[^<>]*","\\.lai\\.[^<>]*","\\(?下\\.载\\.楼[^<>]*"]
+    }
+  }
+}

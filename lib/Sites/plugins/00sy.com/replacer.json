@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": "作者：.*",
+      "author": "作者：",
+      "classes": "分类：",
+      "isend": null,
+      "cover": null,
+      "brief": ["[\\s\\S]+?简介：<br>","<br>.*?的小说<strong>[\\s\\S]*"]
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": null,
+      "source": null,
+      "content": null
+    }
+  }
+}
