@@ -1,0 +1,29 @@
+{
+  "infoPage": {
+    "match": "/\\/\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.g_footer').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.introMid h1').text().trim()",
+      "author": "$('div.phr > p > span').eq(0).text().trim()",
+      "classes": "$('div.phr > p > span').eq(1).text()",
+      "isend": "$('p:contains(最新章节)').text()",
+      "cover": "$.location($('.thumbnail img').attr('src'))",
+      "brief": "$('div.intro-detail').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.g_footer').length > 0",
+    "bookIndexs": "$('.cate-List a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray().reverse()"
+  },
+  "contentPage": {
+    "match": "/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "chapterInfos": {
+      "content": "$('.articleDiv').html()"
+    }
+  }
+}

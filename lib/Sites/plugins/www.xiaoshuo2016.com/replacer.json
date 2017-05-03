@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": null,
+      "author": null,
+      "classes": null,
+      "isend": null,
+      "cover": null,
+      "brief": null,
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": null,
+      "source": null,
+      "content": ["如您已阅读到此章节[^<>]*","您阅读的内容来源于[^<>]*",{"匕匕":"比"},"ｂｉｑｉ．ｍｅ","()","（比奇中文网首发www.biqi.me）","比·奇·小·说·网·首·发○?","http://www.biqi.me比奇中文网永久网址，请牢记！","www.biqi.me比奇中文网一直.*?好友分享！","[\\[｛【].*?(比奇中文|xinbiqi).*?[\\]｝】]","新比奇中文网www.xinbiqi.com ."]
+    }
+  }
+}

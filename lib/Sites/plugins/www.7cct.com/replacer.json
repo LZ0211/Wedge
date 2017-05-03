@@ -5,12 +5,12 @@
     "footer": null,
     "bookInfos": {
       "source": null,
-      "title": ["作者.*"],
-      "author": ["作者:"],
-      "classes": ["小说分类："],
-      "isend": ["小说状态："],
+      "title": null,
+      "author": null,
+      "classes": null,
+      "isend": null,
       "cover": null,
-      "brief": ["【】","&nbsp;"],
+      "brief": null,
       "keywords": null
     }
   },
@@ -26,7 +26,7 @@
     "chapterInfos": {
       "title": null,
       "source": null,
-      "content": ["本书最新免费章节请访问。","请使用访问本站。","请记住本站的网址：。"]
+      "content": [" ...&nbsp;&nbsp; ［本章未完，请点击下一页继续阅读！］","［本章结束］"]
     }
   }
 }

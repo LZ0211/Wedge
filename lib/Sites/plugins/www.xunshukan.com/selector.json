@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/Novel.Asp\\?id=\\d+$/i.test($.location())",
+    "indexPage": "$.location($('.searchbtn03').attr('href'))",
+    "footer": "$('#footer').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.h1title').text().trim()",
+      "author": "$('.h1title').next().find('a').text()",
+      "classes": "$('#weizhi a').eq(1).text()",
+      "isend": "!$('.lzico').length",
+      "cover": "$.location($('.sy_nr02_left img').attr('src'))",
+      "brief": "$('#articledesc').html()"
+    }
+  },
+  "indexPage": {
+    "match": "!!$('.list_box').length",
+    "infoPage": "$.location($('#weizhi a').eq(-1).attr('href'))",
+    "footer": "$('#footer').length > 0",
+    "bookIndexs": "$('.list_box a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/Contents.Asp\\?ID=\\d+/i.test($.location())",
+    "footer": "$('#footer').length > 0",
+    "filter": "$('.novel_content').find('a,script').remove()",
+    "chapterInfos": {
+      "content": "$('.novel_content').html()"
+    }
+  }
+}
