@@ -220,9 +220,14 @@
     "selector": "p.tit a"
   },
   {
-    "url":"http://www.8kana.com/www/search",
+    "url": "http://www.8kana.com/www/search",
     "query": "keyword=%title%&type=1",
     "selector": ".results_del_R_book a",
     "name": ".8kana.com"
+  },
+  {
+    "url": "http://so.msxf.net/book/search/",
+    "query": "q=%title%&t=name",
+    "name": ".msxf.net"
   }
 ]

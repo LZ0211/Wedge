@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/\\/files\\/article\\/info\\/\\d+\\/\\d+\\.htm$/i.test($.location())",
+    "indexPage": "$.location($('a.btnlink').attr('href'))",
+    "footer": "$('.m_foot').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('h1').text().trim()",
+      "author": "$('td:contains(作&nbsp;&nbsp;&nbsp; 者：)').text().trim()",
+      "classes": "$('td:contains(类&nbsp;&nbsp;&nbsp; 别：)').text().trim()",
+      "isend": "$('td:contains(文章状态)').text()",
+      "cover": "$.location($('td > img').attr('src'))",
+      "brief": "$('.hottext').parent('td').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/files\\/article\\/html\\/\\d+\\/\\d+\\/index\\.html$/i.test($.location())",
+    "infoPage": "$.location($('#pagelogo a').eq(1).attr('href'))",
+    "footer": "$('#bottom').length > 0",
+    "bookIndexs": "$('ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/files\\/article\\/html\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#footlink').length > 0",
+    "filter": "$('.copy').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content1').html()"
+    }
+  }
+}

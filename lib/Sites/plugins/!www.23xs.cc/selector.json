@@ -14,7 +14,7 @@
     }
   },
   "indexPage": {
-    "match": "!!$('.tags').length",
+    "match": "!!$('.tags').length || $('td.L').length",
     "infoPage": "$.location($('.bdsub > dl > dt > a').last().attr('href'))",
     "footer": "!!$('.tags').length",
     "filter": "$('td:contains(更新重要通告)').remove()",

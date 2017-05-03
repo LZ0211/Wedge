@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/\\/\\w+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('.chapterlist > li > span.s > a').attr('href'))",
+    "footer": "$('footer').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.header h1').eq(0).text()",
+      "author": "$('.novelinfo li a').eq(0).text().trim()",
+      "classes": "$('section > nav > ul.clearfix > li > a').eq(1).text().trim()",
+      "isend": "$('.novelinfo').text()",
+      "cover": "$.location($('.novelinfo-r img').attr('src'))",
+      "brief": "$('.novelintro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/dir\\/\\d+\\/\\d+/i.test($.location())",
+    "infoPage": "$.location($('.btn.btn-info').attr('href'))",
+    "footer": "$('footer').length > 0",
+    "bookIndexs": "$('.dirlist a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/\\d+\\/ky\\d+\\.html/i.test($.location())",
+    "footer": "true",
+    "request": {
+      "url": "'http://www.booksky.cc/novelsearch/chapter/transcode.html'",
+      "method": "'POST'",
+      "data": "$('script').eq(-1).text().replace(/[\\s\\S]*?transcode.html',\\{/i,'').replace(/'\\},function\\(res\\)[\\s\\S]*/i,'').replace(/:'/g,'=').replace(/',/,'&')",
+      "success": "data=>data.info"
+    }
+  }
+}

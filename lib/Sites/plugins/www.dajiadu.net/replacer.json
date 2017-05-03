@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": null,
+      "author": "[\\s\\S]*作&nbsp;&nbsp;&nbsp; 者：",
+      "classes": "[\\s\\S]*类&nbsp;&nbsp;&nbsp; 别：",
+      "isend": null,
+      "cover": null,
+      "brief": "[\\s\\S]*内容简介："
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": null,
+      "source": null,
+      "content": null
+    }
+  }
+}

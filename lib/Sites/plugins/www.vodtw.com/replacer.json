@@ -5,9 +5,9 @@
     "footer": null,
     "bookInfos": {
       "source": null,
-      "title": null,
-      "author": "本书作者:",
-      "classes": "作品类别:",
+      "title": "文 \\/ .*",
+      "author": ".*文 \\/ ",
+      "classes": null,
       "isend": null,
       "cover": null,
       "brief": null,
@@ -26,7 +26,7 @@
     "chapterInfos": {
       "title": null,
       "source": null,
-      "content": "（龙腾小说网.*保存收藏.*"
+      "content": "本书来自.*"
     }
   }
 }

@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/\\/biquge\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('h1').text().trim()",
+      "author": "$('h3').text().trim()",
+      "classes": "$('.info p').eq(1).text()",
+      "isend": "$('.info').text()",
+      "cover": "$.location($('.img > img').attr('src'))",
+      "brief": "$('#intro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/biquge\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('.article_texttitleb > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/biquge\\/\\d+\\/\\d+\\/\\S+\\.html$/i.test($.location())",
+    "footer": "$('.footers').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#book_text').html()"
+    }
+  }
+}
