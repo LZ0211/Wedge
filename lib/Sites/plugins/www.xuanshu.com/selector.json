@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/\\/book\\/\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('.info_des h1').text().trim()",
+      "author": "$('.info_des dl').eq(0).text().trim()",
+      "classes": "$('#info a').eq(1).text()",
+      "isend": "$('.pc_list').text()",
+      "cover": "$.location($('.tupian img').attr('src'))",
+      "brief": "$('.intro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/book\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('.pc_list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "chapterInfos": {
+      "title": "$('.txt_cont h1').text()",
+      "source": "$.location()",
+      "content": "$('#content1').html()"
+    }
+  }
+}

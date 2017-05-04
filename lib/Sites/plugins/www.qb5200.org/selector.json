@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/\\/book\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('a.btnlink').attr('href'))",
+    "footer": "$('.m_foot').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "title": "$('#content > table > tr:nth-child(1) > td > table > tr:nth-child(1) > td > table > tr > td:nth-child(1) > span').text().trim()",
+      "author": "$('#content > table > tr:nth-child(1) > td > table > tr:nth-child(2) > td:nth-child(2)').text().trim()",
+      "classes": "$('#content > table > tr:nth-child(1) > td > table > tr:nth-child(2) > td:nth-child(1)').text()",
+      "isend": "$('#content > table > tr:nth-child(1) > td > table > tr:nth-child(3) > td:nth-child(2)').text()",
+      "cover": "$.location($('#content > table > tr:nth-child(5) > td > table > tr > td:nth-child(2) > a:nth-child(1) > img').attr('src'))",
+      "brief": "$('#content > table > tr:nth-child(5) > td > table > tr > td:nth-child(2)').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/xiaoshuo\\/\\d+\\/\\d+\\/$/i.test($.location())",
+    "infoPage": "$.location($('#linkleft a').eq(-1).attr('href'))",
+    "footer": "$('#mb3').length > 0",
+    "bookIndexs": "$('td a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#bottom').length > 0",
+    "filter": "$('#content a').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

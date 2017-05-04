@@ -5,7 +5,7 @@ module.exports = function (){
             success:data=>{
                 var $ = this.Parser(data,url);
                 var compile = code=>new Function('$','return ('+code+')');
-                function sandBox(str){
+                var sandBox = str=>{
                     var func = compile(str);
                     try{
                         console.log(func($));
