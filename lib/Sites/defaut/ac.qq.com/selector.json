@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/\\/Comic\\/ComicInfo\\/id\\/\\d+/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.mod-footer-info').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('h2.works-intro-title').text().trim()",
+      "author": "$('.works-author-name').text().trim()",
+      "classes": "$('.tags-show a').text()",
+      "isend": "$('.works-intro-status').text()",
+      "cover": "$.location($('.works-cover img').attr('src'))",
+      "brief": "$('.works-intro-short').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/Comic\\/ComicInfo\\/id\\/\\d+/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.mod-footer-info').length > 0",
+    "filter": "$('.ui-icon-pay').prev('a').remove()",
+    "bookIndexs": "$('.works-chapter-list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/ComicView\\/index\\/id\\/\\d+\\/cid\\/\\d+/i.test($.location())",
+    "footer": "true",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "JSON.parse(new Buffer($.html().match(/var DATA        = '(.*)?',/)[1].slice(1),'base64').toString()).picture.map(x=>'<img src=\"'+x.url+'\">').join('\\n')"
+    }
+  }
+}

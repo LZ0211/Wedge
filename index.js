@@ -769,7 +769,8 @@ class Wedge extends EventEmitter{
         var ChapterId = classes.Id(chapter.id).val();
         var imgFolder = Path.join(this.bookdir,ChapterId);
         var isEmpty = true;
-        var isImgFile = ext=>/^\.(jpg|png|gif|png|tif|webp|bmp|tga|ppm|pgm|jpeg|pbm|pcx|jpm|jng|ico)$/gi.test(ext);
+        var imgExts = new RegExp("^("+(this.config.get("book.imageExts")||(['','.jpg','.png','.gif','.png','.tif','.webp','.bmp','.tga','.ppm','.pgm','.jpeg','.pbm','.pcx','.jpm','.jng','.ico'])).join("|")+")$","i");
+        var isImgFile = ext=>imgExts.test(ext);
         var getImgFile = (img,then)=>{
             var times = parseInt(this.config.get('app.retry.image'));
             times = isNaN(times) ? 3 : times;
@@ -799,6 +800,7 @@ class Wedge extends EventEmitter{
         imgs.forEach(img=>img.ext = Path.extname(img.path));
         imgs = imgs.filter(img=>isImgFile(img.ext));
         imgs.forEach((img,index)=>{
+            img.ext = img.ext || ".jpeg";
             img.id = classes.Id(index).val();
             img.name = img.id + img.ext;
             img.src = ChapterId + '/' + img.name;
