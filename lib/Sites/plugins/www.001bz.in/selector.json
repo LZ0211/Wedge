@@ -34,7 +34,8 @@
     "chapterInfos": {
       "title": "$('.box_con h2').text()",
       "source": "$.location()",
-      "content": "$('div.box_box').html() || $('.page-content').html()"
+      "content": "$('div.box_box').html() || $('.page-content').html()",
+      "nextPage": "$.location($('a.curr').next().attr('href'))"
     }
   }
 }

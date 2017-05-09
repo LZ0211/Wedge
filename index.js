@@ -1076,8 +1076,8 @@ util.formatLink = function (link){
 
 util.parseInteger = function (str,defaut){
     var times = parseInt(str);
-    if (isNaN(times)) return defaut;
-    return times;
+    if(times == str) return times;
+    return defaut;
 };
 
 util.checkUrlValid = function (url){

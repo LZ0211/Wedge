@@ -22,6 +22,13 @@ module.exports = function (){
             this.lib.fs.writeFile("Quests.txt",JSON.stringify(Quests));
             this.newBooks(Quests);
         }
-        this.Thread().use(getLinks).end(final).queue(urls).setThread(10).start();
+        this.Thread()
+        .use(getLinks)
+        .end(final)
+        .queue(urls)
+        .setThread(this.config.get('thread.deepQuest'))
+        .log(this.debug.bind(this))
+        .label("deepQuest")
+        .start();
     }
 }
