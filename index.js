@@ -396,7 +396,7 @@ class Wedge extends EventEmitter{
             options.error = error=>{
                 this.debug(error);
                 if (--times <= 0) return this.end();
-                this.request(options);
+                setTimeout(()=>this.request(options),1000*5);
             };
             return this.request(options);
         };
@@ -572,7 +572,7 @@ class Wedge extends EventEmitter{
             options.error = error=>{
                 this.debug(error);
                 if (--times <= 0) return setIndex();
-                this.request(options);
+                setTimeout(()=>this.request(options),1000*5);
             };
             return this.request(options);
         };
@@ -695,7 +695,7 @@ class Wedge extends EventEmitter{
             options.error = error=>{
                 this.debug(error);
                 if (--times <= 0) return fn();
-                this.request(options);
+                setTimeout(()=>this.request(options),1000*5);
             };
             return this.request(options);
         };
@@ -965,6 +965,27 @@ class Wedge extends EventEmitter{
         return this;
     }
 
+    ebook(dir){
+        var activated = this.config.get('ebook.activated');
+        this.config.set('ebook.activated',true);
+        this.end(()=>this.config.set('ebook.activated',activated));
+        this.CMD('loadBook > generateEbook > end')(dir);
+        return this;
+    }
+
+    ebooks(dirs,thread){
+        new Thread()
+        .use((dir,next)=>this.spawn().ebook(dir).end(next))
+        .end(this.next())
+        .queue(dirs)
+        .log(this.debug.bind(this))
+        .label('convertEbooks')
+        .interval(1000)
+        .setThread(thread || this.config.get('thread.update'))
+        .start();
+        return this;
+    }
+
     newBooks(urls,thread){
         new Thread()
         .use((url,next)=>this.spawn().newBook(url).end(next))
@@ -972,6 +993,7 @@ class Wedge extends EventEmitter{
         .queue(urls)
         .log(this.debug.bind(this))
         .label('newBooks')
+        .interval(3000)
         .setThread(thread || this.config.get('thread.new'))
         .start();
         return this;
@@ -984,6 +1006,7 @@ class Wedge extends EventEmitter{
         .queue(dirs)
         .log(this.debug.bind(this))
         .label('updateBooks')
+        .interval(1000)
         .setThread(thread || this.config.get('thread.update'))
         .start();
         return this;
@@ -996,6 +1019,7 @@ class Wedge extends EventEmitter{
         .queue(dirs)
         .log(this.debug.bind(this))
         .label('refreshBooks')
+        .interval(1000)
         .setThread(thread || this.config.get('thread.refresh'))
         .start();
         return this;
@@ -1075,8 +1099,9 @@ util.formatLink = function (link){
 };
 
 util.parseInteger = function (str,defaut){
+    if(str == Infinity || str == -Infinity) return Infinity;
     var times = parseInt(str);
-    if(times == str) return times;
+    if(!isNaN(times)) return times;
     return defaut;
 };
 
