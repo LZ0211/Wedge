@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/shu8.cc\\/xs\\/\\d+\\/\\d+/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('#footer').length > 0",
+    "bookInfos": {
+      "source": "$.location()",
+      "origin": "$.location()",
+      "title": "$('meta[property=\"og:novel:book_name\"]').attr('content')",
+      "author": "$('meta[property=\"og:novel:author\"]').attr('content')",
+      "classes": "$('meta[property=\"og:novel:category\"]').attr('content')",
+      "isend": "$('meta[property=\"og:novel:status\"]').attr('content')",
+      "cover": "$('meta[property=\"og:image\"]').attr('content')",
+      "brief": "$('.bookinfo_intro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/shu8.cc\\/xs\\/\\d+\\/\\d+/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('#footer').length > 0",
+    "bookIndexs": "$('div.book_list').eq(1).find('a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/shu8.cc\\/xs\\/\\d+\\/\\d+\\/\\d+.html/i.test($.location())",
+    "footer": "$('#footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#shu8id').html()"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/www.22mt.in\\/\\w+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('#backToTop').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('meta[property=\"og:novel:book_name\"]').attr('content')",
+      "author": "$('meta[property=\"og:novel:author\"]').attr('content')",
+      "classes": "$('meta[property=\"og:novel:category\"]').attr('content')",
+      "isend": "$('meta[property=\"og:novel:status\"]').attr('content')",
+      "cover": "$('meta[property=\"og:image\"]').attr('content')",
+      "brief": "$('meta[property=\"og:description\"]').attr('content')"
+    }
+  },
+  "indexPage": {
+    "match": "/www.22mt.in\\/\\w+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('#backToTop').length > 0",
+    "bookIndexs": "$('.booklist a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.foot').length > 0",
+    "filter": "$('#chapterContent script').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#chapterContent').html()"
+    }
+  }
+}
