@@ -26,7 +26,7 @@
     "footer": "true",
     "chapterInfos": {
       "source": "$.location()",
-      "content": "unescape($('script').eq(-2).text().replace(/[\\s\\S]*unescape\\(\"(.*)?\"\\)\\);[\\s\\S]*/,'$1'))"
+      "content": "$('#partContent').html()"
     }
   }
 }
