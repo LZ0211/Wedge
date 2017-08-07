@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/\\/files\\/article\\/info\\/\\d+\\/\\d+\\.htm$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(点击阅读)').attr('href'))",
+    "footer": "$('.m_foot').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('#content > table > tr:nth-child(1) > td > table > tr:nth-child(1) > td > table > tr > td:nth-child(1) > span').text().trim()",
+      "author": "$('#content > table > tr:nth-child(1) > td > table > tr:nth-child(2) > td:nth-child(2)').text().trim()",
+      "classes": "$('#content > table > tr:nth-child(1) > td > table > tr:nth-child(2) > td:nth-child(1)').text().trim()",
+      "isend": "$('#content > table > tr:nth-child(1) > td > table > tr:nth-child(3) > td:nth-child(2)').text()",
+      "cover": "$.location($('#content > table > tr:nth-child(5) > td > table > tr > td:nth-child(2) > a:nth-child(1) > img').attr('src'))",
+      "brief": "$('#content > table > tr:nth-child(5) > td > table > tr > td:nth-child(2)').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/files\\/article\\/html\\/\\d+\\/\\d+\\/index\\.html$/i.test($.location())",
+    "infoPage": "$.location($('a:contains(返回本书简介)').attr('href'))",
+    "footer": "$('#foot').length > 0",
+    "bookIndexs": "$('.uclist a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/files\\/article\\/html\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#foot').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}
