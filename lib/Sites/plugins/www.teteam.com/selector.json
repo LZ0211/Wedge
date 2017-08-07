@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/txt\\d+\\.shtml$/i.test($.location())",
+    "indexPage": "$.location($('a.button.read').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.status h1').text().trim()",
+      "author": "$('p.author a').text().trim()",
+      "classes": "$('p.author').next().find('a').text()",
+      "isend": "$('.serial').text()",
+      "cover": "$.location($('.imgbox img').attr('src'))",
+      "brief": "$('div.jianjie').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/xiaoshuo\\d+\\.shtml$/i.test($.location())",
+    "infoPage": "$.location($('a:contains(返回书页)').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('.mulu_list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/modules\\/article\\/reader.php/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#htmlContent').html()"
+    }
+  }
+}

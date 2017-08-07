@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www.xbiquge520.com\\/book_\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(查看目录)').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('meta[property=\"og:book_name\"]').attr('content')",
+      "author": "$('meta[property=\"og:author\"]').attr('content')",
+      "classes": "$('meta[property=\"og:category\"]').attr('content')",
+      "isend": "$('meta[property=\"og:status\"]').attr('content')",
+      "cover": "$('meta[property=\"og:image\"]').attr('content')",
+      "brief": "$('.panel-body').eq(0).html()"
+    }
+  },
+  "indexPage": {
+    "match": "/mulu/i.test($.location())",
+    "infoPage": "$.location($('.breadcrumb a').eq(-1).attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('.novel-index').eq(-1).find('a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#novel-content').html()"
+    }
+  }
+}
