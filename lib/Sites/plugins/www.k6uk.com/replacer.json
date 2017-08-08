@@ -6,8 +6,8 @@
     "bookInfos": {
       "source": null,
       "title": null,
-      "author": null,
-      "classes": null,
+      "author": "作&nbsp;&nbsp;&nbsp; 者：",
+      "classes": "类&nbsp;&nbsp;&nbsp; 别：",
       "isend": null,
       "cover": null,
       "brief": null,
@@ -26,7 +26,7 @@
     "chapterInfos": {
       "title": null,
       "source": null,
-      "content": [{"匕匕":"比","Ш":"w","·":""},"^.*[比奇中文小说說网]{2,}.*?(\\}|\\\\|\\/|／|\\+|com|con|首发|↙)","^.*[ｘxiｉｎnｂbｑq]{3,}.*?(\\}|\\\\|\\/|／|\\+|com|con|首发|↙)","如您已阅读到此章节[^<>]*","您阅读的内容来源于[^<>]*","^.{2,25}(\\}|\\\\|\\/|／|\\+|com|con|首发|↙)"]
+      "content": "Www.K6UK.CoM"
     }
   }
 }

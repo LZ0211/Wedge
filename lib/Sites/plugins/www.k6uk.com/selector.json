@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/novelinfo/i.test($.location())",
+    "indexPage": "$.location($('a:contains(点击阅读)').attr('href'))",
+    "footer": "$('.m_foot').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('h1.STYLE12').text().trim()",
+      "author": "$('#content > div > table > tr:nth-child(1) > td > table > tr:nth-child(2) > td:nth-child(2)').text().trim()",
+      "classes": "$('#content > div > table > tr:nth-child(1) > td > table > tr:nth-child(2) > td:nth-child(1)').text()",
+      "isend": "$('#content > div > table > tr:nth-child(1) > td > table > tr:nth-child(2) > td:nth-child(3)').text()",
+      "cover": "$.location($('td > a > img').attr('src'))",
+      "brief": "$('span.STYLE6').eq(-1).html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/novel\\//i.test($.location())",
+    "infoPage": "$.location($('a:contains(返回书页)').attr('href'))",
+    "footer": "$('#info').length > 0",
+    "bookIndexs": "$('.ccss a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\d+\\.html$/i.test($.location())",
+    "footer": "$('#footlink').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}
