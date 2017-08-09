@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/txt\\d+\\/$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(章节目录)').attr('href'))",
+    "footer": "!!$('footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.info h1').text().trim()",
+      "author": "$('p.detail').find('a').eq(0).text().trim()",
+      "classes": "$('p.detail').find('a').eq(1).text().trim()",
+      "isend": "$('p.detail').text()",
+      "cover": "$.location($('.cover > img').attr('src'))",
+      "brief": "$('p.desc').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/mulu.htm$/i.test($.location())",
+    "infoPage": "$.location($('body > section > nav > ul > li:nth-child(3) > a').attr('href'))",
+    "footer": "!!$('footer').length",
+    "bookIndexs": "$('.mulu a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray().slice(9)"
+  },
+  "contentPage": {
+    "match": "!!$('#content').length",
+    "footer": "!!$('footer').length",
+    "filter": "$('#content').find('a,script,div').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/book\\/\\d+\\.html$/i.test($.location())",
+    "indexPage": "$.location($('a:contains(章节列表)').attr('href'))",
+    "footer": "!!$('#footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.d_title h1').text().trim()",
+      "author": "$('.p_author a').text().trim()",
+      "classes": "$('.tabstit a').eq(-1).text()",
+      "isend": "$('#bookinfo').text()",
+      "cover": "$.location($('#bookimg > img').attr('src'))",
+      "brief": "$('#showinfo > .d2').html()"
+    }
+  },
+  "indexPage": {
+    "match": "!!$('#readerlist').length",
+    "infoPage": "$.location($('.tabstit a').eq(-1).attr('href'))",
+    "footer": "!!$('#footer').length",
+    "bookIndexs": "$('#readerlist a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "!!$('#content').length",
+    "footer": "!!$('#footer').length",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}
