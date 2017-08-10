@@ -335,5 +335,8 @@
     },
     "tqzw.com/": {
         "PTCMS_history": "PTCMS_history=312-147502-1502337899-1502338349; expires=Thu, 17-Aug-2017 04:12:29 GMT; Max-Age=604800; path=/; domain=tqzw.com"
+    },
+    ".banzhu2.com/": {
+        "__cfduid": "__cfduid=d61dc83e3655f538cd7b9ef50890290721502339982; expires=Fri, 10-Aug-18 04:39:42 GMT; path=/; domain=.banzhu2.com; HttpOnly"
     }
 }
