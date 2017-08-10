@@ -250,7 +250,7 @@ class Wedge extends EventEmitter{
                 parser(data).forEach(push);
             }else {
                 var $ = Parser(data,url);
-                var selector = site.selector || ':header a';
+                var selector = site.selector || ':header a,img a';
                 $(selector).filter((i,v)=>~$(v).text().indexOf(title)).each((i,v)=>links.push([
                     $.location($(v).attr('href')),
                     $(v).text().trim()

@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/jieshaoinfo/i.test($.location())",
+    "indexPage": "$.location($('a:contains(在线阅读)').attr('href'))",
+    "footer": "!!$('.footer').length",
+    "filter": "$('#BookIntro a').remove()",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.info_t h1').text().trim()",
+      "author": "$('.author').text().trim()",
+      "classes": "$('.breadnav a').eq(-1).text()",
+      "isend": "$('.state').text()",
+      "cover": "$.location($('.fengmian img').attr('src'))",
+      "brief": "$('#BookIntro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/index.html/i.test($.location())",
+    "infoPage": "$.location($('a:contains(返回书页)').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('.ml_main a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\d+.html$/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.yd_text2').html()"
+    }
+  }
+}

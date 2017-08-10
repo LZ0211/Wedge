@@ -52,6 +52,12 @@
     "name": ".faloo.com"
   },
   {
+    "url": "http://mm.faloo.com/girl/0/1.html",
+    "query": "t=0&k=%title%",
+    "charset": "gbk",
+    "name": ".faloo.com"
+  },
+  {
     "url": "http://so.ihuaben.com/search",
     "query": "keyword=%title%",
     "name": ".ihuaben.com"

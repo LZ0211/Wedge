@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": null,
+      "author": null,
+      "classes": null,
+      "isend": null,
+      "cover": null,
+      "brief": null,
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": null,
+      "source": null,
+      "content": ["飞卢小说网 b.faloo.com 欢迎广大书友光临阅读，最新、最快、最火的连载作品尽在飞卢小说网！"]
+    }
+  }
+}
