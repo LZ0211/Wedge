@@ -338,5 +338,9 @@
     },
     ".banzhu2.com/": {
         "__cfduid": "__cfduid=d61dc83e3655f538cd7b9ef50890290721502339982; expires=Fri, 10-Aug-18 04:39:42 GMT; path=/; domain=.banzhu2.com; HttpOnly"
+    },
+    "www.lwxiaoshuo.com/": {
+        "wP_v": "wP_v=96a0da7160b5Iu2lXcOO3kzTj8O2rYqXoWK2~L2MBUKt9L2Ti2OLSzjXek4i18qkzc              ",
+        "jieqiVisitId": "jieqiVisitId=article_articleviews%3D60423; expires=Fri, 11-Aug-2017 13:51:06 GMT; path=/"
     }
 }
