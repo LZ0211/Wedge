@@ -78,7 +78,7 @@ App.config.set('request.proxyAuth',{username:'###',password:'###'});
 //生成电子书保存路径
 App.config.set('ebook.directory','E:/MyBooks/Library/ebook');
 //电子书格式，默认epub
-//支持txt,fb2,epub,json,txt.zip(txt格式的压缩文件),fb2.zip(fb2格式的压缩文件),html.zip(分章节的html压缩文件)
+//支持txt,fb2,epub,json,htmlz,docx,txt.zip(txt格式的压缩文件),fb2.zip(fb2格式的压缩文件),html.zip(分章节的html压缩文件)
 App.config.set('ebook.formation','epub');
 /*
 是否创建电子书，子进程命令
@@ -160,6 +160,8 @@ App.Engine.search(title,callback);
 //设置搜索引擎;默认为sogou
 App.Engine.setEngine("360");
 App.Engine.setEngine("baidu");
+//电子书生成（默认开启）
+App.convertEbook(bookdir[,ebookdir,formation])
 //测试选择器（默认关闭）
 //进入终端界面，类似于浏览器控制台
 App.testSelector(url);
