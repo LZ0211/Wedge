@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "!!$('#info').length",
+    "indexPage": "$.location()",
+    "footer": "!!$('.footer,#footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('meta[property=\"og:novel:book_name\"]').attr('content')",
+      "author": "$('meta[property=\"og:novel:author\"]').attr('content')",
+      "classes": "$('meta[property=\"og:novel:category\"]').attr('content')",
+      "isend": "!!$('meta[property=\"og:novel:status\"]').attr('content')",
+      "cover": "$('meta[property=\"og:image\"]').attr('content')",
+      "brief": "$('meta[property=\"og:description\"]').attr('content')"
+    }
+  },
+  "indexPage": {
+    "match": "!!$('#info').length",
+    "infoPage": "$.location()",
+    "footer": "!!$('.footer,#footer').length",
+    "filter": "$('#list dt').length > 1 && $('#list dt').eq(0).text().match('缓存') && $('#list dt').eq(1).prevAll('dd').length < 30 && $('#list dt').eq(1).prevAll('dd').remove()",
+    "bookIndexs": "$('#list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "!!$('#content').length",
+    "footer": "!!$('.footer,#footer').length",
+    "filter": "$('#content').find('a,script').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}
