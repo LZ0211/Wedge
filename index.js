@@ -1024,6 +1024,10 @@ class Wedge extends EventEmitter{
         .start();
         return this;
     }
+
+    updateAllBooks(){
+        this.updateBooks(this.database.map(x=>x.uuid));
+    }
 }
 
 Wedge.prototype.platform = process.platform;
