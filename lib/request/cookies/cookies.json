@@ -356,5 +356,11 @@
     },
     ".001bz.org/": {
         "__cfduid": "__cfduid=d842d706cd8405762f1f65aeed3d956cb1502707413; expires=Tue, 14-Aug-18 10:43:33 GMT; path=/; domain=.001bz.org; HttpOnly"
+    },
+    "www.txtduo.com/": {
+        "jieqiVisitId": "jieqiVisitId=article_articleviews%3D15238; expires=Wed, 16-Aug-2017 13:49:59 GMT; path=/"
+    },
+    "www.damoge.com/": {
+        "updateclick": "updateclick=548; expires=Wed, 16-Aug-2017 14:01:02 GMT; path=/; domain=www.damoge.com"
     }
 }

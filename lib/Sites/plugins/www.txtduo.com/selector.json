@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/info/i.test($.location())",
+    "indexPage": "$.location($('div.booklink > span.fl > a').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.uc_cont h1').text().trim()",
+      "author": "$('div.bookinfo > p:nth-child(1) > i').text().trim()",
+      "classes": "$('div.bookinfo > p:nth-child(2) > a').text()",
+      "isend": "$('div.bookinfo').text()",
+      "cover": "$.location($('.bookcover img').attr('src'))",
+      "brief": "$('#mainbox > div.ucbox.about > div:nth-child(5)').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/html\\//i.test($.location())",
+    "infoPage": "$.location($('a:contains(返回书页)').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('div.uclist a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.uctxt > .text').html()"
+    }
+  }
+}
