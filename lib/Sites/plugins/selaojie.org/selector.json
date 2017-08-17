@@ -17,12 +17,13 @@
     "match": "$('.breadnav a').length == 1",
     "infoPage": "$.location()",
     "footer": "$('footer').length > 0",
-    "bookIndexs": "$('div.bd > ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).attr('title')})).toArray()"
+    "bookIndexs": "$('div.bd > ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).attr('title'),id:$(v).attr('href').replace(/.*\\/(\\w+)\\/$/,'$1')})).toArray()"
   },
   "contentPage": {
     "match": "$('.breadnav a').length == 2",
     "footer": "$('footer').length > 0",
     "filter": "$('.con').find('a,script').remove()",
+    "filter2": "$('.con img').each((i,v)=>{$(v).attr('src',$(v).attr('data-original'))})",
     "chapterInfos": {
       "source": "$.location()",
       "content": "$('.con').html()",
