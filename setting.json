@@ -87,6 +87,7 @@
     }
   },
   "database": {
+    "sync": true,
     "primary": "uuid"
   },
   "app": {
