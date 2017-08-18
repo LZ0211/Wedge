@@ -18,9 +18,14 @@ const Engines = {
 
 module.exports = function(){
     var Engine = Engines['sogou'];
+    var defaultSearch = (keyword,fn)=>this.searchBook(keyword,list=>fn(list.map(item=>item[0])));
     var setEngine = name=>{
-        Engine = Engines[name];
-        searchEngine.search = search;
+        if(name in Engines){
+            Engine = Engines[name];
+            searchEngine.search = search;
+        }else{
+            searchEngine.search = defaultSearch;
+        }
         return searchEngine;
     };
     var search = (keyword,fn)=>{
@@ -60,7 +65,7 @@ module.exports = function(){
     };
     var searchEngine = {
         setEngine:setEngine,
-        search:(keyword,fn)=>this.searchBook(keyword,list=>fn(list.map(item=>item[0])))
+        search:defaultSearch
     };
     this.searchEngine = searchEngine;
 }
