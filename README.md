@@ -14,8 +14,8 @@ App.updateBook(dir);
 App.newBooks([url1,url2,url3,...]);
 //批量更新书籍
 App.updateBooks([dir1,dir2,dir3,...]);
-//合并多个目录并下载
-App.start([url1,url2,url3,...])
+//终端提示输入界面
+App.start()
 ```
 ### 数据库命令
 ```Javascript
