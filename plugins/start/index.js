@@ -55,6 +55,7 @@ module.exports = function (){
         return _arr;
     }
     function showmainOptions(){
+        Stack = [];
         Select(mainOptions);
     }
     function goBack(){
@@ -118,6 +119,7 @@ module.exports = function (){
         }
         var subOptions = [
             returnOption,
+            main,
             {text:'显示表格',func:[[],()=>showDatabase(items)]},
             {text:'显示详情',func:[[],()=>showDetail(items)]},
             {text:'过滤数据',func:[
@@ -139,31 +141,45 @@ module.exports = function (){
             ]},
             {text:'导出数据',options:[
                 returnOption,
+                main,
                 {text:'导出书名',func:[[],output('title')]},
                 {text:'导出作者',func:[[],output('author')]},
                 {text:'导出ID',func:[[],output('uuid')]},
                 {text:'导出类别',func:[[],output('classes')]},
-                {text:'导出链接',func:[[],output('source')]}
+                {text:'导出链接',func:[[],output('source')]},
+                exit
             ]},
             {
                 text:'批量操作',
                 options:[
                     returnOption,
+                    main,
                     {text:'更新书籍',func:[[],()=>app.updateBooks(items.map(item=>item.uuid)).end(goBack)]},
                     {text:'刷新书籍信息',func:[[],()=>app.refreshBooks(items.map(item=>item.uuid)).end(goBack)]},
                     {text:'生成电子书',func:[[],()=>app.ebooks(items.map(item=>item.uuid)).end(goBack)]},
-                    {text:'删除书籍',func:[[],()=>app.deleteBooks(items.map(item=>item.uuid)).end(goBack)]}
+                    {text:'删除书籍',func:[[],()=>app.deleteBooks(items.map(item=>item.uuid)).end(goBack)]},
+                    exit
                 ]
-            }
+            },exit
         ];
         Stack.push(thisOpt);
         Select(subOptions);
     }
     
     const returnOption = {
-        text: '返回上一级',
+        text: '返回上一级菜单',
         func: [[],goBack]
     };
+
+    const main = {
+        text: '返回主菜单',
+        func: [[],showmainOptions]
+    }
+
+    const exit = {
+        text:'退出',
+        func:[[],()=>process.exit()]
+    }
     
     const mainOptions = [
         {   text:'返回',func: [[],goBack]},
@@ -183,6 +199,9 @@ module.exports = function (){
             text:'删除书籍',
             func:[['请输入书籍ID：'],uuid=>app.end(refresh).deleteBook(uuid)]
         },{
+            text:'自动更新全部书籍',
+            func:[[],()=>app.end(refresh).updateAllBooks()]
+        },{
             text:'批量操作',
             options:[returnOption,{
                 text:'新建书籍',
@@ -199,10 +218,7 @@ module.exports = function (){
             },{
                 text:'删除书籍',
                 func:[[],()=>multInput([],uuids=>app.end(refresh).deleteBooks(uuids))]
-            }]
-        },{
-            text:'自动更新全部书籍',
-            func:[[],()=>app.end(refresh).updateAllBooks()]
+            },exit]
         },{
             text:'数据库检索',
             options:[
@@ -214,7 +230,7 @@ module.exports = function (){
                 {text:'query查询',func:[['请输入查询字符串：'],string=>{
                     var items = app.database.query(string);
                     showDatabaseOptions(items);
-                }]}
+                }]},exit
             ]
         },{
             text:'发送到手机[需在同一局域网下]',
@@ -285,7 +301,7 @@ module.exports = function (){
                             });
                         }
                     ]
-                },
+                },exit
             ]
         },{
             text:'修改配置',
@@ -305,10 +321,7 @@ module.exports = function (){
                     refresh();
                 }
             ]
-        },{
-            text:'退出',
-            func:[[],()=>process.exit()]
-        }
+        },exit
     ]
     
     function Select(options){
