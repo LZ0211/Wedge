@@ -48,36 +48,33 @@ class Wedge extends EventEmitter{
         this.label = Random.uuid(8,16);
         this.book = new Book();
         this.bookdir = null;
+        this.initLog();
         this.initFunctions();
         this.plugins();
         return this;
     }
 
+    initLog(){
+        var appLog = this.getConfig('app.log');
+        if(typeof appLog === 'string'){
+            this.log = new Log(appLog);
+        }else{
+            appLog = !!appLog;
+            if(appLog == false) {
+                this.log = this.noop;
+            }else{
+                this.log = console.log.bind(console);
+            }
+        }
+
+        if(this.getConfig('app.debug')){
+            this.debug = msg => this.log(`[${this.label}]:${msg}`);
+        }else{
+            this.debug = this.noop;
+        }
+    }
+
     initFunctions(){
-        //log function
-        if(!this.log){
-            var appLog = this.getConfig('app.log');
-            if(typeof appLog === 'string'){
-                this.log = new Log(appLog);
-            }else{
-                appLog = !!appLog;
-                if(appLog == false) {
-                    this.log = this.noop;
-                }else{
-                    this.log = console.log.bind(console);
-                }
-            }
-        }
-
-        //debug function
-        if(!this.debug){
-            if(this.getConfig('app.debug')){
-                this.debug = msg => this.log(`[${this.label}]:${msg}`);
-            }else{
-                this.debug = this.noop;
-            }
-        }
-
         //newBookCmd
         this.newBookCmd = this.CMD('getBookMeta > updateBookMeta > createBook > checkBookCover > saveBook > getBookIndexs > getChapters > sendToDataBase > generateEbook > end');
 
