@@ -1,6 +1,6 @@
 const Engines = {
     "baidu":{
-        "url": "https://www.baidu.com/s?wd=%keyword%&rsv_spt=1&rsv_iqid=0x96272cd60002200d&issp=1&f=3&rsv_bp=0&rsv_idx=2&ie=utf-8&rqlang=&tn=99190945_s_hao_pg&rsv_enter=1&inputT=3752&rt=50",
+        "url": "https://www.baidu.com/s?wd=%keyword%&rsv_spt=1&rsv_iqid=0x96272cd60002200d&issp=1&f=3&rsv_bp=0&rsv_idx=2&ie=utf-8&rqlang=&tn=99190945_s_hao_pg&rsv_enter=1&inputT=3752&rn=50",
         "host": ".baidu.com",
         "selector": ".result h3.t a"
     },

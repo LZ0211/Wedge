@@ -294,6 +294,7 @@ class Wedge extends EventEmitter{
             };
         }
         this.request(options);
+        return this;
     }
 
     fuzzysearchBook(title,fn){
@@ -460,31 +461,40 @@ class Wedge extends EventEmitter{
             if (~s2.indexOf(s1)) return true;
             return false;
         }
-        this.searchBook(title,links=>{
-            new Thread()
-            .use((link,nextFn)=>{
-                var app = this.spawn();
-                app.debug(link);
-                app.end(nextFn);
-                app.getBookMeta(link,()=>{
-                    var meta = app.book.metaValue();
-                    for (var x in meta){
-                        if (meta[x] === '') return app.end();
-                    }
-                    if (!like(meta.title,title)) return app.end();
-                    if (!like(meta.author,author)) return app.end();
-                    delete meta.source;
-                    this.book.setMeta(meta);
-                    app.debug('updateMeta');
-                    return fn();
-                });
-            })
-            .end(fn)
-            .log(this.debug.bind(this))
-            .label('searchBookMeta')
-            .queue(links.map(link=>link[0]))
-            .start();
-        });
+        var search = (site,next)=>{
+            this.searchInSite(title,site,list=>{
+                new Thread()
+                .use((link,nextFn)=>{
+                    var app = this.spawn();
+                    app.debug(link);
+                    app.end(nextFn);
+                    app.getBookMeta(link,()=>{
+                        var meta = app.book.metaValue();
+                        for (var x in meta){
+                            if (meta[x] === '') return app.end();
+                        }
+                        if (!like(meta.title,title)) return app.end();
+                        if (!like(meta.author,author)) return app.end();
+                        delete meta.source;
+                        this.book.setMeta(meta);
+                        app.debug('updateMeta');
+                        return fn();
+                    });
+                })
+                .end(next)
+                .log(this.debug.bind(this))
+                .label('searchBookMeta')
+                .queue(list.map(link=>link[0]))
+                .start();
+            });
+        };
+        new Thread()
+        .use(search)
+        .queue(Searcher)
+        .end(fn)
+        .log(this.debug.bind(this))
+        .label('searchBook')
+        .start();
         return this;
     }
 

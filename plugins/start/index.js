@@ -290,17 +290,19 @@ module.exports = function (){
         },{
             text:'修改配置',
             func:[["请输入配置的参数名：","请输入配置的参数值"],(key,value)=>{
-                    var convert = {
-                        'boolean': Boolean,
-                        'string': String,
-                        'number': Number,
-                    }
                     var origin = app.config.get(key);
-                    if(origin == null) return Select(options);
                     console.log(`原始${key}参数的配置为${origin}`);
-                    app.config.set(key,convert[typeof origin](value));
+                    if(value==='false'){
+                        app.config.set(key,false);
+                    }else if(value==='true'){
+                        app.config.set(key,true);
+                    }else if(value.match(/^\d+(\.\d+)?/)){
+                        app.config.set(key,parseInt(value));
+                    }else{
+                        app.config.set(key,value);
+                    }
                     console.log(`当前${key}参数的配置为${app.config.get(key)}`);
-                    Select(options);
+                    refresh();
                 }
             ]
         },{
