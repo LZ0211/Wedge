@@ -56,7 +56,6 @@ class Wedge extends EventEmitter{
         this.database.file(Path.join(this.dir,'metadatas.json'));
         this.database.unique(this.config.get('database.primary'));
         this.database.sync(this.config.get('database.sync'));
-        this.database.change()
     }
 
     initLog(){
