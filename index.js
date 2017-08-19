@@ -26,8 +26,12 @@ class Wedge extends EventEmitter{
     constructor(dir){
         super();
         this.config = new Hash(setting);
+        this.label = Random.uuid(8,16);
+        this.book = new Book();
+        this.bookdir = null;
         this.chdir(dir);
         this.init();
+        this.plugins();
     }
 
     chdir(dir){
@@ -36,22 +40,23 @@ class Wedge extends EventEmitter{
         fs.mkdirsSync(this.dir);
         process.chdir(this.dir);
         this.config.file('setting.json');
-        this.config.change(this.initFunctions.bind(this));
-        this.database.close();
-        this.database.file(Path.join(this.dir,'metadatas.json'));
-        this.database.unique(this.config.get('database.primary'));
-        this.database.sync(this.config.get('database.sync'));
+        this.config.change(this.init.bind(this));
         return this;
     }
 
     init(){
-        this.label = Random.uuid(8,16);
-        this.book = new Book();
-        this.bookdir = null;
+        this.initDatabase();
         this.initLog();
         this.initFunctions();
-        this.plugins();
         return this;
+    }
+
+    initDatabase(){
+        this.database.close();
+        this.database.file(Path.join(this.dir,'metadatas.json'));
+        this.database.unique(this.config.get('database.primary'));
+        this.database.sync(this.config.get('database.sync'));
+        this.database.change()
     }
 
     initLog(){

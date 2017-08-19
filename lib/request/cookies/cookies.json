@@ -27,7 +27,7 @@
         "SUV": "SUV=00DF87E3743954EF58F9E8683E2F7463; expires=Thu, 16-Apr-37 11:09:28 GMT; domain=.sogou.com; path=/",
         "SNUID": "SNUID=54CCA1E3979DC0999B01AE04983DE55C; expires=Sat, 18-Aug-18 06:15:01 GMT; domain=.sogou.com; path=/",
         "SUID": "SUID=1874293B1E20910A0000000058FBAACE; expires=Fri, 17-Apr-37 19:11:10 GMT; domain=.sogou.com; path=/",
-        "ld": "ld=Ylllllllll2Buw8YlllllVuY02klllllnhOLlZllll9lllll9Zlll5@@@@@@@@@@; path=/; expires=Mon, 18 Sep 2017 19:09:12 GMT; domain=.sogou.com",
+        "ld": "ld=0lllllllll2BuJtqlllllVuYOeUlllllnhOLlZllll9lllll9Zlll5@@@@@@@@@@; path=/; expires=Mon, 18 Sep 2017 19:52:53 GMT; domain=.sogou.com",
         "black_passportid": "black_passportid=1; domain=.sogou.com; path=/; expires=Thu, 01-Dec-1994 16:00:00 GMT"
     },
     "yuedu.sogou.com/": {
@@ -178,7 +178,7 @@
     },
     ".baidu.com/": {
         "version": "BAIDUID=1915E395C600D8E1E34714A99835BC57:FG=1; expires=Sun, 19-Aug-18 19:09:11 GMT; max-age=31536000; path=/; domain=.baidu.com; version=1",
-        "BAIDUID": "BAIDUID=77E99519212EB9F4214371259287AAA6:FG=1; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com",
+        "BAIDUID": "BAIDUID=8F7EB0979B286D43C44A4A6859E53F3D:FG=1; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com",
         "BIDUPSID": "BIDUPSID=FE80E12247B304F8D45B8CC6BD7BACFB; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com",
         "PSTM": "PSTM=1493012512; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com",
         "BDRCVFR[y-8S9OCiXKD]": "BDRCVFR[y-8S9OCiXKD]=mk3SLVN4HKm; path=/; domain=.baidu.com",
@@ -186,7 +186,7 @@
         "H_PS_PSSID": "H_PS_PSSID=; path=/; domain=.baidu.com"
     },
     "www.sogou.com/": {
-        "ABTEST": "ABTEST=0|1503169752|v17; expires=Mon, 18-Sep-17 19:09:12 GMT; path=/"
+        "ABTEST": "ABTEST=5|1503172373|v17; expires=Mon, 18-Sep-17 19:52:53 GMT; path=/"
     },
     "www.jingyu.com/": {
         "src_360": "src_360=1; expires=Wed, 21-Jun-2017 19:11:16 GMT; Max-Age=5184000; path=/"
@@ -213,7 +213,7 @@
     },
     "www.baidu.com/": {
         "BD_CK_SAM": "BD_CK_SAM=1;path=/",
-        "BDSVRTM": "BDSVRTM=0; path=/",
+        "BDSVRTM": "BDSVRTM=8; path=/",
         "__bsi": "__bsi=11195679571059233082_00_49_N_N_14_0303_C02F_N_N_N_0; expires=Mon, 24-Apr-17 05:41:57 GMT; domain=www.baidu.com; path=/"
     },
     "www.paoshuba.cc/": {
@@ -365,5 +365,19 @@
     },
     ".biquge.cm/": {
         "__cfduid": "__cfduid=d45aab009a9d94bbb0514ff4a816569631503171555; expires=Sun, 19-Aug-18 19:39:15 GMT; path=/; domain=.biquge.cm; HttpOnly"
+    },
+    ".bing.com/": {
+        "SRCHD": "SRCHD=AF=NOFORM; domain=.bing.com; expires=Mon, 19-Aug-2019 19:53:43 GMT; path=/",
+        "SRCHUID": "SRCHUID=V=2&GUID=370B57D16EDD4BC2806374E75652E7C2&dmnchg=1; domain=.bing.com; expires=Mon, 19-Aug-2019 19:53:43 GMT; path=/",
+        "SRCHUSR": "SRCHUSR=DOB=20170819; domain=.bing.com; expires=Mon, 19-Aug-2019 19:53:43 GMT; path=/",
+        "_SS": "_SS=SID=0D16DECD11176E863614D42E10B66F31; domain=.bing.com; path=/"
+    },
+    "bing.com/": {
+        "_EDGE_S": "_EDGE_S=F=1&SID=0D16DECD11176E863614D42E10B66F31; path=/; httponly; domain=bing.com",
+        "_EDGE_V": "_EDGE_V=1; path=/; httponly; expires=Mon, 19-Aug-2019 19:53:43 GMT; domain=bing.com",
+        "MUID": "MUID=39A5DA0D670E67D50CA5D0EE66AF66EE; path=/; expires=Mon, 19-Aug-2019 19:53:43 GMT; domain=bing.com"
+    },
+    "cn.bing.com/": {
+        "MUIDB": "MUIDB=39A5DA0D670E67D50CA5D0EE66AF66EE; path=/; httponly; expires=Mon, 19-Aug-2019 19:53:43 GMT"
     }
 }
