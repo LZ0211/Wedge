@@ -236,7 +236,12 @@ module.exports = function (){
                 return Select(item.options);
             }
             var func = item.func;
-            return app.prompt.apply(app,func);
+            try{
+                app.prompt.apply(app,func);
+            }catch(e){
+                console.log(e);
+                refresh()
+            }
         });
     }
     this.start =showmainOptions;

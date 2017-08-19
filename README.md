@@ -160,6 +160,22 @@ App.Engine.search(title,callback);
 //设置搜索引擎;默认为sogou
 App.Engine.setEngine("360");
 App.Engine.setEngine("baidu");
+//简单的控制台输入界面（默认开启）
+App.start()
+/*
+请选择功能
+  0) 新建书籍
+  1) 更新书籍
+  2) 自动更新
+  3) 批量添加书籍
+  4) 生成电子书
+  5) 搜索书籍
+  6) 发送到手机
+  7) 使用引擎搜索
+  8) 修改配置
+  9) 数据库检索
+  10) 退出
+*/
 //电子书生成（默认开启）
 App.convertEbook(bookdir[,ebookdir,formation])
 //测试选择器（默认关闭）
