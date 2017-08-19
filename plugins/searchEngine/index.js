@@ -1,6 +1,6 @@
 const Engines = {
     "baidu":{
-        "url": "https://www.baidu.com/s?wd=%keyword%&rsv_spt=1&rsv_iqid=0x96272cd60002200d&issp=1&f=3&rsv_bp=0&rsv_idx=2&ie=utf-8&rqlang=&tn=99190945_s_hao_pg&rsv_enter=1&inputT=3752",
+        "url": "https://www.baidu.com/s?wd=%keyword%&rsv_spt=1&rsv_iqid=0x96272cd60002200d&issp=1&f=3&rsv_bp=0&rsv_idx=2&ie=utf-8&rqlang=&tn=99190945_s_hao_pg&rsv_enter=1&inputT=3752&rt=50",
         "host": ".baidu.com",
         "selector": ".result h3.t a"
     },
@@ -13,6 +13,11 @@ const Engines = {
         "url": "https://www.so.com/s?ie=utf-8&fr=none&src=360sou_newhome&q=%keyword%",
         "host": ".so.com",
         "selector": ".result h3.res-title a"
+    },
+    "bing":{
+        "url": "http://cn.bing.com/search?q=%keyword%",
+        "host": ".bing.com",
+        "selector": ".b_algo h2 a"
     }
 }
 

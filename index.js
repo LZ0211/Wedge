@@ -68,7 +68,9 @@ class Wedge extends EventEmitter{
         }
 
         if(this.getConfig('app.debug')){
-            this.debug = msg => this.log(`[${this.label}]:${msg}`);
+            this.debug = function(msg){
+                this.log(`[${this.label}]:${msg}`);
+            }
         }else{
             this.debug = this.noop;
         }
@@ -1042,6 +1044,7 @@ class Wedge extends EventEmitter{
 
     updateAllBooks(){
         this.updateBooks(this.database.map(x=>x.uuid));
+        return this;
     }
 }
 
