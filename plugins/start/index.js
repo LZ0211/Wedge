@@ -178,7 +178,10 @@ module.exports = function (){
 
     const exit = {
         text:'退出',
-        func:[[],()=>process.exit()]
+        options:[
+            main,
+            {text:'确定退出',func:[[],()=>process.exit()]}
+        ]
     }
     
     const mainOptions = [
