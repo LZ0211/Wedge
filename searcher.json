@@ -73,22 +73,23 @@
     "name": ".xs8.cn"
   },
   {
-    "url": "http://www.xxsy.net/search.aspx",
-    "query": "q=%title%&sort=9&rn=22&pn=1&rand=%time%",
-    "dataType": "json",
-    "parse": "JSON.parse(json).booklist.map(x=>['http://www.xxsy.net/info/'+x.bookid+'.html',x.bookname])",
+    "url": "http://www.xxsy.net/search",
+    "query": "s_wd=%title%",
+    "selector": ".title > a",
     "name": ".xxsy.net"
   },
   {
-    "url": "http://www.jjwxc.net/bookbase.php",
-    "query": "fw0=0&fbsj=3&ycx0=0&xx0=0&sd0=0&lx0=0&fg0=0&collectiontypes=ors&null=0&searchkeywords=%title%",
-    "charset": "gbk",
-    "selector": "tr > td > a",
+    "url": "https://www.baidu.com/s",
+    "query": "?ie=utf-8&rn=50&wd=site%3Ajjwxc.net%20%title%",
+    "selector": ".result h3.t a",
+    "engine": "baidu",
     "name": ".jjwxc.net"
   },
   {
-    "url": "https://www.sogou.com/web",
-    "query": "query=%title%+%E7%BA%A2%E8%A2%96%E6%B7%BB%E9%A6%99&ie=utf8&_ast=1488053248&_asf=null&w=01029901&cid=&cid=&sut=5558&sst0=1488053317810&lkt=0%2C0%2C0",
+    "url": "https://www.baidu.com/s",
+    "query": "?ie=utf-8&rn=50&wd=site%3Ahongxiu.com%20%title%",
+    "selector": ".result h3.t a",
+    "engine": "baidu",
     "name": ".hongxiu.com"
   },
   {
@@ -96,16 +97,6 @@
     "method": "post",
     "data": "k=%title%",
     "name": ".zhulang.com"
-  },
-  {
-    "url": "http://s.hongxiu.com/SearchResult.aspx",
-    "query": "query=%title%&iftitle=5&qb=&vip=&lb=&hidZilei=&px=&pagesize=50&type=1",
-    "headers": {
-      "referer": "http://s.hongxiu.com/SearchResult.aspx"
-    },
-    "selector": ".bookname a",
-    "charset": "gbk",
-    "name": ".hongxiu.com"
   },
   {
     "url": "http://www.yousuu.com/search/%title%?type=all",
@@ -134,6 +125,9 @@
     "url": "http://a.ruochu.com/jsonp/search/",
     "query": "queryString=%title%&objectType=2&page=1",
     "name": ".ruochu.com",
+    "headers":{
+      "referer": "http://www.ruochu.com/search/?queryString=%title%"
+    },
     "parse": "json.voRF.items.map(o=>['http://www.ruochu.com'+o.object.url,o.object.name])"
   },
   {
@@ -174,7 +168,10 @@
     "name": ".xiang5.com"
   },
   {
-    "url": "http://www.shuhai.com/search/%title%?formhash=f88879d7",
+    "url": "http://www.shuhai.com/search/%title%?formhash=2382a444",
+    "headers": {
+        "referer":"http://www.shuhai.com/search/"
+    },
     "name": ".shuhai.com",
     "selector": ".name a"
   },

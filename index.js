@@ -225,6 +225,7 @@ class Wedge extends EventEmitter{
                 return options.success(data);
             }
             if (err){
+                this.debug(err)
                 if (connectTimes < maxConnectTimes) return req.end();
                 return options.error(err.code);
             }
@@ -281,6 +282,23 @@ class Wedge extends EventEmitter{
                     $(v).text().trim()
                 ]));
             }
+            if(site.engine){
+                return Thread().queue(links).use((link,next)=>{
+                    this.request({
+                        url:link[0]+'&wd=',
+                        headers:{referer:link[0]+'&wd='},
+                        success:data=>{
+                            var $ = this.Parser(data,link);
+                            var content = $('meta[http-equiv="refresh"]').attr('content');
+                            if (!content) return next();
+                            link[0] = content.replace(/0;URL='(.*)'/,"$1");
+                            console.log(link)
+                            return next();
+                        },
+                        error:next
+                    })
+                }).setThread(10).end(()=>fn(links.filter(link=>~link[0].indexOf(site.name)))).start()
+            }
             return fn(links);
         };
         var options = {
@@ -296,6 +314,13 @@ class Wedge extends EventEmitter{
             options.headers = {
                 'X-Requested-With':'XMLHttpRequest'
             };
+        }
+        if(site.headers){
+            for(var name in site.headers){
+                if('string' == typeof site.headers[name]){
+                    site.headers[name] = site.headers[name].replace('%title%',util.encodeURI(title,site.charset)).replace('%time%',+new Date()).replace('%random%',Math.random());
+                }
+            }
         }
         this.request(options);
         return this;
