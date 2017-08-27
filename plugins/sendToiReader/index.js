@@ -56,8 +56,9 @@ module.exports = function(){
         if (!ip) return this.prompt(["请输入IP地址："],ip=>this.sendToiReader(ip,Files));
         if (!Files){
             return this.prompt(["拖动文件到窗口："],dir=>{
-                dir = dir.replace(/^"/,'').replace(/"$/,'');
+                dir = dir.trim().replace(/^"/,'').replace(/"$/,'');
                 if (dir == '') return process.exit();
+                dir = Path.resolve(dir);
                 var stat = fs.statSync(dir);
                 if (stat.isDirectory()){
                     try{
