@@ -115,10 +115,12 @@ App.config.set('thread.image',5);
 ```
 
 #### 数据库参数
+```Javascript
 //实时同步本地
 App.config.set('database.sync',true);
 //修改primary键
 App.config.set('database.primary','uuid');
+```
 
 #### 书籍参数
 ```Javascript
