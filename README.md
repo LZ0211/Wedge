@@ -1,19 +1,26 @@
 # Wedge
 可配置的小说下载工具
+## 快速开始
+```Javascript
+#!/usr/bin/env node
+const Wedge = require("./wedge");
+const app = new Wedge("./library");
+app.start()
+```
 ## 使用教程
 ```Javascript
 //引入wedge模块
 const Wedge = require("./wedge");
 //创建App，参数为工作路径
-var App = new Wedge("./library");
+var App = new Wedge(workdir);
 //新建书籍
 App.newBook(url);
 //更新书籍
-App.updateBook(dir);
+App.updateBook(uuid);
 //批量新建书籍
 App.newBooks([url1,url2,url3,...]);
 //批量更新书籍
-App.updateBooks([dir1,dir2,dir3,...]);
+App.updateBooks([uuid1,uuid2,uuid3,...]);
 //终端提示输入界面
 App.start()
 ```
@@ -78,7 +85,7 @@ App.config.set('request.proxyAuth',{username:'###',password:'###'});
 //生成电子书保存路径
 App.config.set('ebook.directory','E:/MyBooks/Library/ebook');
 //电子书格式，默认epub
-//支持txt,fb2,epub,json,htmlz,docx,txt.zip(txt格式的压缩文件),fb2.zip(fb2格式的压缩文件),html.zip(分章节的html压缩文件)
+//支持txt,fb2,epub,umd,rtf,json,htmlz,docx,txt.zip(txt格式的压缩文件),fb2.zip(fb2格式的压缩文件),html.zip(分章节的html压缩文件)
 App.config.set('ebook.formation','epub');
 /*
 是否创建电子书，子进程命令
@@ -106,6 +113,12 @@ App.config.set('thread.merge',5);
 //下载图片时的并行数目
 App.config.set('thread.image',5);
 ```
+
+#### 数据库参数
+//实时同步本地
+App.config.set('database.sync',true);
+//修改primary键
+App.config.set('database.primary','uuid');
 
 #### 书籍参数
 ```Javascript
