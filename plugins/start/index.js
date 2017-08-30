@@ -100,7 +100,7 @@ module.exports = function (){
 
     function showDetail(items){
         items.forEach(item=>{
-            console.log(`【书名】${item.title}\n【作者】${item.author}\n【类别】${item.classes}\n【唯一码】${item.uuid}\n【完结】${item.isend}\n【更新时间】${formatTime(item.date)}\n【官网】${item.origin}\n【来源】${item.source}\n【简介】${item.brief}`);
+            console.log(`【书名】${item.title}\n【作者】${item.author}\n【类别】${item.classes}\n【唯一码】${item.uuid}\n【完结】${!!item.isend}\n【更新时间】${formatTime(item.date)}\n【官网】${item.origin}\n【来源】${item.source}\n【简介】${item.brief}`);
             console.log('---------------------------------------------------------------------------');
         });
         refresh();
@@ -227,11 +227,15 @@ module.exports = function (){
             options:[
                 returnOption,
                 {text:'关键字检索',func:[['请输入关键词：'],name=>{
-                    var items = app.database.filter(item=>(~item.title.indexOf(name) || ~item.author.indexOf(name) || ~item.classes.indexOf(name)));
+                    var items = app.database.query().filter(item=>(~item.title.indexOf(name) || ~item.author.indexOf(name) || ~item.classes.indexOf(name)));
                     showDatabaseOptions(items);
                 }]},
                 {text:'query查询',func:[['请输入查询字符串：'],string=>{
                     var items = app.database.query(string);
+                    showDatabaseOptions(items);
+                }]},
+                {text:'SQL查询',func:[['请输入SQL：'],string=>{
+                    var items = app.database.sql(string);
                     showDatabaseOptions(items);
                 }]},exit
             ]

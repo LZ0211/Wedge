@@ -52,9 +52,7 @@ class Wedge extends EventEmitter{
     }
 
     initDatabase(){
-        this.database.close();
-        this.database.file(Path.join(this.dir,'metadatas.json'));
-        this.database.unique(this.config.get('database.primary'));
+        this.database.file(Path.join(this.dir,'metadatas.sqlite'));
         this.database.sync(this.config.get('database.sync'));
     }
 
@@ -996,7 +994,7 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         var meta = this.book.metaValue();
         if (!meta.title || !meta.author) return fn();
-        if (!this.book.changed && ~this.database.indexOf(meta.uuid)) return fn();
+        if (!this.book.changed && this.database.query('uuid='+meta.uuid).length) return fn();
         this.debug('sendToDataBase');
         delete meta.cover;
         this.log(meta);
@@ -1032,10 +1030,7 @@ class Wedge extends EventEmitter{
 
     deleteBook(uuid){
         process.nextTick(()=>{
-            var index = this.database.indexOf(uuid);
-            if(index !== null){
-                this.database.remove(index);
-            }
+            this.database.remove(uuid);
             fs.rmdirsSync(uuid);
             this.end();
         });
@@ -1127,7 +1122,7 @@ class Wedge extends EventEmitter{
     }
 
     updateAllBooks(){
-        this.updateBooks(this.database.map(x=>x.uuid));
+        this.updateBooks(this.database.attr('uuid'));
         return this;
     }
 }
