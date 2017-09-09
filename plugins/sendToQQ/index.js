@@ -51,7 +51,7 @@ module.exports = function(){
         if (!ip) return this.prompt(["请输入IP地址："],ip=>this.sendToQQ(ip,Files));
         if (!Files){
             return this.prompt(["拖动文件到窗口："],dir=>{
-                dir = dir.trim().replace(/^"/,'').replace(/"$/,'');
+                dir = dir.trim().replace(/^"/,'').replace(/"$/,'').replace(/\\ /gi,' ');
                 if (dir == '') return process.exit();
                 dir = Path.resolve(dir);
                 var stat = fs.statSync(dir);

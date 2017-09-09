@@ -1,5 +1,17 @@
 {
     "8kana.com/www/search": {
         "keyword": "keyword=%E8%8B%B1%E9%9B%84; expires=Sun, 27-Aug-2017 16:54:47 GMT; Max-Age=3600; path=/www/search; domain=8kana.com"
+    },
+    ".qu.la/": {
+        "__cfduid": "__cfduid=dfc16596e1d2fa304706fc4a0058fcef11504959596; expires=Sun, 09-Sep-18 12:19:56 GMT; path=/; domain=.qu.la; HttpOnly"
+    },
+    ".bequge.com/": {
+        "__cfduid": "__cfduid=d7777dbd87842ec1b447b6738e02dd2cd1504959728; expires=Sun, 09-Sep-18 12:22:08 GMT; path=/; domain=.bequge.com; HttpOnly"
+    },
+    ".biquge.cm/": {
+        "__cfduid": "__cfduid=d3b01adfe7069b07c2d2de74af9d2587f1504959868; expires=Sun, 09-Sep-18 12:24:28 GMT; path=/; domain=.biquge.cm; HttpOnly"
+    },
+    ".luoqiu.com/": {
+        "__cfduid": "__cfduid=d05ab2c449e3f616a56a772c1f75623981504959879; expires=Sun, 09-Sep-18 12:24:39 GMT; path=/; domain=.luoqiu.com; HttpOnly"
     }
 }

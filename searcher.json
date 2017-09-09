@@ -83,6 +83,7 @@
     "query": "?ie=utf-8&rn=50&wd=site%3Ajjwxc.net%20%title%",
     "selector": ".result h3.t a",
     "engine": "baidu",
+    "filter": "\\/book\\/\\d+$",
     "name": ".jjwxc.net"
   },
   {
@@ -90,6 +91,7 @@
     "query": "?ie=utf-8&rn=50&wd=site%3Ahongxiu.com%20%title%",
     "selector": ".result h3.t a",
     "engine": "baidu",
+    "filter": "\\/book\\/\\d+",
     "name": ".hongxiu.com"
   },
   {
