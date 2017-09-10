@@ -475,7 +475,7 @@ class Wedge extends EventEmitter{
         var source = this.book.getMeta('source');
         var author = this.book.getMeta('author');
         var uuid = this.book.getMeta('uuid');
-        if(this.database.query('uuid='+uuid).length) return fn();
+        //if(this.database.query('uuid='+uuid).length) return fn();
         if(!title) return this.end();
         var except = new RegExp(Searcher.map(x=>x.name.replace(/\./g,'\\.')).join('|'),'gi');
         if(source.match(except)) return fn();
