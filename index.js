@@ -83,7 +83,7 @@ class Wedge extends EventEmitter{
         this.newBookCmd = this.CMD('getBookMeta > updateBookMeta > createBook > checkBookCover > saveBook > getBookIndexs > getChapters > sendToDataBase > generateEbook > end');
 
         //updateBookCmd
-        this.updateBookCmd = this.CMD('loadBook > checkBookCover > getBookIndexs > getChapters > sendToDataBase > generateEbook > end');
+        this.updateBookCmd = this.CMD('loadBook > checkBookCover > saveBook > getBookIndexs > getChapters > sendToDataBase > generateEbook > end');
 
         //refreshBookCmd
         this.refreshBookCmd = this.CMD('loadBook > updateBookMeta > checkBookCover > saveBook > sendToDataBase > generateEbook > end');
@@ -92,7 +92,7 @@ class Wedge extends EventEmitter{
         this.autoUpdateCmd = this.CMD('loadBook > updateBookMeta > checkBookCover > saveBook > getBookIndexs > getChapters > sendToDataBase > generateEbook > end');
 
         //eBookCmd
-        this.eBookCmd = this.CMD('loadBook > generateEbook > end');
+        this.eBookCmd = this.CMD('loadBook > checkBookCover > saveBook > generateEbook > end');
 
         return this;
     }
@@ -290,7 +290,6 @@ class Wedge extends EventEmitter{
                             var content = $('meta[http-equiv="refresh"]').attr('content');
                             if (!content) return next();
                             link[0] = content.replace(/0;URL='(.*)'/,"$1");
-                            console.log(link)
                             return next();
                         },
                         error:next
@@ -511,7 +510,7 @@ class Wedge extends EventEmitter{
                 .end(next)
                 .log(this.debug.bind(this))
                 .label('searchBookMeta')
-                .queue(list.map(link=>link[0]))
+                .queue(list.filter(link=>link[1] == title).map(link=>link[0]))
                 .start();
             });
         };
@@ -555,7 +554,9 @@ class Wedge extends EventEmitter{
         fs.exists(coverDir,exist=>{
             if (exist){
                 fs.readFile(coverDir,(err,data)=>{
-                    this.book.setMeta('cover',data);
+                    if(data.toString('base64') !== this.book.getMeta('cover')){
+                        this.book.setMeta('cover',data);
+                    }
                     return fn();
                 });
             }else {
@@ -593,6 +594,7 @@ class Wedge extends EventEmitter{
     saveBook(fn){
         fn = this.next(fn);
         if (!this.bookdir) return this.end();
+        this.debug('saveBook');
         this.book.setMeta('date',+new Date);
         this.book.localization(this.bookdir,fn);
         return this;
