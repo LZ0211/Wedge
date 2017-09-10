@@ -1,33 +1,32 @@
 {
   "infoPage": {
-    "match": "!!$('#htmlch').length",
-    "indexPage": "$.location($('#htmlmulu').attr('href'))",
-    "footer": "!!$('#footer').length",
+    "match": "/.hongxiu.com\\/book\\/\\d+$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "!!$('.footer').length",
     "bookInfos": {
       "origin": "$.location()",
       "source": "$.location()",
-      "title": "$('#htmltimu').text().trim()",
-      "author": "$('#htmlzuozhe').text().trim()",
-      "classes": "$('#htmlpos > a').last().text()",
-      "isend": "$('#htmlquanben').text()",
-      "cover": "$.location($('#htmlfengmiantu').attr('src'))",
-      "brief": "$('#htmljiashao').html()"
+      "title": "$('div.book-info > h1 > em').text().trim()",
+      "author": "$('div.book-info > h1 > a').text().trim()",
+      "classes": "$('div.book-info > p.tag-box > span > i').eq(-1).text()",
+      "isend": "$('div.book-info > p.tag-box').text()",
+      "cover": "$.location($('#bookImg > img').attr('src'))",
+      "brief": "$('p.intro').html()"
     }
   },
   "indexPage": {
-    "match": "!!$('#htmlList').length",
-    "infoPage": "$.location($('#htmltimu').attr('href'))",
-    "footer": "!!$('#footer').length",
-    "filter": "$('.isvip').parent().remove()",
-    "bookIndexs": "$('#htmlList a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+    "match": "/.hongxiu.com\\/book\\/\\d+$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "!!$('.footer').length",
+    "filter": "$('.iconfont').parent().remove()",
+    "bookIndexs": "$('.volume a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
-    "match": "!!$('#htmlContent').length",
-    "footer": "!!$('#footer').length",
-    "filter": "$('font.D49').remove()",
+    "match": "/.hongxiu.com\\/chapter\\/\\d+\\/\\d+$/i.test($.location())",
+    "footer": "!!$('.chapter-control').length",
     "chapterInfos": {
       "source": "$.location()",
-      "content": "$('#htmlContent').html()"
+      "content": "$('.read-content').html()"
     }
   }
 }

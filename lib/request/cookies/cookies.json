@@ -160,5 +160,11 @@
     },
     "www.hbooker.com/": {
         "ci_session": "ci_session=9nh82hl6gp73f31rhiohmhs9eb1ij46n; expires=Sun, 10-Sep-2017 21:21:45 GMT; Max-Age=21600; path=/; HttpOnly"
+    },
+    ".hongxiu.com/": {
+        "_csrfToken": "_csrfToken=BqAIoD1OGBxWmK5nOkjVKkHWwECJH5J0g8Z5TlUI; expires=Mon, 10-Sep-2018 16:19:31 GMT; path=/; domain=.hongxiu.com",
+        "ywGuid": "ywGuid=test; expires=Sun, 10-Sep-2017 16:26:34 GMT; path=/; domain=.hongxiu.com",
+        "ywKey": "ywKey=test; expires=Sun, 10-Sep-2017 16:26:34 GMT; path=/; domain=.hongxiu.com",
+        "newstatisticUUID": "newstatisticUUID=1505060371_183504153; expires=Tue, 10-Sep-2019 16:19:31 GMT; path=/; domain=.hongxiu.com"
     }
 }

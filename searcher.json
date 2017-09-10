@@ -80,18 +80,15 @@
   },
   {
     "url": "https://www.baidu.com/s",
-    "query": "?ie=utf-8&rn=50&wd=site%3Ajjwxc.net%20%title%",
+    "query": "ie=utf-8&rn=50&wd=site%3Ajjwxc.net%20%title%",
     "selector": ".result h3.t a",
     "engine": "baidu",
-    "filter": "\\/book\\/\\d+$",
+    "filter": "novelid=\\d+$",
     "name": ".jjwxc.net"
   },
   {
-    "url": "https://www.baidu.com/s",
-    "query": "?ie=utf-8&rn=50&wd=site%3Ahongxiu.com%20%title%",
-    "selector": ".result h3.t a",
-    "engine": "baidu",
-    "filter": "\\/book\\/\\d+",
+    "url": "https://www.hongxiu.com/search",
+    "query": "kw=%title%",
     "name": ".hongxiu.com"
   },
   {
