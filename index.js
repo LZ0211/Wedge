@@ -546,9 +546,9 @@ class Wedge extends EventEmitter{
     }
 
     checkBookCover(fn){
-        this.debug('checkBookCover');
         fn = this.next(fn);
         if (!this.bookdir) return this.end();
+        this.debug('checkBookCover');
         var coverSrc = this.book.getMeta('cover');
         var coverDir = Path.join(this.bookdir,'cover.jpg');
         fs.exists(coverDir,exist=>{
@@ -594,6 +594,7 @@ class Wedge extends EventEmitter{
     saveBook(fn){
         fn = this.next(fn);
         if (!this.bookdir) return this.end();
+        if(!this.book.changed) return fn();
         this.debug('saveBook');
         this.book.setMeta('date',+new Date);
         this.book.localization(this.bookdir,fn);
