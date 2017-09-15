@@ -193,6 +193,9 @@ module.exports = function (){
             text:'更新书籍',
             func:[['请输入书籍ID：'],uuid=>app.end(refresh).updateBook(uuid)]
         },{
+            text:'重新下载书籍',
+            func:[['请输入书籍ID：'],uuid=>app.end(refresh).reDownloadBook(uuid)]
+        },{
             text:'刷新书籍信息',
             func:[['请输入书籍ID：'],uuid=>app.end(refresh).refreshBook(uuid)]
         },{

@@ -85,6 +85,9 @@ class Wedge extends EventEmitter{
         //updateBookCmd
         this.updateBookCmd = this.CMD('loadBook > checkBookCover > saveBook > getBookIndexs > getChapters > sendToDataBase > generateEbook > end');
 
+        //redownload
+        this.reDownloadCmd = this.CMD('loadBook > updateBookMeta > checkBookCover > emptyBookIndex > saveBook > getBookIndexs > getChapters > sendToDataBase > generateEbook > end')
+
         //refreshBookCmd
         this.refreshBookCmd = this.CMD('loadBook > updateBookMeta > checkBookCover > saveBook > sendToDataBase > generateEbook > end');
 
@@ -374,7 +377,7 @@ class Wedge extends EventEmitter{
 
     checkBookIndex(fn){
         fn = this.next(fn);
-        if (!this.book.location()) return this;
+        if (!this.book.location()) return this.end();
         if (!this.config.get('book.localization')) return fn();
         if (!this.config.get('book.check')) return fn();
         if (this.config.get('book.sync')){
@@ -383,6 +386,13 @@ class Wedge extends EventEmitter{
         }
         this.book.checkIndex(fn);
         return this;
+    }
+
+    emptyBookIndex(fn){
+        fn = this.next(fn);
+        if (!this.book.location()) return this.end();
+        this.book.emptyList();
+        return fn()
     }
 
     getParsedData(data,url){
@@ -1023,6 +1033,11 @@ class Wedge extends EventEmitter{
 
     refreshBook(dir){
         process.nextTick(this.refreshBookCmd.bind(this,dir));
+        return this;
+    }
+
+    reDownloadBook(dir){
+        process.nextTick(this.reDownloadCmd.bind(this,dir));
         return this;
     }
 
