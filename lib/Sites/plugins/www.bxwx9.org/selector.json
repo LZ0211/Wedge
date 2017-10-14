@@ -17,7 +17,7 @@
     "match": "/^http:\\/\\/www\\.bxwx9\\.org\\/b\\/\\d+\\/\\d+\\/index\\.html$/i.test($.location())",
     "infoPage": "$.location($('div.toproad > ul a').attr('href'))",
     "footer": "$('#copyright').length > 0",
-    "bookIndexs": "$('div.TabCss a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+    "bookIndexs": "$('div.TabCss a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray().sort((a,b)=>a.href.split('/').pop().replace(/\\D+/g,'') - b.href.split('/').pop().replace(/\\D+/g,''))"
   },
   "contentPage": {
     "match": "/^http:\\/\\/www\\.bxwx9\\.org\\/b\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",

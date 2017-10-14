@@ -12,7 +12,7 @@
         "__cfduid": "__cfduid=d6b765e44f95c003c4c6b837285415fe91506100979; expires=Sat, 22-Sep-18 17:22:59 GMT; path=/; domain=.luoqiu.com; HttpOnly"
     },
     "www.xbqge.com/;HttpOnly": {
-        "_D_SID": "_D_SID=417F8FBDACB051F8EC40D99D52750A8C; path=/;HttpOnly"
+        "_D_SID": "_D_SID=727F8FBD4271110CEC56FB8FEAF295B0; path=/;HttpOnly"
     },
     ".qidian.com/": {
         "_csrfToken": "_csrfToken=olt4IrWwH6xpJKqEswJjb7XgLqQ4gtxXiqHOBjyf; expires=Sat, 22-Sep-2018 17:26:26 GMT; path=/; domain=.qidian.com",
@@ -23,12 +23,12 @@
     },
     "book.qq.com/": {
         "PHPSESSID": "PHPSESSID=oleaf7c64o99tssjj3j5hemjo5; path=/",
-        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Fri, 13-Oct-2017 09:29:20 GMT; path=/",
-        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Fri, 13-Oct-2017 09:29:20 GMT; path=/"
+        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Sat, 14-Oct-2017 17:35:02 GMT; path=/",
+        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Sat, 14-Oct-2017 17:35:02 GMT; path=/"
     },
     "ebook.qq.com/": {
-        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Fri, 13-Oct-2017 09:29:21 GMT; path=/",
-        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Fri, 13-Oct-2017 09:29:21 GMT; path=/"
+        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Sat, 14-Oct-2017 17:35:03 GMT; path=/",
+        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Sat, 14-Oct-2017 17:35:03 GMT; path=/"
     },
     ".sogou.com/": {
         "IPLOC": "IPLOC=CN4401; expires=Sat, 22-Sep-18 18:07:38 GMT; domain=.sogou.com; path=/",
@@ -42,12 +42,12 @@
     },
     ".readnovel.com/": {
         "_csrfToken": "_csrfToken=Mebpu3m7gFVOLMOE4nz5iNuaMiGrI6UtvHqvkUbM; expires=Sat, 13-Oct-2018 07:36:45 GMT; path=/; domain=.readnovel.com",
-        "ywGuid": "ywGuid=test; expires=Fri, 13-Oct-2017 07:35:01 GMT; path=/; domain=.readnovel.com",
-        "ywKey": "ywKey=test; expires=Fri, 13-Oct-2017 07:35:01 GMT; path=/; domain=.readnovel.com",
+        "ywGuid": "ywGuid=test; expires=Sat, 14-Oct-2017 18:33:24 GMT; path=/; domain=.readnovel.com",
+        "ywKey": "ywKey=test; expires=Sat, 14-Oct-2017 18:33:24 GMT; path=/; domain=.readnovel.com",
         "newstatisticUUID": "newstatisticUUID=1506103666_1549143063; expires=Sun, 22-Sep-2019 18:07:46 GMT; path=/; domain=.readnovel.com"
     },
     "www.motie.com/": {
-        "JSESSIONID": "JSESSIONID=64EBE3D0B0721D8F8AA00ACDAD9B6346; Path=/; HttpOnly"
+        "JSESSIONID": "JSESSIONID=98B4698B58AD3960A0D7C3AF74031AE7; Path=/; HttpOnly"
     },
     "motie.com/": {
         "uc": "uc=Ch1e3lnFUXfBcSWNQRpfAg==; expires=Thu, 31-Dec-37 23:55:55 GMT; domain=motie.com; path=/"
@@ -56,22 +56,22 @@
         "PHPSESSID": "PHPSESSID=d9dvh9gst1md8c9b1sa2pf6mq5; path=/; domain=.hongshu.com"
     },
     ".baidu.com/": {
-        "version": "BAIDUID=6BA85E7088E1DC718EE916C302BAC324:FG=1; expires=Sat, 13-Oct-18 07:36:43 GMT; max-age=31536000; path=/; domain=.baidu.com; version=1",
-        "BAIDUID": "BAIDUID=35CA9CB2593793008C9D906ED1DB1ED8:FG=1; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com",
+        "version": "BAIDUID=2919B98D777674F442110512475BB290:FG=1; expires=Sun, 14-Oct-18 18:35:05 GMT; max-age=31536000; path=/; domain=.baidu.com; version=1",
+        "BAIDUID": "BAIDUID=A965856FB842816BBB1690273E5A087A:FG=1; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com",
         "BIDUPSID": "BIDUPSID=D049AA1D5BB116C556240F99E67517C4; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com",
         "PSTM": "PSTM=1506103687; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com",
-        "PSINO": "PSINO=3; domain=.baidu.com; path=/",
-        "H_PS_PSSID": "H_PS_PSSID=1442_21116; path=/; domain=.baidu.com"
+        "PSINO": "PSINO=6; domain=.baidu.com; path=/",
+        "H_PS_PSSID": "H_PS_PSSID=1425_19033_21115_17001_24658; path=/; domain=.baidu.com"
     },
     "so.ihuaben.com/": {
-        "JSESSIONID": "JSESSIONID=00F5EBC0358FA1526C85732C0229E7A3; Path=/"
+        "JSESSIONID": "JSESSIONID=88ACCF59A49FD4F548651ECAA89C7FE1; Path=/"
     },
     "www.xxsy.net/": {
         "ASP.NET_SessionId": "ASP.NET_SessionId=tz4c3rqlgeakpnwmk3w0agxj; path=/; HttpOnly"
     },
     "www.baidu.com/": {
         "BD_CK_SAM": "BD_CK_SAM=1;path=/",
-        "BDSVRTM": "BDSVRTM=0; path=/"
+        "BDSVRTM": "BDSVRTM=6; path=/"
     },
     ".001bz.org/": {
         "__cfduid": "__cfduid=db88789e415ac93558c83d6c5bc8eb6d81506105357; expires=Sat, 22-Sep-18 18:35:57 GMT; path=/; domain=.001bz.org; HttpOnly"
@@ -84,8 +84,8 @@
     },
     ".hongxiu.com/": {
         "_csrfToken": "_csrfToken=Y8fiw2xkuSt2RhKW4q9MSMf3e2LBMVI5ZouO2XVD; expires=Mon, 24-Sep-2018 14:01:24 GMT; path=/; domain=.hongxiu.com",
-        "ywGuid": "ywGuid=test; expires=Tue, 26-Sep-2017 16:39:58 GMT; path=/; domain=.hongxiu.com",
-        "ywKey": "ywKey=test; expires=Tue, 26-Sep-2017 16:39:58 GMT; path=/; domain=.hongxiu.com",
+        "ywGuid": "ywGuid=test; expires=Sat, 14-Oct-2017 18:33:28 GMT; path=/; domain=.hongxiu.com",
+        "ywKey": "ywKey=test; expires=Sat, 14-Oct-2017 18:33:28 GMT; path=/; domain=.hongxiu.com",
         "newstatisticUUID": "newstatisticUUID=1506261685_938775994; expires=Tue, 24-Sep-2019 14:01:25 GMT; path=/; domain=.hongxiu.com"
     },
     "zhulang.com/": {

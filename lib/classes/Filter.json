@@ -2,7 +2,8 @@
     "chapterTitle":[
         "[\\(\\[（].*？[0-9一二三四五六七八九十]更.*?[\\)\\]）]",
         "[\\(\\[（].*?(月票|推荐|收藏).*?[\\)\\]）]",
-        "www.*(com|net|org|cn|in)"
+        "www.*(com|net|org|cn|in)",
+        "乐文小说网"
     ],
     "chapterBeforeFilter":[],
     "chapterAfterFilter":[
