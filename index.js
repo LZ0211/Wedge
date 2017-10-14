@@ -70,8 +70,8 @@ class Wedge extends EventEmitter{
         }
 
         if(this.getConfig('app.debug')){
-            this.debug = function(msg){
-                this.log(`[${this.label}]:${msg}`);
+            this.debug = function(...msg){
+                this.log(`[${this.label}]:${msg.join(' ')}`);
             }
         }else{
             this.debug = this.noop;
@@ -145,7 +145,7 @@ class Wedge extends EventEmitter{
         }
         function listen(){
             rl.question(docs[ref],function(input){
-                args.push(input);
+                args.push(input.trim());
                 ref += 1;
                 if(ref === len){
                     rl.close();
@@ -226,7 +226,7 @@ class Wedge extends EventEmitter{
                 return options.success(data);
             }
             if (err){
-                this.debug(err)
+                this.debug(err,options.url,this.book.getMeta('title'));
                 if (connectTimes < maxConnectTimes) return req.end();
                 return options.error(err.code);
             }

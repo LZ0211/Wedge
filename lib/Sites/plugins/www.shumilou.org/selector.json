@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/\\/\\w+\\/$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.bottom').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('meta[property=\"og:novel:book_name\"]').attr('content')",
+      "author": "$('meta[property=\"og:novel:author\"]').attr('content')",
+      "classes": "$('meta[property=\"og:novel:category\"]').attr('content')",
+      "isend": "$('meta[property=\"og:novel:status\"]').attr('content')",
+      "cover": "$('meta[property=\"og:image\"]').attr('content')",
+      "brief": "$('p.book-intro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/\\w+\\/$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.bottom').length",
+    "bookIndexs": "$('.chapterlist a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/\\w+\\/\\d+\\.html$/i.test($.location())",
+    "footer": "$('.bottom').length",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

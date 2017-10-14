@@ -26,7 +26,6 @@
     "filter": "$('.content').find('span,script').remove()",
     "image": "$('.content img').each((i,v)=>$(v).attr('src',$(v).attr('data-original')))",
     "chapterInfos": {
-      "id": "/\\d+\\.html/.test($.location()) && $.location().match(/(\\d+)\\.html/)[0]",
       "title": "$('.title h2').text()",
       "source": "$.location()",
       "content": "$('.content').html()"

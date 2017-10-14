@@ -53,7 +53,7 @@
   ],
   "request": {
     "reconnect": 5,
-    "imageReconnect": 3,
+    "imagereconnect": 3,
     "timeout": 5000,
     "proxy": false
   },
@@ -73,12 +73,12 @@
   "book": {
     "check": true,
     "sync": false,
-    "changeSource": true,
+    "changesource": true,
     "override": false,
-    "imageLocalization": false,
-    "searchMeta": true,
-    "deepDownload": false,
-    "maxDepth": 0,
+    "imagelocalization": false,
+    "searchmeta": true,
+    "deepdownload": false,
+    "maxdepth": 0,
     "localization": true,
     "unique":{
       "id":true,
