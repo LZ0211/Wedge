@@ -80,19 +80,19 @@ class Wedge extends EventEmitter{
 
     initFunctions(){
         //newBookCmd
-        this.newBookCmd = this.CMD('getBookMeta > updateBookMeta > createBook > checkBookCover > saveBook > getBookIndexs > getChapters > sendToDataBase > generateEbook > end');
+        this.newBookCmd = this.CMD('getBookMeta > updateBookMeta > createBook > checkBookCover > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end');
 
         //updateBookCmd
-        this.updateBookCmd = this.CMD('loadBook > checkBookCover > saveBook > getBookIndexs > getChapters > sendToDataBase > generateEbook > end');
+        this.updateBookCmd = this.CMD('loadBook > checkBookCover > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end');
 
         //redownload
-        this.reDownloadCmd = this.CMD('loadBook > updateBookMeta > checkBookCover > emptyBookIndex > saveBook > getBookIndexs > getChapters > sendToDataBase > generateEbook > end')
+        this.reDownloadCmd = this.CMD('loadBook > updateBookMeta > checkBookCover > emptyBookIndex > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end')
 
         //refreshBookCmd
         this.refreshBookCmd = this.CMD('loadBook > updateBookMeta > checkBookCover > saveBook > sendToDataBase > generateEbook > end');
 
         //autoUpdateCmd
-        this.autoUpdateCmd = this.CMD('loadBook > updateBookMeta > checkBookCover > saveBook > getBookIndexs > getChapters > sendToDataBase > generateEbook > end');
+        this.autoUpdateCmd = this.CMD('loadBook > updateBookMeta > checkBookCover > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end');
 
         //eBookCmd
         this.eBookCmd = this.CMD('loadBook > checkBookCover > saveBook > generateEbook > end');
@@ -164,6 +164,7 @@ class Wedge extends EventEmitter{
         if (undefined == fn){
             this.debug('end...');
             this.emit('end');
+            this.book = new Book();
         }
         if (typeof fn === 'function'){
             this.once('end',fn);
@@ -1116,13 +1117,14 @@ class Wedge extends EventEmitter{
     }
 
     deleteBooks(dirs){
-        new Thread()
-        .use((dir,next)=>this.spawn().deleteBook(dir).end(next))
-        .end(this.next())
-        .queue(dirs)
-        .log(this.debug.bind(this))
-        .label('deleteBooks')
-        .start();
+        process.nextTick(()=>{
+            dirs.forEach(uuid=>{
+                this.debug(`[deleteBooks] ${uuid}`)
+                this.database.remove(uuid);
+                fs.rmdirsSync(uuid);
+            });
+            this.end();
+        });
         return this;
     }
 

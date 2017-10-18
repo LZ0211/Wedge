@@ -89,12 +89,12 @@ module.exports = function (){
         var maxTitleLength = Math.max.apply(Math,titles.map(strLength));
         var maxAuthorLength = Math.max.apply(Math,authors.map(strLength));
         var maxClassesLength = Math.max.apply(Math,classes.map(strLength));
-        var line = Array(76+maxTitleLength+maxAuthorLength+maxClassesLength).fill('-').join('');
+        var line = Array(84+maxTitleLength+maxAuthorLength+maxClassesLength).fill('-').join('');
         console.log(line);
-        console.log(` ${center('书名',maxTitleLength)} | ${center('作者',maxAuthorLength)} |                 UUID                 | ${center('小说类别',maxClassesLength)} | 状态 |      更新时间      `);
+        console.log(` ${center('序号',5)} | ${center('书名',maxTitleLength)} | ${center('作者',maxAuthorLength)} |                 UUID                 | ${center('小说类别',maxClassesLength)} | 状态 |      更新时间      `);
         console.log(line);
-        items.forEach(item=>{
-            console.log(` ${center(item.title,maxTitleLength)} | ${center(item.author,maxAuthorLength)} | ${item.uuid} | ${center(item.classes,maxClassesLength)} |${item.isend ? ' 完结 ' : ' 连载 '}| ${formatTime(item.date)} `);
+        items.forEach((item,idx)=>{
+            console.log(` ${center(''+(idx+1),5)} | ${center(item.title,maxTitleLength)} | ${center(item.author,maxAuthorLength)} | ${item.uuid} | ${center(item.classes,maxClassesLength)} |${item.isend ? ' 完结 ' : ' 连载 '}| ${formatTime(item.date)} `);
         });
         console.log(line);
         refresh();

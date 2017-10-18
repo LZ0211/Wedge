@@ -64,12 +64,10 @@ module.exports = function(){
                     try{
                         var files = fs.readdirSync(dir).map(file=>Path.join(dir,file));
                         return this.sendToiReader(ip,files);
-                    }
-                    catch (err){
+                    }catch (err){
                         return this.sendToiReader(ip,Files);
                     }
-                }
-                if (stat.isFile()){
+                }else{
                     return this.sendToiReader(ip,[dir]);
                 }
             });

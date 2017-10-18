@@ -59,16 +59,14 @@ module.exports = function(){
                     try{
                         var files = fs.readdirSync(dir).map(file=>Path.join(dir,file));
                         return this.sendToQQ(ip,files);
-                    }
-                    catch (err){
+                    }catch (err){
                         return this.sendToQQ(ip,Files);
                     }
-                }
-                if (stat.isFile()){
+                }else{
                     return this.sendToQQ(ip,[dir]);
                 }
             });
         }
-        return formatIp(ip,this.Thread().use(post).queue(Files).end(()=>this.end()).start());
+        return formatIp(ip,()=>this.Thread().use(post).queue(Files).end(()=>this.end()).start());
     }
 }

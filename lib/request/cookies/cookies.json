@@ -12,23 +12,23 @@
         "__cfduid": "__cfduid=d6b765e44f95c003c4c6b837285415fe91506100979; expires=Sat, 22-Sep-18 17:22:59 GMT; path=/; domain=.luoqiu.com; HttpOnly"
     },
     "www.xbqge.com/;HttpOnly": {
-        "_D_SID": "_D_SID=727F8FBD4271110CEC56FB8FEAF295B0; path=/;HttpOnly"
+        "_D_SID": "_D_SID=CFB9442879C864EDEC40197607026BC9; path=/;HttpOnly"
     },
     ".qidian.com/": {
         "_csrfToken": "_csrfToken=olt4IrWwH6xpJKqEswJjb7XgLqQ4gtxXiqHOBjyf; expires=Sat, 22-Sep-2018 17:26:26 GMT; path=/; domain=.qidian.com",
         "newstatisticUUID": "newstatisticUUID=1506101186_2036671516; expires=Sun, 22-Sep-2019 17:26:26 GMT; path=/; domain=.qidian.com"
     },
     "www.paoshuba.cc/": {
-        "jieqiVisitId": "jieqiVisitId=article_articleviews%3D71898%7C15336%7C49154%7C55047%7C68752%7C74315%7C50903%7C72536%7C45783%7C2620%7C69677%7C19454%7C73823%7C63288%7C56132%7C9957%7C53172%7C69721%7C65102%7C54202%7C51646%7C54201%7C17948%7C68833%7C55759%7C70943%7C64015%7C65736%7C25418%7C58325%7C9964%7C70319%7C1608%7C72719%7C22754%7C2253%7C73490%7C11018%7C63816%7C73883%7C69674%7C67922%7C71192%7C61084%7C51777%7C1708%7C66275%7C74112%7C61858%7C74427%7C67377%7C68873%7C67212%7C58556%7C68798%7C61447%7C29713%7C32015%7C52316; expires=Tue, 26-Sep-2017 17:49:01 GMT; path=/"
+        "jieqiVisitId": "jieqiVisitId=article_articleviews%3D71898%7C15336%7C49154%7C55047%7C68752%7C74315%7C50903%7C72536%7C45783%7C2620%7C69677%7C19454%7C73823%7C63288%7C56132%7C9957%7C53172%7C69721%7C65102%7C54202%7C51646%7C54201%7C17948%7C68833%7C55759%7C70943%7C64015%7C65736%7C25418%7C58325%7C9964%7C70319%7C1608%7C72719%7C22754%7C2253%7C73490%7C11018%7C63816%7C73883%7C69674%7C67922%7C71192%7C61084%7C51777%7C1708%7C66275%7C74112%7C61858%7C74427%7C67377%7C68873%7C67212%7C58556%7C68798%7C61447%7C29713%7C32015%7C52316%7C71070%7C73718%7C21292%7C44810%7C12305%7C45432%7C1166%7C1376%7C37363%7C47802%7C2791%7C47624%7C1469%7C15319%7C1271%7C1747%7C46642%7C2146%7C56985%7C64170; expires=Mon, 16-Oct-2017 19:24:07 GMT; path=/"
     },
     "book.qq.com/": {
         "PHPSESSID": "PHPSESSID=oleaf7c64o99tssjj3j5hemjo5; path=/",
-        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Sat, 14-Oct-2017 17:35:02 GMT; path=/",
-        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Sat, 14-Oct-2017 17:35:02 GMT; path=/"
+        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Tue, 17-Oct-2017 12:20:09 GMT; path=/",
+        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Tue, 17-Oct-2017 12:20:09 GMT; path=/"
     },
     "ebook.qq.com/": {
-        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Sat, 14-Oct-2017 17:35:03 GMT; path=/",
-        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Sat, 14-Oct-2017 17:35:03 GMT; path=/"
+        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Tue, 17-Oct-2017 12:20:18 GMT; path=/",
+        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Tue, 17-Oct-2017 12:20:18 GMT; path=/"
     },
     ".sogou.com/": {
         "IPLOC": "IPLOC=CN4401; expires=Sat, 22-Sep-18 18:07:38 GMT; domain=.sogou.com; path=/",
@@ -42,12 +42,12 @@
     },
     ".readnovel.com/": {
         "_csrfToken": "_csrfToken=Mebpu3m7gFVOLMOE4nz5iNuaMiGrI6UtvHqvkUbM; expires=Sat, 13-Oct-2018 07:36:45 GMT; path=/; domain=.readnovel.com",
-        "ywGuid": "ywGuid=test; expires=Sat, 14-Oct-2017 18:33:24 GMT; path=/; domain=.readnovel.com",
-        "ywKey": "ywKey=test; expires=Sat, 14-Oct-2017 18:33:24 GMT; path=/; domain=.readnovel.com",
+        "ywGuid": "ywGuid=test; expires=Sun, 15-Oct-2017 18:47:52 GMT; path=/; domain=.readnovel.com",
+        "ywKey": "ywKey=test; expires=Sun, 15-Oct-2017 18:47:52 GMT; path=/; domain=.readnovel.com",
         "newstatisticUUID": "newstatisticUUID=1506103666_1549143063; expires=Sun, 22-Sep-2019 18:07:46 GMT; path=/; domain=.readnovel.com"
     },
     "www.motie.com/": {
-        "JSESSIONID": "JSESSIONID=98B4698B58AD3960A0D7C3AF74031AE7; Path=/; HttpOnly"
+        "JSESSIONID": "JSESSIONID=653CAF649347B68EE431FDB2BB0958AD; Path=/; HttpOnly"
     },
     "motie.com/": {
         "uc": "uc=Ch1e3lnFUXfBcSWNQRpfAg==; expires=Thu, 31-Dec-37 23:55:55 GMT; domain=motie.com; path=/"
@@ -56,22 +56,22 @@
         "PHPSESSID": "PHPSESSID=d9dvh9gst1md8c9b1sa2pf6mq5; path=/; domain=.hongshu.com"
     },
     ".baidu.com/": {
-        "version": "BAIDUID=2919B98D777674F442110512475BB290:FG=1; expires=Sun, 14-Oct-18 18:35:05 GMT; max-age=31536000; path=/; domain=.baidu.com; version=1",
-        "BAIDUID": "BAIDUID=A965856FB842816BBB1690273E5A087A:FG=1; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com",
+        "version": "BAIDUID=E1BEE1E96AC09FBF914A1933B5D79EE6:FG=1; expires=Mon, 15-Oct-18 18:49:34 GMT; max-age=31536000; path=/; domain=.baidu.com; version=1",
+        "BAIDUID": "BAIDUID=3C823406776E83902A61CBDD301B15D6:FG=1; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com",
         "BIDUPSID": "BIDUPSID=D049AA1D5BB116C556240F99E67517C4; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com",
         "PSTM": "PSTM=1506103687; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com",
         "PSINO": "PSINO=6; domain=.baidu.com; path=/",
-        "H_PS_PSSID": "H_PS_PSSID=1425_19033_21115_17001_24658; path=/; domain=.baidu.com"
+        "H_PS_PSSID": "H_PS_PSSID=1427_21119_18560_17001_22159; path=/; domain=.baidu.com"
     },
     "so.ihuaben.com/": {
-        "JSESSIONID": "JSESSIONID=88ACCF59A49FD4F548651ECAA89C7FE1; Path=/"
+        "JSESSIONID": "JSESSIONID=29CFA4FC730CC1BEBE9A7814494CFC17; Path=/"
     },
     "www.xxsy.net/": {
         "ASP.NET_SessionId": "ASP.NET_SessionId=tz4c3rqlgeakpnwmk3w0agxj; path=/; HttpOnly"
     },
     "www.baidu.com/": {
         "BD_CK_SAM": "BD_CK_SAM=1;path=/",
-        "BDSVRTM": "BDSVRTM=6; path=/"
+        "BDSVRTM": "BDSVRTM=7; path=/"
     },
     ".001bz.org/": {
         "__cfduid": "__cfduid=db88789e415ac93558c83d6c5bc8eb6d81506105357; expires=Sat, 22-Sep-18 18:35:57 GMT; path=/; domain=.001bz.org; HttpOnly"
@@ -84,8 +84,8 @@
     },
     ".hongxiu.com/": {
         "_csrfToken": "_csrfToken=Y8fiw2xkuSt2RhKW4q9MSMf3e2LBMVI5ZouO2XVD; expires=Mon, 24-Sep-2018 14:01:24 GMT; path=/; domain=.hongxiu.com",
-        "ywGuid": "ywGuid=test; expires=Sat, 14-Oct-2017 18:33:28 GMT; path=/; domain=.hongxiu.com",
-        "ywKey": "ywKey=test; expires=Sat, 14-Oct-2017 18:33:28 GMT; path=/; domain=.hongxiu.com",
+        "ywGuid": "ywGuid=test; expires=Sun, 15-Oct-2017 18:47:57 GMT; path=/; domain=.hongxiu.com",
+        "ywKey": "ywKey=test; expires=Sun, 15-Oct-2017 18:47:57 GMT; path=/; domain=.hongxiu.com",
         "newstatisticUUID": "newstatisticUUID=1506261685_938775994; expires=Tue, 24-Sep-2019 14:01:25 GMT; path=/; domain=.hongxiu.com"
     },
     "zhulang.com/": {
@@ -166,8 +166,8 @@
     },
     "chuangshi.qq.com/": {
         "PHPSESSID": "PHPSESSID=cgvdvp3nnns2qsmlcndc7r8kj7; path=/",
-        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Tue, 26-Sep-2017 15:25:50 GMT; Max-Age=-3600; path=/",
-        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Tue, 26-Sep-2017 15:25:50 GMT; Max-Age=-3600; path=/"
+        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Tue, 17-Oct-2017 12:20:09 GMT; Max-Age=-3600; path=/",
+        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Tue, 17-Oct-2017 12:20:09 GMT; Max-Age=-3600; path=/"
     },
     ".diyibanzhu.in/": {
         "__cfduid": "__cfduid=d350040293cc7f137122d4f1d86a648941507524866; expires=Tue, 09-Oct-18 04:54:26 GMT; path=/; domain=.diyibanzhu.in; HttpOnly; Secure"
@@ -188,5 +188,16 @@
         "ywGuid": "ywGuid=test; expires=Fri, 13-Oct-2017 07:35:05 GMT; path=/; domain=.xs8.cn",
         "ywKey": "ywKey=test; expires=Fri, 13-Oct-2017 07:35:05 GMT; path=/; domain=.xs8.cn",
         "newstatisticUUID": "newstatisticUUID=1507880206_1704927679; expires=Sun, 13-Oct-2019 07:36:46 GMT; path=/; domain=.xs8.cn"
+    },
+    ".zwdu.com/": {
+        "__cfduid": "__cfduid=dddf1b889ee08c516db9b1169e4fb4fab1508087285; expires=Mon, 15-Oct-18 17:08:05 GMT; path=/; domain=.zwdu.com; HttpOnly"
+    },
+    "dushu.qq.com/": {
+        "PHPSESSID": "PHPSESSID=j65u3kq022q0ni3kn6cimroom1; path=/",
+        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Sun, 15-Oct-2017 17:59:36 GMT; path=/",
+        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Sun, 15-Oct-2017 17:59:36 GMT; path=/"
+    },
+    "www.beidouxin.com/": {
+        "__jsluid": "__jsluid=e6d331be8d2ac6b4d3d4fc461db6a811; max-age=31536000; path=/; HttpOnly"
     }
 }
