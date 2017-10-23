@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/xiaoshuo\\/\\d+\\/?$/i.test($.location())",
+    "indexPage": "$.location($('a.catalogbtn').attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('meta[property=\"og:novel:book_name\"]').attr('content')",
+      "author": "$('meta[property=\"og:novel:author\"]').attr('content')",
+      "classes": "$('meta[property=\"og:novel:category\"]').attr('content')",
+      "isend": "false",
+      "cover": "$('meta[property=\"og:image\"]').attr('content')",
+      "brief": "$('div.book-intro > div').eq(0).html()"
+    }
+  },
+  "indexPage": {
+    "match": "$('.chapter-list').length",
+    "infoPage": "$.location($('.location a').eq(-1).attr('href'))",
+    "footer": "$('.footer').length > 0",
+    "bookIndexs": "$('ul > li > span > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "$('.article-con').length",
+    "footer": "$('.footer').length > 0",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.article-con').html()"
+    }
+  }
+}

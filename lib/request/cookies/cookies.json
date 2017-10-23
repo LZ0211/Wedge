@@ -12,23 +12,23 @@
         "__cfduid": "__cfduid=d6b765e44f95c003c4c6b837285415fe91506100979; expires=Sat, 22-Sep-18 17:22:59 GMT; path=/; domain=.luoqiu.com; HttpOnly"
     },
     "www.xbqge.com/;HttpOnly": {
-        "_D_SID": "_D_SID=CFB9442879C864EDEC40197607026BC9; path=/;HttpOnly"
+        "_D_SID": "_D_SID=417F8FBD41066EA5EC7988A21518EBEC; path=/;HttpOnly"
     },
     ".qidian.com/": {
         "_csrfToken": "_csrfToken=olt4IrWwH6xpJKqEswJjb7XgLqQ4gtxXiqHOBjyf; expires=Sat, 22-Sep-2018 17:26:26 GMT; path=/; domain=.qidian.com",
         "newstatisticUUID": "newstatisticUUID=1506101186_2036671516; expires=Sun, 22-Sep-2019 17:26:26 GMT; path=/; domain=.qidian.com"
     },
     "www.paoshuba.cc/": {
-        "jieqiVisitId": "jieqiVisitId=article_articleviews%3D71898%7C15336%7C49154%7C55047%7C68752%7C74315%7C50903%7C72536%7C45783%7C2620%7C69677%7C19454%7C73823%7C63288%7C56132%7C9957%7C53172%7C69721%7C65102%7C54202%7C51646%7C54201%7C17948%7C68833%7C55759%7C70943%7C64015%7C65736%7C25418%7C58325%7C9964%7C70319%7C1608%7C72719%7C22754%7C2253%7C73490%7C11018%7C63816%7C73883%7C69674%7C67922%7C71192%7C61084%7C51777%7C1708%7C66275%7C74112%7C61858%7C74427%7C67377%7C68873%7C67212%7C58556%7C68798%7C61447%7C29713%7C32015%7C52316%7C71070%7C73718%7C21292%7C44810%7C12305%7C45432%7C1166%7C1376%7C37363%7C47802%7C2791%7C47624%7C1469%7C15319%7C1271%7C1747%7C46642%7C2146%7C56985%7C64170; expires=Mon, 16-Oct-2017 19:24:07 GMT; path=/"
+        "jieqiVisitId": "jieqiVisitId=article_articleviews%3D71898%7C15336%7C49154%7C55047%7C68752%7C74315%7C50903%7C72536%7C45783%7C2620%7C69677%7C19454%7C73823%7C63288%7C56132%7C9957%7C53172%7C69721%7C65102%7C54202%7C51646%7C54201%7C17948%7C68833%7C55759%7C70943%7C64015%7C65736%7C25418%7C58325%7C9964%7C70319%7C1608%7C72719%7C22754%7C2253%7C73490%7C11018%7C63816%7C73883%7C69674%7C67922%7C71192%7C61084%7C51777%7C1708%7C66275%7C74112%7C61858%7C74427%7C67377%7C68873%7C67212%7C58556%7C68798%7C61447%7C29713%7C32015%7C52316%7C71070%7C73718%7C21292%7C44810%7C12305%7C45432%7C1166%7C1376%7C37363%7C47802%7C2791%7C47624%7C1469%7C15319%7C1271%7C1747%7C46642%7C2146%7C56985%7C64170%7C72529%7C74060%7C72733%7C72891%7C74837%7C68401%7C17847%7C52458%7C66893; expires=Thu, 19-Oct-2017 18:38:13 GMT; path=/"
     },
     "book.qq.com/": {
         "PHPSESSID": "PHPSESSID=oleaf7c64o99tssjj3j5hemjo5; path=/",
-        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Tue, 17-Oct-2017 12:20:09 GMT; path=/",
-        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Tue, 17-Oct-2017 12:20:09 GMT; path=/"
+        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Fri, 20-Oct-2017 21:37:45 GMT; Max-Age=-3600; path=/",
+        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Fri, 20-Oct-2017 21:37:45 GMT; Max-Age=-3600; path=/"
     },
     "ebook.qq.com/": {
-        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Tue, 17-Oct-2017 12:20:18 GMT; path=/",
-        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Tue, 17-Oct-2017 12:20:18 GMT; path=/"
+        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Fri, 20-Oct-2017 21:37:45 GMT; Max-Age=-3600; path=/",
+        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Fri, 20-Oct-2017 21:37:45 GMT; Max-Age=-3600; path=/"
     },
     ".sogou.com/": {
         "IPLOC": "IPLOC=CN4401; expires=Sat, 22-Sep-18 18:07:38 GMT; domain=.sogou.com; path=/",
@@ -194,10 +194,18 @@
     },
     "dushu.qq.com/": {
         "PHPSESSID": "PHPSESSID=j65u3kq022q0ni3kn6cimroom1; path=/",
-        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Sun, 15-Oct-2017 17:59:36 GMT; path=/",
-        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Sun, 15-Oct-2017 17:59:36 GMT; path=/"
+        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Thu, 19-Oct-2017 17:01:48 GMT; Max-Age=-3600; path=/",
+        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Thu, 19-Oct-2017 17:01:48 GMT; Max-Age=-3600; path=/"
     },
     "www.beidouxin.com/": {
         "__jsluid": "__jsluid=e6d331be8d2ac6b4d3d4fc461db6a811; max-age=31536000; path=/; HttpOnly"
+    },
+    "31wxw8.com/": {
+        "safedog-flow-item": "safedog-flow-item=; expires=Wen, 18-Oct-2017 16:00:11 GMT; domain=31wxw8.com; path=/"
+    },
+    "www.kenshu.cc/": {
+        "tjcookiestr": "tjcookiestr=a%3A3%3A%7Bs%3A7%3A%22addtime%22%3Bs%3A10%3A%222017-10-21%22%3Bs%3A2%3A%22ip%22%3Bs%3A12%3A%22117.26.144.5%22%3Bs%3A3%3A%22ids%22%3Bs%3A5%3A%22%2C2904%22%3B%7D; expires=Sat, 21-Oct-2017 22:47:22 GMT; path=/",
+        "jieqiVisitId": "jieqiVisitId=article_articleviews%3D2904; expires=Sat, 21-Oct-2017 00:13:55 GMT; path=/",
+        "yunsuo_session_verify": "yunsuo_session_verify=8746387ba055dc85db3cc7b493fdfec3; expires=Thu, 26-Oct-17 00:21:07 GMT; path=/; HttpOnly"
     }
 }

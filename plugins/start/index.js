@@ -392,8 +392,8 @@ module.exports = function (){
                         app.config.set(key,false);
                     }else if(value==='true'){
                         app.config.set(key,true);
-                    }else if(value.match(/^\d+(\.\d+)?/)){
-                        app.config.set(key,parseInt(value));
+                    }else if(value.match(/^\d+(\.\d+)?$/)){
+                        app.config.set(key,Number(value));
                     }else{
                         app.config.set(key,value);
                     }
