@@ -463,16 +463,17 @@ class Wedge extends EventEmitter{
             var parsedData = this.getParsedData(data,link.url);
             var infoPage = parsedData.infoPage;
             var indexPage = parsedData.indexPage;
-            if (!infoPage && !indexPage){
+            if (infoPage){
+                indexUrl = infoPage.indexPage;
+                return infoPage;  
+            }
+            if (indexPage && indexPage.infoPage && indexPage.infoPage !== link.url){
+                this.getBookMeta(indexPage.infoPage,fn);
+                return null;
+            }else{
                 this.error('this url is Not infoPage or request failed');
                 return null;
             }
-            if (!infoPage){
-                this.getBookMeta(indexPage.infoPage,fn);
-                return null;
-            }
-            indexUrl = infoPage.indexPage;
-            return infoPage;
         };
         requestInfo(link);
         return this;
