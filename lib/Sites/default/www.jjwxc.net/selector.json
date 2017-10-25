@@ -8,7 +8,7 @@
     "bookInfos": {
       "origin": "$.location()",
       "source": "$.location()",
-      "title": "$('h1[itemprop=\"name\"]').text().trim()",
+      "title": "$('h1[itemprop=\"name\"]').find('span').text().trim()",
       "author": "$('span[itemprop=\"author\"]').text().trim()",
       "classes": "$('span[itemprop=\"genre\"]').text().trim()",
       "isend": "$('span[itemprop=\"updataStatus\"]').text()",

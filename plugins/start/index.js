@@ -69,7 +69,7 @@ module.exports = function (){
         app.prompt(['>'],input=>{
             if(input !== ''){
                 arr.push(input);
-                multInput(arr,fn);
+                return multInput(arr,fn);
             }else{
                 return fn(arr);
             }
@@ -266,6 +266,7 @@ module.exports = function (){
                 function rename(next){
                     if(uuid !== app.book.getMeta('uuid')){
                         app.database.remove(uuid);
+                        app.lib.fs.rmdirsSync(app.book.getMeta('uuid'));
                         app.lib.fs.renameSync(uuid, app.book.getMeta('uuid'));
                     }
                     next()

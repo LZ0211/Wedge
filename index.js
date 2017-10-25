@@ -27,7 +27,7 @@ class Wedge extends EventEmitter{
         super();
         this.config = new Hash(setting);
         this.label = Random.uuid(8,16);
-        this.book = new Book();
+        this.book = Book();
         this.bookdir = null;
         this.chdir(dir);
         this.init();
@@ -86,13 +86,13 @@ class Wedge extends EventEmitter{
         this.updateBookCmd = this.CMD('loadBook > checkBookCover > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end');
 
         //redownload
-        this.reDownloadCmd = this.CMD('loadBook > updateBookMeta > checkBookCover > emptyBookIndex > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end')
+        this.reDownloadCmd = this.CMD('loadBook > updateBookMeta > getBookCover > checkBookCover > emptyBookIndex > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end')
 
         //refreshBookCmd
-        this.refreshBookCmd = this.CMD('loadBook > updateBookMeta > checkBookCover > saveBook > sendToDataBase > generateEbook > end');
+        this.refreshBookCmd = this.CMD('loadBook > updateBookMeta > getBookCover > checkBookCover > saveBook > sendToDataBase > generateEbook > end');
 
         //autoUpdateCmd
-        this.autoUpdateCmd = this.CMD('loadBook > updateBookMeta > checkBookCover > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end');
+        this.autoUpdateCmd = this.CMD('loadBook > updateBookMeta > getBookCover > checkBookCover > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end');
 
         //eBookCmd
         this.eBookCmd = this.CMD('loadBook > checkBookCover > saveBook > generateEbook > end');
@@ -122,7 +122,7 @@ class Wedge extends EventEmitter{
             EventEmitter.call(this);
             this.config = new Hash();
             this.config.set(setting);
-            this.book = new Book();
+            this.book = Book();
             this.bookdir = null;
             this.label = Random.uuid(8,16);
             this.initFunctions();
@@ -164,7 +164,7 @@ class Wedge extends EventEmitter{
         if (undefined == fn){
             this.debug('end...');
             this.emit('end');
-            this.book = new Book();
+            this.book = Book();
         }
         if (typeof fn === 'function'){
             this.once('end',fn);
@@ -499,11 +499,11 @@ class Wedge extends EventEmitter{
             if (~s2.indexOf(s1)) return true;
             return false;
         }
+        var app = this.spawn();
         var search = (site,next)=>{
             this.searchInSite(title,site,list=>{
                 new Thread()
                 .use((link,nextFn)=>{
-                    var app = this.spawn();
                     app.debug(link);
                     app.end(nextFn);
                     app.getBookMeta(link,()=>{

@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "$('#chapterlist').length",
+    "indexPage": "$.location()",
+    "footer": "$('.footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('div.info > h1').text().trim()",
+      "author": "$('div.info > h3 > a').text().trim()",
+      "classes": "$('div.info > p').text()",
+      "isend": "$('div.info > span').text().trim()",
+      "cover": "$.location($('.img > img').attr('src'))",
+      "brief": "$('#intro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "$('#chapterlist').length",
+    "infoPage": "$.location()",
+    "footer": "$('.footer').length",
+    "bookIndexs": "$('#chapterlist > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\d\\.html$/i.test($.location())",
+    "footer": "$('.footer').length",
+    "request": {
+      "method": "'POST'",
+      "url": "'http://www.73xs.cc/content.php'",
+      "data": "'nbid=' + $.location().replace('.html','').replace('http://www.73xs.cc/','').split('/').slice(1).join('&crid=') + '&fid=fb96549631c835eb239cd614cc6b5cb7d295121a'"
+    }
+  }
+}
