@@ -231,5 +231,11 @@
     "url": "http://so.msxf.net/book/search/",
     "query": "q=%title%&t=name",
     "name": ".msxf.net"
+  },
+  {
+    "url": "http://s.sfacg.com/",
+    "query": "Key=%title%&S=1&SS=0",
+    "selector": "a.orange_link2",
+    "name": ".sfacg.com"
   }
 ]

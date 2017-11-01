@@ -1,0 +1,34 @@
+{
+  "infoPage": {
+    "match": "$('.comic_Serial_list').length",
+    "indexPage": "$.location()",
+    "footer": "$('.content_bottom').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.wrap > h1').text().trim()",
+      "author": "$('ul.synopsises_font > li:nth-child(2) > a:nth-child(8)').text().split('/').pop()",
+      "classes": "$('ul.synopsises_font > li:nth-child(2) > a:nth-child(10)').text()",
+      "isend": "$('.synopsises_font').text()",
+      "cover": "$.location($('.cover img').attr('src'))",
+      "brief": "$('ul.synopsises_font > li:nth-child(2)').html()"
+    }
+  },
+  "indexPage": {
+    "match": "$('.comic_Serial_list').length",
+    "infoPage": "$.location()",
+    "footer": "$('.content_bottom').length",
+    "bookIndexs": "$('.comic_Serial_list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray().reverse()"
+  },
+  "contentPage": {
+    "match": "$('#curPic').length",
+    "footer": "true",
+    "request":{
+      "url":"$('script').eq(3).attr('src')",
+      "headers":{
+        "referer":"$.location()",
+        "accept":"'*/*'"
+      },
+      "success":"data=>Function(data.toString()+`return picAy.map(src=>hosts[0]+src).map(src=>'<img src=\"'+src+'\">').join('')`)()"
+    }
+  }
+}
