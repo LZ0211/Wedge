@@ -58,7 +58,7 @@
     "proxy": false
   },
   "ebook": {
-    "activated": true,
+    "activated": -1,
     "formation": "epub",
     "directory": "../ebook",
     "opendirectory": false,
@@ -73,8 +73,8 @@
   "book": {
     "check": true,
     "sync": false,
-    "changesource": true,
-    "override": false,
+    "changesource": false,
+    "override": true,
     "imagelocalization": false,
     "searchmeta": true,
     "deepdownload": false,
@@ -88,6 +88,7 @@
   },
   "database": {
     "sync": true,
+    "check": true,
     "primary": "uuid"
   },
   "app": {

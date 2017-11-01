@@ -65,15 +65,26 @@ module.exports = function (){
         Select(thisOpt || mainOptions);
     }
     
-    function multInput(arr,fn){
-        app.prompt(['>'],input=>{
-            if(input !== ''){
-                arr.push(input);
-                return multInput(arr,fn);
-            }else{
-                return fn(arr);
-            }
-        });
+    function multInput(fn){
+        return function(){
+            var rl = app.lib.readline.createInterface({
+                input: process.stdin,
+                output: process.stdout,
+            });
+            rl.setPrompt('>');
+            rl.prompt();
+            var args = [];
+            rl.on('line',input=>{
+                input = input.trim();
+                if(input !== ''){
+                    args.push(input);
+                    rl.prompt()
+                }else{
+                    rl.close();
+                    return fn(args)
+                }
+            });
+        }
     }
     
     function showDatabase(items){
@@ -255,7 +266,7 @@ module.exports = function (){
                             }]
                         },{
                             text:`简介:${app.book.getMeta('brief')}`,
-                            func:[[],()=>multInput([],lines=>{
+                            func:[[],multInput(lines=>{
                                 var val = lines.join('\n')
                                 app.book.setMeta('brief',val);
                                 SelectOptions(next)
@@ -282,19 +293,19 @@ module.exports = function (){
             text:'批量操作',
             options:[returnOption,{
                 text:'新建书籍',
-                func:[[],()=>multInput([],urls=>app.end(refresh).newBooks(urls))]
+                func:[[],multInput(urls=>app.end(refresh).newBooks(urls))]
             },{
                 text:'更新书籍',
-                func:[[],()=>multInput([],uuids=>app.end(refresh).updateBooks(uuids))]
+                func:[[],multInput(uuids=>app.end(refresh).updateBooks(uuids))]
             },{
                 text:'刷新书籍信息',
-                func:[[],()=>multInput([],uuids=>app.end(refresh).refreshBooks(uuids))]
+                func:[[],multInput(uuids=>app.end(refresh).refreshBooks(uuids))]
             },{
                 text:'生成电子书',
-                func:[[],()=>multInput([],uuids=>app.end(refresh).ebooks(uuids))]
+                func:[[],multInput(uuids=>app.end(refresh).ebooks(uuids))]
             },{
                 text:'删除书籍',
-                func:[[],()=>multInput([],uuids=>app.end(refresh).deleteBooks(uuids))]
+                func:[[],multInput(uuids=>app.end(refresh).deleteBooks(uuids))]
             },exit]
         },{
             text:'数据库检索',
@@ -402,6 +413,12 @@ module.exports = function (){
                     refresh();
                 }
             ]
+        },{
+            text:'清除cookie',
+            func:[['请输入网址：'],url=>{
+                app.lib.request.cookies.delCookie(url);
+                refresh();
+            }]
         },exit
     ]
     

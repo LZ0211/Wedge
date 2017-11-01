@@ -72,6 +72,6 @@ module.exports = function(){
                 }
             });
         }
-        return formatIp(ip,()=>this.Thread().use(post).queue(Files).end(()=>this.end()).start());
+        return formatIp(ip,()=>this.Thread().use(post).queue(Files).label('sendToiReader').log(console.log).end(()=>this.end()).start());
     }
 }

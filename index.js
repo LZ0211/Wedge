@@ -227,7 +227,7 @@ class Wedge extends EventEmitter{
                 return options.success(data);
             }
             if (err){
-                this.debug(err,options.url,this.book.getMeta('title'));
+                this.debug(err,url);
                 if (connectTimes < maxConnectTimes) return req.end();
                 return options.error(err.code);
             }
@@ -298,7 +298,10 @@ class Wedge extends EventEmitter{
                         },
                         error:next
                     })
-                }).setThread(10).end(()=>fn(links.filter(link=>~link[0].indexOf(site.name)))).start()
+                })
+                .setThread(10)
+                .end(()=>fn(links.filter(link=>~link[0].indexOf(site.name))))
+                .start()
             }
             return fn(links);
         };
@@ -338,7 +341,7 @@ class Wedge extends EventEmitter{
                 return next();
             });
         };
-        new Thread()
+        Thread()
         .use(search)
         .queue(Searcher)
         .setThread(3)
@@ -359,7 +362,12 @@ class Wedge extends EventEmitter{
 
     loadBook(dir,fn){
         fn = this.next(fn);
-        if (!fs.existsSync(dir)) return this.end();
+        if (!fs.existsSync(dir)){
+            if(this.config.get('database.check')){
+                this.database.remove(dir);
+            }
+            return this.end();
+        }
         this.CMD('loadBookIndex > checkBookIndex',[fn])(dir);
         return this;
     }
@@ -502,7 +510,7 @@ class Wedge extends EventEmitter{
         var app = this.spawn();
         var search = (site,next)=>{
             this.searchInSite(title,site,list=>{
-                new Thread()
+                Thread()
                 .use((link,nextFn)=>{
                     app.debug(link);
                     app.end(nextFn);
@@ -526,7 +534,7 @@ class Wedge extends EventEmitter{
                 .start();
             });
         };
-        new Thread()
+        Thread()
         .use(search)
         .queue(Searcher)
         .end(fn)
@@ -669,7 +677,7 @@ class Wedge extends EventEmitter{
         });
         var indexs = [];
         var push = item=>indexs.push(item);
-        new Thread()
+        Thread()
         .use((link,next)=>this.getBookIndex(link,items=>{
             items.forEach(push);
             return next();
@@ -807,7 +815,7 @@ class Wedge extends EventEmitter{
             links = this.filterBookIndex(links);
             if (!links.length) return fn(chapter);
             this.debug('mergeChapters');
-            new Thread()
+            Thread()
             .use((link,next)=>Thread.series(mergeContentCMD.concat([next]))(link))
             .end(()=>fn(chapter))
             .queue(links)
@@ -890,7 +898,7 @@ class Wedge extends EventEmitter{
                 isEmpty = false;
                 hasFiles.forEach(repImg);
             }
-            new Thread()
+            Thread()
             .use(getImgFile)
             .end(final)
             .setThread(this.config.get('thread.image'))
@@ -919,7 +927,7 @@ class Wedge extends EventEmitter{
         if (!links.length) return fn(chapter);
         this.debug(links);
         this.debug('getDeepChapter');
-        new Thread()
+        Thread()
         .use(this.getChapter.bind(this))
         .end(()=>fn(chapter))
         .queue(links)
@@ -958,7 +966,7 @@ class Wedge extends EventEmitter{
     getChapters(links,fn){
         fn = this.next(fn);
         this.debug('getChapters');
-        new Thread()
+        Thread()
         .use(this.getChapter.bind(this))
         .end(fn)
         .queue(links)
@@ -971,14 +979,15 @@ class Wedge extends EventEmitter{
 
     generateEbook(fn){
         fn = this.next(fn);
-        if (!this.config.get("ebook.activated")) return fn();
-        if (!this.book.changed && this.config.get("ebook.activated") !== true) return fn();
+        if (0 === this.config.get("ebook.activated")) return fn();
+        if (!this.book.changed && this.config.get("ebook.activated") <= 0) return fn();
         this.debug('generateEbook');
         var work = child_process.fork(Path.join(__dirname,"lib/ebook/generator.js"),{cwd:process.cwd()});
         var options = {
             directory:this.config.get("ebook.directory"),
             formation:this.config.get("ebook.formation"),
-            bookdir:this.bookdir
+            bookdir:this.bookdir,
+            filter:this.config.get("ebook.filter")
         };
         fs.mkdirsSync(options.directory);
         work.send(options);
@@ -1066,7 +1075,7 @@ class Wedge extends EventEmitter{
     }
 
     ebooks(dirs,thread){
-        new Thread()
+        Thread()
         .use((dir,next)=>this.spawn().ebook(dir).end(next))
         .end(this.next())
         .queue(dirs)
@@ -1079,7 +1088,7 @@ class Wedge extends EventEmitter{
     }
 
     newBooks(urls,thread){
-        new Thread()
+        Thread()
         .use((url,next)=>this.spawn().newBook(url).end(next))
         .end(this.next())
         .queue(urls)
@@ -1092,7 +1101,7 @@ class Wedge extends EventEmitter{
     }
 
     updateBooks(dirs,thread){
-        new Thread()
+        Thread()
         .use((dir,next)=>this.spawn().updateBook(dir).end(next))
         .end(this.next())
         .queue(dirs)
@@ -1105,7 +1114,7 @@ class Wedge extends EventEmitter{
     }
 
     refreshBooks(dirs,thread){
-        new Thread()
+        Thread()
         .use((dir,next)=>this.spawn().refreshBook(dir).end(next))
         .end(this.next())
         .queue(dirs)
@@ -1118,19 +1127,20 @@ class Wedge extends EventEmitter{
     }
 
     deleteBooks(dirs){
-        process.nextTick(()=>{
-            dirs.forEach(uuid=>{
-                this.debug(`[deleteBooks] ${uuid}`)
-                this.database.remove(uuid);
-                fs.rmdirsSync(uuid);
-            });
-            this.end();
-        });
+        Thread()
+        .use((dir,next)=>this.spawn().deleteBook(dir).end(next))
+        .end(this.next())
+        .queue(dirs)
+        .log(this.debug.bind(this))
+        .label('deleteBooks')
+        .interval(1000)
+        .setThread(thread || this.config.get('thread.refresh'))
+        .start();
         return this;
     }
 
     autoUpdateBooks(dirs,thread){
-        new Thread()
+        Thread()
         .use((dir,next)=>this.spawn().autoUpdateBook(dir).end(next))
         .end(this.next())
         .queue(dirs)
@@ -1161,6 +1171,7 @@ Wedge.prototype.lib = {
     fs:fs,
     request:request,
     querystring:querystring,
+    readline:readline,
     Path:Path,
     child_process:child_process,
     url:URL,
