@@ -15,17 +15,16 @@
   },
   "indexPage": {
     "match": "!!$('#list dl').length",
-    "infoPage": "$.location($('.con_top > a').eq(1).attr('href'))",
+    "infoPage": "$.location($('.con_top > a').eq(-1).attr('href'))",
     "footer": "$('.footer').length > 0",
     "bookIndexs": "$('#list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
-    "match": "$('#TXT').length",
+    "match": "$('#booktext').length",
     "footer": "$('.footer').length > 0",
-    "filter": "$('#TXT').find('div,script,p').remove()",
-    "chapterInfos": {
-      "source": "$.location()",
-      "content": "$('#TXT').html()"
+    "request": {
+      "url": "$('#pagecontent script').text().replace('\\',\\'','&did=').replace('\\',\\'','&qid=').replace('\\',\\'','&page=')",
+      "success": "data=>$.decode(data,'gbk').replace(/<font.*?\\/font>/gi,'')"
     }
   }
 }

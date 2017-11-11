@@ -1,0 +1,72 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": ["作者.*"],
+      "author": ["作者:","作者："],
+      "classes": ["小说分类："],
+      "isend": ["小说状态："],
+      "cover": null,
+      "brief": ["【】","&nbsp;"],
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": ["乐文小说网?","www.lwxs520.Com"],
+      "source": null,
+      "content": ["本书最新免费章节请访问。",
+        "请使用访问本站。",
+        "请记住本站的网址：。",
+        "看小说到乐文小说网www.lwxs520.com",
+        "喜欢乐文小说网就上www.*(?:ＣＯＭ|com)",
+        "爱玩爱看就来乐文小说网.*",
+        "\\(LＷXＳ５２０。\\)",
+        "Ｍ.LＷxＳ520.com&nbsp;乐文移动网",
+        "乐文小说网值得.+",
+        "乐\\+文\\+小说&nbsp;Ｗww.しwＸs520.Ｃom",
+        "乐文\\s*小说 www.lwxs520.com",
+        "&乐&文&小说 \\{www\\}.\\{lw\\}\\{xs520\\}.\\{com\\}",
+        "<乐-文>小说www.しＷＸS520.com",
+        "-乐-文-小-说-www-lwxs520-com",
+        "？乐？文？小说 wwＷ.lＷＸs520. ＣＯＭ",
+        ";乐;文;小说 www.lw＋xs520.com",
+        "小说&nbsp;wＷw.Lwxs520.cＯm",
+        "www.LＷＸＳ５２０.com",
+        "www.lwxs520.com 首发哦亲",
+        "[wＷｗ]+.[lし]w[xχＸ][sS]520.[cｃ][oｏＯ][mＭ]",
+        "lwxs520.com\\|?",
+        "[しlL][ωＷw][χＸXx][ｓsS]520",
+        "\\(未完待续.+",
+        "\\P?[樂乐]\\P文\\P小\\P?说",
+        "》乐>文》小说",
+        "乐+文+小说",
+        "《乐<文《小说",
+        "樂文小說",
+        ":乐:文:小说",
+        "`乐`文`小说`",
+        "=乐=文=小说",
+        "＠樂＠文＠小＠说|",
+        ";乐;文;小说",
+        "︾樂︾文︾小︾说\\|",
+        "｀乐｀文｀小说｀",
+        "@乐@文@小说",
+        "lw＋xs520",
+        "♂！",
+        "3w.",
+        "\\(\\)"
+      ]
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "$('a.on').length",
+    "indexPage": "$.location($('a.on').attr('href'))",
+    "footer": "$('.footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('meta[property=\"og:novel:book_name\"]').attr('content')",
+      "author": "$('meta[property=\"og:novel:author\"]').attr('content')",
+      "classes": "$('meta[property=\"og:novel:category\"]').attr('content')",
+      "isend": "$('meta[property=\"og:novel:status\"]').attr('content')",
+      "cover": "$('meta[property=\"og:image\"]').attr('content')",
+      "brief": "$('meta[property=\"og:description\"]').attr('content')"
+    }
+  },
+  "indexPage": {
+    "match": "$('.box_chap').length",
+    "infoPage": "$.location($('a:contains(返回书页)').attr('href'))",
+    "footer": "$('.footer').length",
+    "bookIndexs": "$('.box_chap a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "$('#readcon').length",
+    "footer": "$('.footer').length",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#readcon').html()"
+    }
+  }
+}

@@ -1,11 +1,11 @@
 {
   "infoPage": {
-    "match": "$('.btopt > a').length > 0",
+    "match": "$('.box_intro').length",
     "indexPage": "$.location($('.btopt a').attr('href'))",
     "footer": "$('.footers').length > 0",
     "filter": "$('.intro a').remove()",
     "bookInfos": {
-      "source": "$.location()",
+      "origin": "$.location()",
       "title": "$('h1').text()",
       "author": "$('h1 em').text()",
       "classes": "$('b:contains(小说分类)').parent().text()",
@@ -15,13 +15,13 @@
     }
   },
   "indexPage": {
-    "match": "$('#defaulthtml').length > 0",
-    "infoPage": "$.location($('ul.bread-crumbs li').eq(-2).find('a').attr('href'))",
+    "match": "$('.bookinfo_td').length",
+    "infoPage": "$.location($('ul.bread-crumbs a').eq(1).attr('href'))",
     "footer": "$('#bgdiv').length > 0",
     "bookIndexs": "$('.dccss a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
-    "match": "$('#thumb').length > 0",
+    "match": "/\\d+\\.html$/i.test($.location())",
     "footer": "$('#bgdiv').length > 0",
     "filter": "$('#content').find('a,script,div,center').remove()",
     "chapterInfos": {

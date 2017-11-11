@@ -10,7 +10,7 @@
       "classes": null,
       "isend": null,
       "cover": null,
-      "brief": {"    ":"\n","　　":"\n","&nbsp;&nbsp;&nbsp;&nbsp;":"\n"},
+      "brief": {"[\\s\\S]*?简介:":"","[\\s\\S]*?简介：":"","    ":"\n","　　":"\n","&nbsp;&nbsp;&nbsp;&nbsp;":"\n"},
       "keywords": null
     }
   },

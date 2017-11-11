@@ -28,6 +28,19 @@
     "name": ".17k.com"
   },
   {
+    "url": "https://www.baidu.com/s",
+    "query": "ie=utf-8&rn=50&wd=site%3Ajjwxc.net%20%title%",
+    "selector": ".result h3.t a",
+    "engine": "baidu",
+    "filter": "novelid=\\d+$",
+    "name": ".jjwxc.net"
+  },
+  {
+    "url": "http://yc.ireader.com.cn/index.php",
+    "query": "ca=search.index&ajax_load=1&channel=all&category=&min_category=&lzstatus=&is_vip=&charnum=&updatetime=&keyword=%title%&order=default",
+    "name": ".ireader.com"
+  },
+  {
     "url": "https://www.readnovel.com/search",
     "query": "kw=%title%",
     "name": ".readnovel.com"
@@ -77,14 +90,6 @@
     "query": "s_wd=%title%",
     "selector": ".title > a",
     "name": ".xxsy.net"
-  },
-  {
-    "url": "https://www.baidu.com/s",
-    "query": "ie=utf-8&rn=50&wd=site%3Ajjwxc.net%20%title%",
-    "selector": ".result h3.t a",
-    "engine": "baidu",
-    "filter": "novelid=\\d+$",
-    "name": ".jjwxc.net"
   },
   {
     "url": "https://www.hongxiu.com/search",

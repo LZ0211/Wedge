@@ -6,11 +6,6 @@
       "func": "./plugins/5sing"
     },
     {
-      "name": "testRule",
-      "activated": true,
-      "func": "./plugins/testRule"
-    },
-    {
       "name": "testSelector",
       "activated": false,
       "func": "./plugins/testSelector"

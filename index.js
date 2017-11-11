@@ -52,7 +52,7 @@ class Wedge extends EventEmitter{
     }
 
     initDatabase(){
-        this.database.file(Path.join(this.dir,'metadatas.sqlite'));
+        this.database.file(Path.join(this.dir,'metadatas.db'));
         this.database.sync(this.config.get('database.sync'));
     }
 
@@ -96,6 +96,9 @@ class Wedge extends EventEmitter{
 
         //eBookCmd
         this.eBookCmd = this.CMD('loadBook > checkBookCover > saveBook > generateEbook > end');
+
+        //testRuleCmd
+        this.testRuleCmd = this.CMD('getBookMeta > getBookIndexs > intercept > getChapterContent > mergeChapterContent > log > end');
 
         return this;
     }
@@ -185,6 +188,12 @@ class Wedge extends EventEmitter{
         return fn;
     }
 
+    intercept(infos,fn){
+        this.log(this.book.metaValue());
+        this.log(infos);
+        fn(Random.select(infos));
+    }
+
     request(url,options){
         if ( typeof url === 'object' ) {
             options = url;
@@ -241,6 +250,7 @@ class Wedge extends EventEmitter{
             var protoFun = this[name];
             if (!protoFun) return this.error(`no Function named ${name}`);
             var argsLength = protoFun.length;
+            if(argsLength == 0) return protoFun.bind(this);
             var define = [];
             if (argsLength){
                 define = Random.sample('abcdefghijklmnopqrstuvwxyz',argsLength);
@@ -479,6 +489,7 @@ class Wedge extends EventEmitter{
                 this.getBookMeta(indexPage.infoPage,fn);
                 return null;
             }else{
+                this.debug(JSON.stringify(parsedData,null,2));
                 this.error('this url is Not infoPage or request failed');
                 return null;
             }

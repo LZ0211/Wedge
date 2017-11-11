@@ -1,8 +1,8 @@
 {
   "infoPage": {
-    "match": "!!$('#info').length",
+    "match": "$('#info').length",
     "indexPage": "$.location()",
-    "footer": "!!$('.footer,#footer').length",
+    "footer": "$('.footer,#footer').length",
     "bookInfos": {
       "source": "$.location()",
       "title": "$('#info h1').text()",
@@ -10,23 +10,23 @@
       "classes": "$('.con_top').text().split('&gt;')[1] || $('.con_top').text().split('>')[1]",
       "isend": "false",
       "cover": "$.location($('#fmimg > img').attr('src'))",
-      "brief": "$('#intro > p').eq(0).html() || $('#intro').html()"
+      "brief": "$('#intro').html()"
     }
   },
   "indexPage": {
-    "match": "!!$('#info').length",
+    "match": "$('#info').length",
     "infoPage": "$.location()",
-    "footer": "!!$('.footer,#footer').length",
+    "footer": "$('.footer,#footer').length",
     "filter": "$('#list dt').length > 1 && $('#list dt').eq(0).text().match('缓存') && $('#list dt').eq(1).prevAll('dd').length < 30 && $('#list dt').eq(1).prevAll('dd').remove()",
     "bookIndexs": "$('#list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
-    "match": "!!$('#content').length",
-    "footer": "!!$('.footer,#footer').length",
-    "filter": "$('#content').find('a,script').remove()",
+    "match": "$('#content,#TXT').length",
+    "footer": "$('.footer,#footer').length",
+    "filter": "$('#content,#TXT').find('div,a,script').remove()",
     "chapterInfos": {
       "source": "$.location()",
-      "content": "$('#content').html()"
+      "content": "$('#content,#TXT').html()"
     }
   }
 }
