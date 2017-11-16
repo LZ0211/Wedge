@@ -21,6 +21,7 @@ const Sites = require("./lib/Sites");
 const Parser = require("./lib/Parser");
 const Book = require("./lib/Book");
 const classes = require("./lib/classes");
+const ebook = require('./lib/ebook');
 
 class Wedge extends EventEmitter{
     constructor(dir){
@@ -115,7 +116,13 @@ class Wedge extends EventEmitter{
     plugins(){
         this.getConfig('plugins').filter(plugin=>{
             return plugin.activated === true;
-        }).forEach(this.install.bind(this));
+        }).forEach(plugin=>{
+            try{
+                this.install(plugin);
+            }catch(e){
+                plugin.activated = false;
+            }
+        });
         return this;
     }
 
@@ -367,6 +374,50 @@ class Wedge extends EventEmitter{
         title = title.replace(/[:：？\?,；，,\.。!！_—\-]/g,'');
         var filterFun = links=>fn(links.filter(link=>link[1] == title));
         this.fuzzysearchBook(title,filterFun);
+        return this;
+    }
+
+    importWBK(filename,fn){
+        fn = this.next(fn);
+        try{
+            this.debug('importing WBK');
+            this.book = Book();
+            var buf = fs.readFileSync(filename);
+            ebook.unwbk(buf,book=>{
+                this.bookdir = Path.resolve(book.meta.uuid);
+                fs.mkdirsSync(this.bookdir);
+                this.book.localization(this.bookdir);
+                this.book.setMeta(book.meta);
+                fs.writeFileSync(Path.join(this.bookdir,'cover.jpg'),Buffer.from(book.meta.cover,'base64'));
+                Thread()
+                .use((chapter,next)=>{
+                    this.book.pushList(chapter);
+                    this.book.pushChapter(chapter,next);
+                }).queue(book.list).threads(20).label('importWBKChapter')
+                .end(()=>{
+                    this.book.localization(this.bookdir);
+                    this.sendToDataBase(fn);
+                }).start();
+            });
+        }catch(e){
+            return this.end();
+        }
+    }
+
+    outportWBK(uuid,fn){
+        fn = this.next(fn);
+        this.debug('outportWBK');
+        var work = child_process.fork(Path.join(__dirname,"lib/ebook/generator.js"),{cwd:process.cwd()});
+        var options = {formation:'wbk',bookdir:uuid,directory:this.config.get("ebook.directory")};
+        fs.mkdirsSync(options.directory);
+        work.on('message',this.noop);
+        work.on("exit",()=>{
+            this.log("exit");
+            work = null;
+            return fn();
+        });
+        work.on("err",this.noop);
+        work.send(options);
         return this;
     }
 
@@ -1018,10 +1069,32 @@ class Wedge extends EventEmitter{
             }
         });
         work.on("exit",()=>{
+            this.log("exit");
             work = null;
             return fn();
         });
         work.on("err",this.log);
+        return this;
+    }
+
+    convertEbook(file,fn){
+        fn = this.next(fn);
+        this.debug('convertEbook');
+        var work = child_process.fork(Path.join(__dirname,"lib/ebook/convertor.js"),{cwd:process.cwd()});
+        var options = {
+            formation:this.config.get("ebook.formation"),
+            filename:Path.resolve(file),
+        };
+        work.send(options);
+        this.log("converting ebook >>> " + options.filename);
+        work.on("message",msg=>{
+            if (msg.msg === "success"){
+                this.log("ebook converted successful...");
+            }else {
+                this.log("ebook convertion failed...");
+            }
+            return fn();
+        });
         return this;
     }
 
@@ -1137,6 +1210,19 @@ class Wedge extends EventEmitter{
         return this;
     }
 
+    reDownloadBooks(dirs,thread){
+        Thread()
+        .use((dir,next)=>this.spawn().reDownloadBook(dir).end(next))
+        .end(this.next())
+        .queue(dirs)
+        .log(this.debug.bind(this))
+        .label('reDownloadBooks')
+        .interval(1000)
+        .setThread(thread || this.config.get('thread.new'))
+        .start();
+        return this;
+    }
+
     deleteBooks(dirs){
         Thread()
         .use((dir,next)=>this.spawn().deleteBook(dir).end(next))
@@ -1145,7 +1231,19 @@ class Wedge extends EventEmitter{
         .log(this.debug.bind(this))
         .label('deleteBooks')
         .interval(1000)
-        .setThread(thread || this.config.get('thread.refresh'))
+        .start();
+        return this;
+    }
+
+    convertEbooks(dirs,thread){
+        Thread()
+        .use(this.convertEbook.bind(this))
+        .end(this.next())
+        .queue(dirs)
+        .log(this.debug.bind(this))
+        .label('convertEbooks')
+        .interval(1000)
+        .setThread(thread || this.config.get('thread.update'))
         .start();
         return this;
     }

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+node convertor.js wbk2epub $*
+
+

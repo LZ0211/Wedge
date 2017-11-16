@@ -169,6 +169,7 @@ module.exports = function (){
                     main,
                     {text:'更新书籍',func:[[],()=>app.updateBooks(items.map(item=>item.uuid)).end(goBack)]},
                     {text:'刷新书籍信息',func:[[],()=>app.refreshBooks(items.map(item=>item.uuid)).end(goBack)]},
+                    {text:'重新下载书籍',func:[[],()=>app.reDownloadBooks(items.map(item=>item.uuid)).end(goBack)]},
                     {text:'生成电子书',func:[[],()=>app.ebooks(items.map(item=>item.uuid)).end(goBack)]},
                     {text:'删除书籍',func:[[],()=>app.deleteBooks(items.map(item=>item.uuid)).end(goBack)]},
                     exit
@@ -214,6 +215,12 @@ module.exports = function (){
         },{
             text:'生成电子书',
             func:[['请输入书籍ID：'],uuid=>app.end(refresh).ebook(uuid)]
+        },{
+            text:'导入书籍',
+            func:[['拖拽wbk文件到窗口：'],file=>app.end(refresh).importWBK(file.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))]
+        },{
+            text:'导出书籍',
+            func:[['请输入书籍ID：'],uuid=>app.end(refresh).outportWBK(uuid)]
         },{
             text:'删除书籍',
             func:[['请输入书籍ID：'],uuid=>app.end(refresh).deleteBook(uuid)]
@@ -298,11 +305,17 @@ module.exports = function (){
                 text:'更新书籍',
                 func:[[],multInput(uuids=>app.end(refresh).updateBooks(uuids))]
             },{
+                text:'重新下载书籍',
+                func:[[],multInput(uuids=>app.end(refresh).reDownloadBooks(uuids))]
+            },{
                 text:'刷新书籍信息',
                 func:[[],multInput(uuids=>app.end(refresh).refreshBooks(uuids))]
             },{
                 text:'生成电子书',
                 func:[[],multInput(uuids=>app.end(refresh).ebooks(uuids))]
+            },{
+                text:'转换电子书',
+                func:[[],multInput(uuids=>app.end(refresh).convertEbooks(uuids.map(uuid=>uuid.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))))]
             },{
                 text:'删除书籍',
                 func:[[],multInput(uuids=>app.end(refresh).deleteBooks(uuids))]
@@ -324,6 +337,9 @@ module.exports = function (){
                     showDatabaseOptions(items);
                 }]},exit
             ]
+        },{
+            text:'电子书格式转换',
+            func: [['拖拽wbk文件到窗口：'],file=>app.end(refresh).convertEbook(file.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))]
         },{
             text:'发送到手机[需在同一局域网下]',
             options:[
@@ -414,11 +430,8 @@ module.exports = function (){
                 }
             ]
         },{
-            text:'清除cookie',
-            func:[['请输入网址：'],url=>{
-                app.lib.request.cookies.delCookie(url);
-                refresh();
-            }]
+            text:'测试规则',
+            func:[['请输入网址：'],url=>app.end(refresh).testRuleCmd(url)]
         },exit
     ]
     
