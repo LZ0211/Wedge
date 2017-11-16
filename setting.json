@@ -31,11 +31,6 @@
       "func": "./plugins/searchEngine"
     },
     {
-      "name": "convertEbook",
-      "activated": true,
-      "func": "./plugins/convertEbook"
-    },
-    {
       "name": "getPageImages",
       "activated": true,
       "func": "./plugins/getPageImages"
