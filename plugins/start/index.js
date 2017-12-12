@@ -170,6 +170,7 @@ module.exports = function (){
                     {text:'更新书籍',func:[[],()=>app.updateBooks(items.map(item=>item.uuid)).end(goBack)]},
                     {text:'刷新书籍信息',func:[[],()=>app.refreshBooks(items.map(item=>item.uuid)).end(goBack)]},
                     {text:'重新下载书籍',func:[[],()=>app.reDownloadBooks(items.map(item=>item.uuid)).end(goBack)]},
+                    {text:'导出书籍',func:[[],()=>app.outportBooks(items.map(item=>item.uuid)).end(goBack)]},
                     {text:'生成电子书',func:[[],()=>app.ebooks(items.map(item=>item.uuid)).end(goBack)]},
                     {text:'删除书籍',func:[[],()=>app.deleteBooks(items.map(item=>item.uuid)).end(goBack)]},
                     exit
@@ -194,6 +195,7 @@ module.exports = function (){
         text:'退出',
         options:[
             main,
+            returnOption,
             {text:'确定退出',func:[[],()=>process.exit()]}
         ]
     }
@@ -220,7 +222,7 @@ module.exports = function (){
             func:[['拖拽wbk文件到窗口：'],file=>app.end(refresh).importWBK(file.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))]
         },{
             text:'导出书籍',
-            func:[['请输入书籍ID：'],uuid=>app.end(refresh).outportWBK(uuid)]
+            func:[['请输入书籍ID：'],uuid=>app.end(refresh).outportBook(uuid)]
         },{
             text:'删除书籍',
             func:[['请输入书籍ID：'],uuid=>app.end(refresh).deleteBook(uuid)]
@@ -310,6 +312,9 @@ module.exports = function (){
             },{
                 text:'刷新书籍信息',
                 func:[[],multInput(uuids=>app.end(refresh).refreshBooks(uuids))]
+            },{
+                text:'导出书籍',
+                func:[[],multInput(uuids=>app.end(refresh).outportBooks(uuids))]
             },{
                 text:'生成电子书',
                 func:[[],multInput(uuids=>app.end(refresh).ebooks(uuids))]
