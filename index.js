@@ -723,12 +723,6 @@ class Wedge extends EventEmitter{
             return this.request(options);
         };
         if (!link) return setIndex();
-        var site = Sites.search(link.url);
-        if(site && site.interval){
-            var thread = this.config.get('threade');
-            this.config.set('thread',{execute:1,new:1,update:1,image:1,interval:site.interval});
-            this.end(()=>this.config.set('thread.',thread));
-        }
         link.success = data=>this.getParsedData(data,link.url).indexPage;
         requestIndex(link);
         return this;
@@ -914,7 +908,7 @@ class Wedge extends EventEmitter{
         var content = chapter.content;
         var $ = Parser(content,chapter.source);
         var $imgs = $('img');
-        var imgs = $imgs.map((i,v)=>({url:$.location($(v).attr('src')),index:i})).toArray();
+        var imgs = $imgs.map((i,v)=>({url:$.location($(v).attr('src')),index:i,headers:{referer:$.location()}})).toArray();
         if (!imgs.length) return fn(chapter);
         this.debug('getChapterImages');
         var repImg = img=>$imgs.eq(img.index).replaceWith('<img src="'+img.src+'" />');

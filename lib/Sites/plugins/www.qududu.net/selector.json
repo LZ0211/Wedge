@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "$('#kui-book-show').length",
+    "indexPage": "$.location()",
+    "footer": "$('.kui-inner').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('div.kui-left.kui-fs32').text().trim()",
+      "author": "$('div.kui-gray').eq(0).text()",
+      "classes": "$('div.kui-gray').eq(0).text()",
+      "isend": "$('#adbanner_1').text()",
+      "cover": "$.location($('div.kui-left img').attr('src'))",
+      "brief": "$('div.kui-mt15.kui-fs12').html()"
+    }
+  },
+  "indexPage": {
+    "match": "$('#kui-book-show').length",
+    "infoPage": "$.location()",
+    "footer": "$('.kui-inner').length",
+    "bookIndexs": "$('#kui-book-show a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "$('#kui-page-read-txt').length",
+    "footer": "$('.kui-inner').length",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#kui-page-read-txt').html()"
+    }
+  }
+}

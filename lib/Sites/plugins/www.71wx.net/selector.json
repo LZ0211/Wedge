@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "$('.booklink').length",
+    "indexPage": "$.location($('.booklink a').eq(0).attr('href'))",
+    "footer": "$('.footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.qingyi_cont h1').text().trim()",
+      "author": "$('.bookinfo').find('p').eq(0).find('i').text()",
+      "classes": "$('.bookinfo').find('p').eq(1).find('a').text()",
+      "isend": "$('.bookinfo').text()",
+      "cover": "$.location($('.bookcover img').attr('src'))",
+      "brief": "$('.qingyi_cont').eq(1).html()"
+    }
+  },
+  "indexPage": {
+    "match": "$('.ml_main').length",
+    "infoPage": "$.location($('a:contains(返回书页)').attr('href'))",
+    "footer": "$('.footer').length",
+    "bookIndexs": "$('.ml_main a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "$('.yd_text2').length",
+    "footer": "$('.footer').length",
+    "filter": "$('.yd_text2').find('center').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.yd_text2').html()"
+    }
+  }
+}
