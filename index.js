@@ -101,6 +101,9 @@ class Wedge extends EventEmitter{
         //outportCmd
         this.outportCmd = this.CMD('loadBook > checkBookCover > saveBook > outportWBK > end');
 
+        //importBookRecordCmd
+        this.importBookRecordCmd = this.CMD('loadBookIndex > sendToDataBase > end');
+
         //testRuleCmd
         this.testRuleCmd = this.CMD('getBookMeta > getBookIndexs > intercept > getChapterContent > mergeChapterContent > log > end');
 
@@ -246,10 +249,11 @@ class Wedge extends EventEmitter{
                 return options.success(data);
             }
             if (err){
-                this.debug(err,url);
+                this.debug(err.code,options.url);
                 if (connectTimes < maxConnectTimes) return req.end();
                 return options.error(err.code);
             }
+            this.debug(res.statusCode,options.url);
             return options.error(res.statusCode);
         });
     }
@@ -662,7 +666,10 @@ class Wedge extends EventEmitter{
         var thisMeta = this.book.metaValue();
         this.loadBook(this.bookdir,()=>{
             var newURL = this.book.getMeta('source');
-            if (thisMeta.source == newURL) return fn();
+            if (thisMeta.source == newURL){
+                this.book.setMeta(thisMeta);
+                return fn();
+            }
             if (!this.config.get('book.changesource')) return fn();
             this.debug('changesource');
             if (this.config.get('book.override')){
@@ -1152,10 +1159,22 @@ class Wedge extends EventEmitter{
 
     deleteBook(uuid){
         process.nextTick(()=>{
-            this.database.remove(uuid);
             fs.rmdirsSync(uuid);
             this.end();
         });
+        return this;
+    }
+
+    removeBookRecord(uuid){
+        process.nextTick(()=>{
+            this.database.remove(uuid);
+            this.end();
+        });
+        return this;        
+    }
+
+    importBookRecord(uuid){
+        process.nextTick(this.importBookRecordCmd.bind(this,uuid));
         return this;
     }
 
@@ -1192,11 +1211,11 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    updateBooks(dirs,thread){
+    updateBooks(uuids,thread){
         Thread()
         .use((dir,next)=>this.spawn().updateBook(dir).end(next))
         .end(this.next())
-        .queue(dirs)
+        .queue(uuids)
         .log(this.debug.bind(this))
         .label('updateBooks')
         .interval(5000)
@@ -1205,11 +1224,11 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    refreshBooks(dirs,thread){
+    refreshBooks(uuids,thread){
         Thread()
         .use((dir,next)=>this.spawn().refreshBook(dir).end(next))
         .end(this.next())
-        .queue(dirs)
+        .queue(uuids)
         .log(this.debug.bind(this))
         .label('refreshBooks')
         .interval(5000)
@@ -1218,11 +1237,11 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    reDownloadBooks(dirs,thread){
+    reDownloadBooks(uuids,thread){
         Thread()
         .use((dir,next)=>this.spawn().reDownloadBook(dir).end(next))
         .end(this.next())
-        .queue(dirs)
+        .queue(uuids)
         .log(this.debug.bind(this))
         .label('reDownloadBooks')
         .interval(5000)
@@ -1231,11 +1250,11 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    outportBooks(dirs,thread){
+    outportBooks(uuids,thread){
          Thread()
         .use((dir,next)=>this.spawn().outportBook(dir).end(next))
         .end(this.next())
-        .queue(dirs)
+        .queue(uuids)
         .log(this.debug.bind(this))
         .label('outportBooks')
         .setThread(thread || this.config.get('thread.update'))
@@ -1243,22 +1262,45 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    deleteBooks(dirs){
+    deleteBooks(uuids){
         Thread()
         .use((dir,next)=>this.spawn().deleteBook(dir).end(next))
         .end(this.next())
-        .queue(dirs)
+        .queue(uuids)
         .log(this.debug.bind(this))
         .label('deleteBooks')
         .start();
         return this;
     }
 
-    convertEbooks(dirs,thread){
+    removeBookRecords(uuids){
+        Thread()
+        .use((dir,next)=>this.spawn().removeBookRecord(dir).end(next))
+        .end(this.next())
+        .queue(uuids)
+        .log(this.debug.bind(this))
+        .label('removeBookRecords')
+        .start();
+        return this;
+    }
+
+    importBookRecords(uuids,thread){
+        Thread()
+        .use((dir,next)=>this.spawn().importBookRecord(dir).end(next))
+        .end(this.next())
+        .queue(uuids)
+        .log(this.debug.bind(this))
+        .label('importBookRecords')
+        .setThread(thread || this.config.get('thread.update'))
+        .start();
+        return this;
+    }
+
+    convertEbooks(uuids,thread){
         Thread()
         .use(this.convertEbook.bind(this))
         .end(this.next())
-        .queue(dirs)
+        .queue(uuids)
         .log(this.debug.bind(this))
         .label('convertEbooks')
         .setThread(thread || this.config.get('thread.update'))
@@ -1266,11 +1308,11 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    autoUpdateBooks(dirs,thread){
+    autoUpdateBooks(uuids,thread){
         Thread()
         .use((dir,next)=>this.spawn().autoUpdateBook(dir).end(next))
         .end(this.next())
-        .queue(dirs)
+        .queue(uuids)
         .log(this.debug.bind(this))
         .label('refreshBooks')
         .interval(5000)

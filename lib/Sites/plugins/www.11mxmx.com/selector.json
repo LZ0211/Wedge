@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "$('.list').length",
+    "indexPage": "$.location()",
+    "footer": "$('#footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.on').text().trim()",
+      "author": "'多人'",
+      "classes": "$('.on').text().trim()",
+      "isend": "false",
+      "cover": "'http://image61.360doc.com/DownloadImg/2013/06/1908/33255203_6.jpg'",
+      "brief": "''"
+    }
+  },
+  "indexPage": {
+    "match": "$('.list').length",
+    "infoPage": "$.location()",
+    "filter": "$('a > span').remove()",
+    "footer": "$('#footer').length",
+    "bookIndexs": "$('.list > ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text(),id:$(v).attr('href').replace(/\\D/g,'')})).toArray()"
+  },
+  "contentPage": {
+    "match": "$('.pics').length",
+    "footer": "$('#footer').length",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.pics').html()",
+      "nextPage": "$.location($('a:contains(下一页)').attr('href'))"
+    }
+  }
+}

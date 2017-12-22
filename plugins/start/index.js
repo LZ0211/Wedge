@@ -173,6 +173,7 @@ module.exports = function (){
                     {text:'导出书籍',func:[[],()=>app.outportBooks(items.map(item=>item.uuid)).end(goBack)]},
                     {text:'生成电子书',func:[[],()=>app.ebooks(items.map(item=>item.uuid)).end(goBack)]},
                     {text:'删除书籍',func:[[],()=>app.deleteBooks(items.map(item=>item.uuid)).end(goBack)]},
+                    {text:'删除书籍记录',func:[[],()=>app.removeBookRecords(items.map(item=>item.uuid)).end(goBack)]},
                     exit
                 ]
             },exit
@@ -226,6 +227,12 @@ module.exports = function (){
         },{
             text:'删除书籍',
             func:[['请输入书籍ID：'],uuid=>app.end(refresh).deleteBook(uuid)]
+        },{
+            text:'删除书籍记录',
+            func:[['请输入书籍ID：'],uuid=>app.end(refresh).removeBookRecord(uuid)]
+        },{
+            text:'导入书籍记录',
+            func:[['请输入书籍ID：'],uuid=>app.end(refresh).importBookRecord(uuid)]
         },{
             text:'修改书籍信息',
             func:[['请输入书籍ID：'],uuid=>{
@@ -324,6 +331,12 @@ module.exports = function (){
             },{
                 text:'删除书籍',
                 func:[[],multInput(uuids=>app.end(refresh).deleteBooks(uuids))]
+            },{
+                text:'删除书籍记录',
+                func:[[],multInput(uuids=>app.end(refresh).removeBookRecords(uuids))]
+            },{
+                text:'导入书籍记录',
+                func:[[],multInput(uuids=>app.end(refresh).importBookRecords(uuids))]
             },exit]
         },{
             text:'数据库检索',
