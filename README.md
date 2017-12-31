@@ -24,45 +24,6 @@ App.updateBooks([uuid1,uuid2,uuid3,...]);
 //终端提示输入界面
 App.start()
 ```
-### 数据库命令
-```Javascript
-//primary key，唯一值
-//当设定primary key以后，如果record不存在该key将被过滤
-//如果存在有键值冲突将发生覆盖
-App.database.unique('uuid');
-//filter,返回数组
-App.database.filter(record=>record.isend == true);
-//map
-App.database.map(record=>record.uuid);
-//each
-App.database.each(console.log);
-//attr，返回所有记录的键值
-App.database.attr('uuid');//等效于map(record=>record.uuid)
-//push, 添加一条记录
-App.database.push({
-	title:'...',
-	author:'...',
-	uuid:'...'
-});
-//remove(index)，移除一条记录
-App.database.remove(0);
-//get(index)，读取一条记录
-App.database.get(0);
-//set(index,object),修改一条记录，在下次执行unique(key)前不受primary key的影响
-App.database.set(0,{});
-//load(db),替换整个db表
-App.database.load([]);
-//file(f),load本地文件(如果存在)，并本地化数据库（实时保存）
-App.database.file('metadatas.json');
-//keys()，返回所有记录的primary key的键值
-App.database.keys();
-//hashBy(key)，根据键值返回所有记录的hash表
-App.database.hashBy('source');
-//query()，简易的query命令，类url的querystring
-//等同于filter
-App.database.query('classes=奇幻玄幻&classes=历史军事&isend=true');
-//等效于App.database.filter(record=>(record.classes=='奇幻玄幻' || record.classes==='历史军事')&&record.isend==true)
-```
 
 ### 配置参数[可选]
 参数配置，初次运行时会在工作路径新建json格式的配置文件，可手动修改
@@ -85,15 +46,15 @@ App.config.set('request.proxyAuth',{username:'###',password:'###'});
 //生成电子书保存路径
 App.config.set('ebook.directory','E:/MyBooks/Library/ebook');
 //电子书格式，默认epub
-//支持txt,fb2,epub,umd,rtf,json,htmlz,docx,txt.zip(txt格式的压缩文件),fb2.zip(fb2格式的压缩文件),html.zip(分章节的html压缩文件)
+//支持txt,fb2,epub,umd,rtf,json,htmlz,docx,txt.zip(txt格式的压缩文件),fb2.zip(fb2格式的压缩文件),html.zip(分章节的html压缩文件),wbk(作者自定义的电子书格式)
 App.config.set('ebook.formation','epub');
 /*
 是否创建电子书，子进程命令
-'auto'——发生修改后自动创建新的电子书(包括书籍metadata变动或有下载新章节)
-true——每次调用生成命令都会创建新的电子书
-false——关闭该功能
+-1——发生修改后自动创建新的电子书(包括书籍metadata变动或有下载新章节)
+1——每次调用生成命令都会创建新的电子书
+0——关闭该功能
 */
-App.config.set('ebook.activated','auto');
+App.config.set('ebook.activated',-1);
 //电子书生成后自动打开文件目录
 App.config.set('ebook.opendirectory',false);
 //电子书生成后自动打开文件
@@ -118,8 +79,6 @@ App.config.set('thread.image',5);
 ```Javascript
 //实时同步本地
 App.config.set('database.sync',true);
-//修改primary键
-App.config.set('database.primary','uuid');
 ```
 
 #### 书籍参数
@@ -160,9 +119,9 @@ App.config.set('app.debug',true);
 //启用或添加插件
 //修改工作路径的setting.json文件后重启程序
 {
-  "name": "5sing",
+  "name": "deepQuest",
   "activated": false,//未启动
-  "func": "./plugins/5sing"//插件脚本路径
+  "func": "./plugins/deepQuest"//插件脚本路径
 }
 //将书籍文件发送到手机阅读器；参数不齐全时自动进入终端界面提示输入
 //QQ阅读器（默认开启）
@@ -178,39 +137,62 @@ App.Engine.setEngine("baidu");
 //简单的控制台输入界面（默认开启）
 App.start()
 /*
-请选择功能
-  0) 新建书籍
-  1) 更新书籍
-  2) 自动更新
-  3) 批量添加书籍
-  4) 生成电子书
-  5) 搜索书籍
-  6) 发送到手机
-  7) 使用引擎搜索
-  8) 修改配置
-  9) 数据库检索
-  10) 退出
+  0) 返回
+  1) 新建书籍
+  2) 更新书籍
+  3) 重新下载书籍
+  4) 刷新书籍信息
+  5) 生成电子书
+  6) 导入书籍
+  7) 导出书籍
+  8) 删除书籍
+  9) 删除书籍记录
+  10) 导入书籍记录
+  11) 修改书籍信息
+  12) 批量操作
+      0) 返回上一级菜单
+      1) 新建书籍
+      2) 更新书籍
+      3) 重新下载书籍
+      4) 刷新书籍信息
+      5) 导出书籍
+      6) 生成电子书
+      7) 转换电子书
+      8) 删除书籍
+      9) 删除书籍记录
+      10) 导入书籍记录
+      11) 退出
+  13) 数据库检索
+      0) 返回上一级菜单
+      1) 关键字检索
+      2) query查询
+      3) SQL查询
+      4) 退出
+          0) 返回上一级菜单
+          1) 返回主菜单
+          2) 显示表格
+          3) 显示详情
+          4) 过滤数据
+          5) 导出数据
+          6) 批量操作
+              0) 返回上一级菜单
+              1) 返回主菜单
+              2) 更新书籍
+              3) 刷新书籍信息
+              4) 重新下载书籍
+              5) 导出书籍
+              6) 生成电子书
+              7) 删除书籍
+              8) 删除书籍记录
+              9) 退出
+          7) 退出
+  14) 电子书格式转换
+  15) 发送到手机[需在同一局域网下]
+  16) 使用引擎搜索
+  17) 修改配置
+  18) 测试规则
+  19) 退出
 */
-//电子书生成（默认开启）
-App.convertEbook(bookdir[,ebookdir,formation])
-//测试选择器（默认关闭）
-//进入终端界面，类似于浏览器控制台
-App.testSelector(url);
-//测试站点规则（默认关闭）
-//用于测试站点规则是否有效
-App.testRule(url)
-//深度任务（默认开启）
-//根据输入的地址和选择器获取书籍链接并批量新建下载任务
-App.deepQuest([urls],selector)
-//5sing下载音乐（默认关闭）
-App._5sing(url)
-//下载页面中的图片
-App.getPageImages(url,options);
-//options参数;可选项
-options.ext = 'jpg|png|jpeg|gif'；//筛选符合扩展名的图片
-options.size = 10240; //单位B,筛选大于该数值的图片
-options.location = "./"; 图片保存位置
-options.rename = "<name><ext>"; 图片保存的重命名规则
 ```
 
 ### 添加网站规则

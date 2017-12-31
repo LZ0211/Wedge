@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/bookinfo/i.test($.location())",
+    "indexPage": "$.location($('a:contains(开始阅读)').attr('href'))",
+    "footer": "$('.main m_foot').length",
+    "filter": "$('#contentA').find('script').remove()",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('#bookTitle > h1 > a').text().trim()",
+      "author": "$('#bookTitle address').text().trim()",
+      "classes": "$('#location').text().split(' >> ')[1]",
+      "isend": "$('#box4').text()",
+      "cover": "$.location($('#bigImg img').attr('src'))",
+      "brief": "$('#contentA').html()"
+    }
+  },
+  "indexPage": {
+    "match": "$('#info').length",
+    "infoPage": "$.location($('#info a').eq(-1).attr('href'))",
+    "footer": "$('.bottom').length",
+    "bookIndexs": "$('td.ccss a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\d+.html$/i.test($.location())",
+    "footer": "$('#footlink').length",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

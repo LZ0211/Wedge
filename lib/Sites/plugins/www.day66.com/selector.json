@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "$('#reader').length",
+    "indexPage": "$.location($('#reader a').attr('href'))",
+    "footer": "$('#day66_footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('#bookinfo h1').text().trim()",
+      "author": "$('#author a').text().trim()",
+      "classes": "$('#count span').eq(0).text()",
+      "isend": "$('#count').text()",
+      "cover": "$.location($('#bookimg img').attr('src'))",
+      "brief": "$('#bookintro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "$('#readerlist').length",
+    "infoPage": "$.location($('.navigation a').eq(-1).attr('href'))",
+    "footer": "$('#day66_footer').length",
+    "bookIndexs": "$('#readerlist a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "$('#content').length",
+    "footer": "$('#day66_footer').length",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('#content').html()"
+    }
+  }
+}

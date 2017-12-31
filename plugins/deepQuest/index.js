@@ -17,10 +17,9 @@ module.exports = function (){
             this.request(options);
         }
         var final = ()=>{
-            var source = this.database.hashBy('source');
-            Quests = Quests.filter(x=>!source[x]);
-            this.lib.fs.writeFile("Quests.txt",JSON.stringify(Quests));
-            this.newBooks(Quests);
+            var sources = {};
+            this.database.attr('source').forEach(url=>sources[url]=true);
+            this.newBooks(Quests.filter(url=>!sources[url]));
         }
         this.Thread()
         .use(getLinks)

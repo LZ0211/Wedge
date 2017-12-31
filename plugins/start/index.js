@@ -1,15 +1,6 @@
+var _showDatabase = require('./showDatabase');
 module.exports = function (){
     var Stack = [],thisOpt,app=this;
-    function isSBCcase(str){
-        return !str.charAt(0).match(/[\u0000-\u00ff]/i)
-    }
-    function strLength(str){
-        var length = 0;
-        for (var i = 0; i < str.length; i++){
-            length += isSBCcase(str[i]) ? 2 : 1;
-        }
-        return length;
-    }
     
     function leftPad(str,padding,length){
         str = '' + str;
@@ -88,26 +79,15 @@ module.exports = function (){
     }
     
     function showDatabase(items){
-        function center(str,length){
-            var len = strLength(str);
-            var sublen = length-len;
-            var padding = sublen >> 1;
-            return Array(padding+1).join(' ') + str + Array(sublen-padding+1).join(' ')
-        }
-        var titles = items.map(item=>item.title);
-        var authors = items.map(item=>item.author);
-        var classes = items.map(item=>item.classes);
-        var maxTitleLength = Math.max.apply(Math,titles.map(strLength));
-        var maxAuthorLength = Math.max.apply(Math,authors.map(strLength));
-        var maxClassesLength = Math.max.apply(Math,classes.map(strLength));
-        var line = Array(84+maxTitleLength+maxAuthorLength+maxClassesLength).fill('-').join('');
-        console.log(line);
-        console.log(` ${center('序号',5)} | ${center('书名',maxTitleLength)} | ${center('作者',maxAuthorLength)} |                 UUID                 | ${center('小说类别',maxClassesLength)} | 状态 |      更新时间      `);
-        console.log(line);
-        items.forEach((item,idx)=>{
-            console.log(` ${center(''+(idx+1),5)} | ${center(item.title,maxTitleLength)} | ${center(item.author,maxAuthorLength)} | ${item.uuid} | ${center(item.classes,maxClassesLength)} |${item.isend ? ' 完结 ' : ' 连载 '}| ${formatTime(item.date)} `);
-        });
-        console.log(line);
+        items = items.map(item=>({
+            uuid:item.uuid,
+            title:item.title,
+            author:item.author,
+            classes:item.classes,
+            isend:item.isend+'',
+            date:formatTime(item.date)
+        }))
+        _showDatabase(items);
         refresh();
     }
 
@@ -169,8 +149,11 @@ module.exports = function (){
                     main,
                     {text:'更新书籍',func:[[],()=>app.updateBooks(items.map(item=>item.uuid)).end(goBack)]},
                     {text:'刷新书籍信息',func:[[],()=>app.refreshBooks(items.map(item=>item.uuid)).end(goBack)]},
+                    {text:'重新下载书籍',func:[[],()=>app.reDownloadBooks(items.map(item=>item.uuid)).end(goBack)]},
+                    {text:'导出书籍',func:[[],()=>app.outportBooks(items.map(item=>item.uuid)).end(goBack)]},
                     {text:'生成电子书',func:[[],()=>app.ebooks(items.map(item=>item.uuid)).end(goBack)]},
                     {text:'删除书籍',func:[[],()=>app.deleteBooks(items.map(item=>item.uuid)).end(goBack)]},
+                    {text:'删除书籍记录',func:[[],()=>app.removeBookRecords(items.map(item=>item.uuid)).end(goBack)]},
                     exit
                 ]
             },exit
@@ -193,6 +176,7 @@ module.exports = function (){
         text:'退出',
         options:[
             main,
+            returnOption,
             {text:'确定退出',func:[[],()=>process.exit()]}
         ]
     }
@@ -215,8 +199,20 @@ module.exports = function (){
             text:'生成电子书',
             func:[['请输入书籍ID：'],uuid=>app.end(refresh).ebook(uuid)]
         },{
+            text:'导入书籍',
+            func:[['拖拽wbk文件到窗口：'],file=>app.end(refresh).importWBK(file.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))]
+        },{
+            text:'导出书籍',
+            func:[['请输入书籍ID：'],uuid=>app.end(refresh).outportBook(uuid)]
+        },{
             text:'删除书籍',
             func:[['请输入书籍ID：'],uuid=>app.end(refresh).deleteBook(uuid)]
+        },{
+            text:'删除书籍记录',
+            func:[['请输入书籍ID：'],uuid=>app.end(refresh).removeBookRecord(uuid)]
+        },{
+            text:'导入书籍记录',
+            func:[['请输入书籍ID：'],uuid=>app.end(refresh).importBookRecord(uuid)]
         },{
             text:'修改书籍信息',
             func:[['请输入书籍ID：'],uuid=>{
@@ -298,14 +294,29 @@ module.exports = function (){
                 text:'更新书籍',
                 func:[[],multInput(uuids=>app.end(refresh).updateBooks(uuids))]
             },{
+                text:'重新下载书籍',
+                func:[[],multInput(uuids=>app.end(refresh).reDownloadBooks(uuids))]
+            },{
                 text:'刷新书籍信息',
                 func:[[],multInput(uuids=>app.end(refresh).refreshBooks(uuids))]
+            },{
+                text:'导出书籍',
+                func:[[],multInput(uuids=>app.end(refresh).outportBooks(uuids))]
             },{
                 text:'生成电子书',
                 func:[[],multInput(uuids=>app.end(refresh).ebooks(uuids))]
             },{
+                text:'转换电子书',
+                func:[[],multInput(uuids=>app.end(refresh).convertEbooks(uuids.map(uuid=>uuid.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))))]
+            },{
                 text:'删除书籍',
                 func:[[],multInput(uuids=>app.end(refresh).deleteBooks(uuids))]
+            },{
+                text:'删除书籍记录',
+                func:[[],multInput(uuids=>app.end(refresh).removeBookRecords(uuids))]
+            },{
+                text:'导入书籍记录',
+                func:[[],multInput(uuids=>app.end(refresh).importBookRecords(uuids))]
             },exit]
         },{
             text:'数据库检索',
@@ -324,6 +335,9 @@ module.exports = function (){
                     showDatabaseOptions(items);
                 }]},exit
             ]
+        },{
+            text:'电子书格式转换',
+            func: [['拖拽wbk文件到窗口：'],file=>app.end(refresh).convertEbook(file.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))]
         },{
             text:'发送到手机[需在同一局域网下]',
             options:[
@@ -414,11 +428,8 @@ module.exports = function (){
                 }
             ]
         },{
-            text:'清除cookie',
-            func:[['请输入网址：'],url=>{
-                app.lib.request.cookies.delCookie(url);
-                refresh();
-            }]
+            text:'测试规则',
+            func:[['请输入网址：'],url=>app.end(refresh).testRuleCmd(url)]
         },exit
     ]
     
