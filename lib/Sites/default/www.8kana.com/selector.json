@@ -24,6 +24,7 @@
     "footer": "$('.read_last_next').length > 0",
     "filter": "$('.myContent span').remove()",
     "chapterInfos": {
+      "title": "$('.readbook_title').text()",
       "source": "$.location()",
       "content": "$('.myContent').html()"
     }

@@ -1,15 +1,6 @@
+var _showDatabase = require('./showDatabase');
 module.exports = function (){
     var Stack = [],thisOpt,app=this;
-    function isSBCcase(str){
-        return !str.charAt(0).match(/[\u0000-\u00ff]/i)
-    }
-    function strLength(str){
-        var length = 0;
-        for (var i = 0; i < str.length; i++){
-            length += isSBCcase(str[i]) ? 2 : 1;
-        }
-        return length;
-    }
     
     function leftPad(str,padding,length){
         str = '' + str;
@@ -88,26 +79,15 @@ module.exports = function (){
     }
     
     function showDatabase(items){
-        function center(str,length){
-            var len = strLength(str);
-            var sublen = length-len;
-            var padding = sublen >> 1;
-            return Array(padding+1).join(' ') + str + Array(sublen-padding+1).join(' ')
-        }
-        var titles = items.map(item=>item.title);
-        var authors = items.map(item=>item.author);
-        var classes = items.map(item=>item.classes);
-        var maxTitleLength = Math.max.apply(Math,titles.map(strLength));
-        var maxAuthorLength = Math.max.apply(Math,authors.map(strLength));
-        var maxClassesLength = Math.max.apply(Math,classes.map(strLength));
-        var line = Array(84+maxTitleLength+maxAuthorLength+maxClassesLength).fill('-').join('');
-        console.log(line);
-        console.log(` ${center('序号',5)} | ${center('书名',maxTitleLength)} | ${center('作者',maxAuthorLength)} |                 UUID                 | ${center('小说类别',maxClassesLength)} | 状态 |      更新时间      `);
-        console.log(line);
-        items.forEach((item,idx)=>{
-            console.log(` ${center(''+(idx+1),5)} | ${center(item.title,maxTitleLength)} | ${center(item.author,maxAuthorLength)} | ${item.uuid} | ${center(item.classes,maxClassesLength)} |${item.isend ? ' 完结 ' : ' 连载 '}| ${formatTime(item.date)} `);
-        });
-        console.log(line);
+        items = items.map(item=>({
+            uuid:item.uuid,
+            title:item.title,
+            author:item.author,
+            classes:item.classes,
+            isend:item.isend+'',
+            date:formatTime(item.date)
+        }))
+        _showDatabase(items);
         refresh();
     }
 

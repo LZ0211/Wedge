@@ -242,5 +242,12 @@
     "query": "Key=%title%&S=1&SS=0",
     "selector": "a.orange_link2",
     "name": ".sfacg.com"
+  },
+  {
+    "url": "http://www.54tushu.com/book_library/searchbook.html",
+    "method": "post",
+    "data": "BookName=%title%&send=",
+    "name": ".54tushu.com",
+    "selector": ".img a"
   }
 ]

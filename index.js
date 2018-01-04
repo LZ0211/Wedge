@@ -81,7 +81,7 @@ class Wedge extends EventEmitter{
 
     initFunctions(){
         //newBookCmd
-        this.newBookCmd = this.CMD('getBookMeta > updateBookMeta > createBook > checkBookCover > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end');
+        this.newBookCmd = this.CMD('getBookMeta > getBookCover > updateBookMeta > createBook > checkBookCover > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end');
 
         //updateBookCmd
         this.updateBookCmd = this.CMD('loadBook > checkBookCover > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end');
@@ -616,6 +616,7 @@ class Wedge extends EventEmitter{
     getBookCover(fn){
         fn = this.next(fn);
         var coverSrc = this.book.getMeta('cover');
+        var coverDir = Path.join(Path.resolve(this.book.getMeta('uuid')),'cover.jpg');
         if (!/^http/i.test(coverSrc)) return fn();
         this.debug('getBookCover');
         var times = parseInt(this.config.get('app.retry.cover'));
@@ -624,11 +625,18 @@ class Wedge extends EventEmitter{
         link.contentType = 'image';
         link.success = data=>{
             this.book.setMeta('cover',data);
-            fs.writeFile(Path.join(this.bookdir,'cover.jpg'),data,fn);
+            this.cache.set(coverDir,data);
+            fs.writeFile(coverDir,data,fn);
         };
         link.error = ()=>{
-            if (--times <= 0) return fn();
-            this.request(link);
+            if (--times <= 0){
+                var data = this.cache.get(coverDir);
+                if(!data) return fn();
+                this.book.setMeta('cover',data);
+                fs.writeFile(coverDir,data,fn);
+            }else{
+                this.request(link);
+            }
         };
         this.request(link);
         return this;
@@ -640,26 +648,28 @@ class Wedge extends EventEmitter{
         this.debug('checkBookCover');
         var coverSrc = this.book.getMeta('cover');
         var coverDir = Path.join(this.bookdir,'cover.jpg');
-        fs.exists(coverDir,exist=>{
-            if (exist){
-                fs.readFile(coverDir,(err,data)=>{
-                    if(data.toString('base64') !== this.book.getMeta('cover')){
-                        this.book.setMeta('cover',data);
-                    }
-                    return fn();
-                });
-            }else {
+        fs.readFile(coverDir,(err,data)=>{
+            if(err){
                 if(!coverSrc) return fn();
                 if (/^http/i.test(coverSrc)) return this.getBookCover(fn);
-                fs.writeFile(coverDir,this.book.Meta.cover.toBuffer(),fn);
+                fs.writeFile(coverDir,Buffer.from(coverSrc,'base64'),fn);
+            }else{
+                var imgBuf = data.toString('base64');
+                if (coverSrc.substr(0,100) !== imgBuf.substr(0,100)){
+                  this.book.setMeta('cover',data);
+                }
+                return fn();
             }
         });
-        return this;
     }
 
     createBook(fn){
         fn = this.next(fn);
         var uuid = this.book.getMeta('uuid');
+        var record = this.database.query(`uuid=${uuid}`)[0];
+        if(record && record.title === this.book.getMeta('title') && !this.config.get('database.check')){
+            return this.end();
+        }
         this.debug('createBook');
         this.bookdir = Path.resolve(uuid);
         fs.mkdirsSync(this.bookdir);
