@@ -20,8 +20,10 @@ function chars(char,length){
 
 function cutOff(str,length){
 	str = str.substr(0,str.length-2);
-	while(strLength(str)+3>length){
+	var strLen = strLength(str);
+	while(strLen+3>length){
 		str = str.substr(0,str.length-2);
+		strLen = strLength(str);
 	}
 	return str + chars('.',length-strLen);
 }
@@ -55,7 +57,7 @@ function showDataBase(array){
 	maxLen['#'] = strLength(array.length+1+'');
 	keys.forEach(key=>table[key]=[key]);
 	array.forEach(item=>keys.forEach(key=>table[key].push(item[key])));
-	keys.forEach(key=>maxLen[key]=Math.max.apply(Math,table[key].map(strLength)));
+	keys.forEach(key=>maxLen[key]=Math.min(36,Math.max.apply(Math,table[key].map(strLength))));
 	ceils = Object2Array(maxLen).map(number=>chars('-',number));
 	table = [];
 	table.push(ceils.join('---'));

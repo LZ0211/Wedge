@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": "/\\.qwyd\\.net\\/?$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('body > div.jumbotron.masthead > div > h1').text().trim()",
+      "author": "$('body > div.jumbotron.masthead > div > p').text().trim()",
+      "classes": "",
+      "isend": "false",
+      "cover": "$.location($('body > div.container > p:nth-child(3) > img').attr('src'))",
+      "brief": "$('body > div.container > p:nth-child(4)').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\.qwyd\\.net\\/?$/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('footer').length",
+    "bookIndexs": "$('div.container > div > ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\d+\\.html$/i.test($.location())",
+    "footer": "$('footer').length > 0",
+    "filter": "$('body > div.container > div.row > div').find('ul,div').remove()",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('body > div.container > div.row > div').html()",
+      "nextPage": "$('.pagination li.active').next().find('a').attr('href')"
+    }
+  }
+}

@@ -599,7 +599,7 @@ class Wedge extends EventEmitter{
                 .end(next)
                 .log(this.debug.bind(this))
                 .label('searchBookMeta')
-                .queue(list.filter(link=>~link[1].indexOf(title)).map(link=>link[0]))
+                .queue(list.filter(link=>(Array.isArray(link) && ~link[1].indexOf(title))).map(link=>link[0]))
                 .start();
             });
         };

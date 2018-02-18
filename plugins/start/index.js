@@ -79,14 +79,17 @@ module.exports = function (){
     }
     
     function showDatabase(items){
-        items = items.map(item=>({
-            uuid:item.uuid,
-            title:item.title,
-            author:item.author,
-            classes:item.classes,
-            isend:item.isend+'',
-            date:formatTime(item.date)
-        }))
+        var keys = app.config.get('database.showkeys') || ['uuid','title','author','classes','isend','date'];
+        items = items.map(item=>{
+            item.date = formatTime(item.date);
+            item.isend = ''+item.isend;
+            item.brief = item.brief.replace(/\s/g,' ');
+            var newItem = {};
+            keys.forEach(key=>{
+                newItem[key] = item[key];
+            });
+            return newItem;
+        });
         _showDatabase(items);
         refresh();
     }
