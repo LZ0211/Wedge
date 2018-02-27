@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN">
+<!-- source={{=book.source}} -->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <title>{{=book.title}}</title>
+  </head>
+  <body>
+    <div id="main">
+      <h3 id="title">{{=book.title}}</h3>
+      <div id="content">{{~book.content.split('\n'): line}}
+        <p>{{=line}}</p>{{~}}
+      </div>
+    </div>
+  </body>
+</html>

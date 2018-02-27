@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id" version="2.0">
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+        <dc:identifier opf:scheme="uuid" id="uuid_id">{{=book.meta.uuid}}</dc:identifier>
+        <dc:subject>{{=book.meta.classes}}</dc:subject>
+        <dc:title>{{=book.meta.title}}</dc:title>
+        <dc:creator opf:file-as="{{=book.meta.author}}" opf:role="aut">{{=book.meta.author}}</dc:creator>
+        <dc:date>{{=(new Date(book.meta.date)).formation('yyyy-MM-ddThh:mm:ss+00:00')}}</dc:date>
+        <dc:description>{{=book.meta.brief}}</dc:description>
+        <dc:publisher>Wedge</dc:publisher>
+        <dc:language>zh</dc:language>
+    </metadata>
+    <guide>
+        <reference href="cover.jpg" title="封面" type="cover"/>
+    </guide>
+</package>

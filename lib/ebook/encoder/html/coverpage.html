@@ -1,0 +1,21 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="right" content="该文档由裂章制作，仅供个人交流与学习使用。"/>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <title>封面</title>
+  </head>
+  <body>
+    <div class="main">
+      <div style="text-align:center">
+        <img class="cover" src="images/cover.jpg" alt="{{=book.meta.title}}"/>
+      </div>
+      <h1>{{=book.meta.title}}</h1>
+      <h2>{{=book.meta.author}}</h2>
+      <div class="description">
+        <b>【简介】</b>{{~book.meta.brief.split('\n'): line}}
+        <p>{{=line}}</p>{{~}}
+      </div>
+    </div>
+  </body>
+</html>

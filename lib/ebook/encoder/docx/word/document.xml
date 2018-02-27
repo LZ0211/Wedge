@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<w:document xmlns:w="http://purl.oclc.org/ooxml/wordprocessingml/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://purl.oclc.org/ooxml/officeDocument/relationships" xmlns:m="http://purl.oclc.org/ooxml/officeDocument/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://purl.oclc.org/ooxml/drawingml/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" mc:Ignorable="w14 w15 wne wp14" w:conformance="strict">
+  <w:body>
+    <w:p w:rsidR="009C3D06" w:rsidRDefault="00287328">
+      <w:pPr>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr><w:noProof/></w:rPr>
+        <w:drawing>
+          <wp:inline distT="0" distB="0" distL="0" distR="0">
+            <wp:extent cx="3056400" cy="4320000"/>
+            <wp:effectExtent l="0" t="0" r="0" b="4445"/>
+            <wp:docPr id="1" name="cover.jpg" descr="封面"/>
+            <wp:cNvGraphicFramePr>
+              <a:graphicFrameLocks xmlns:a="http://purl.oclc.org/ooxml/drawingml/main" noChangeAspect="1"></a:graphicFrameLocks>
+            </wp:cNvGraphicFramePr>
+            <a:graphic xmlns:a="http://purl.oclc.org/ooxml/drawingml/main">
+              <a:graphicData uri="http://purl.oclc.org/ooxml/drawingml/picture">
+                <pic:pic xmlns:pic="http://purl.oclc.org/ooxml/drawingml/picture">
+                  <pic:nvPicPr>
+                    <pic:cNvPr id="0" name="cover.jpg" descr="封面"/>
+                    <pic:cNvPicPr/>
+                  </pic:nvPicPr>
+                  <pic:blipFill>
+                    <a:blip r:embed="rId4">
+                      <a:extLst>
+                        <a:ext uri="{28A0092B-C50C-407E-A947-70E740481C1C}">
+                          <a14:useLocalDpi xmlns:a14="http://schemas.microsoft.com/office/drawing/2010/main" val="0"></a14:useLocalDpi>
+                        </a:ext>
+                      </a:extLst>
+                    </a:blip>
+                    <a:stretch>
+                      <a:fillRect/>
+                    </a:stretch>
+                  </pic:blipFill>
+                  <pic:spPr>
+                    <a:xfrm>
+                      <a:off x="0" y="0"/>
+                      <a:ext cx="3056400" cy="4320000"/>
+                    </a:xfrm>
+                    <a:prstGeom prst="rect">
+                      <a:avLst/>
+                    </a:prstGeom>
+                  </pic:spPr>
+                </pic:pic>
+              </a:graphicData>
+            </a:graphic>
+          </wp:inline>
+        </w:drawing>
+      </w:r>
+    </w:p>
+    <w:p w:rsidR="00287328" w:rsidRDefault="00287328">
+      <w:pPr><w:pStyle w:val="a3"/><w:rPr><w:sz w:val="40"/></w:rPr></w:pPr>
+      <w:r><w:rPr><w:sz w:val="40"/></w:rPr><w:t>{{=book.meta.title}}</w:t></w:r>
+    </w:p>
+    <w:p w:rsidR="00287328" w:rsidRDefault="00287328">
+      <w:pPr><w:pStyle w:val="a4"/><w:rPr><w:sz w:val="40"/></w:rPr></w:pPr>
+      <w:r><w:t>{{=book.meta.author}}</w:t></w:r>
+    </w:p>
+    <w:p w:rsidR="00287328" w:rsidRDefault="00287328">
+      <w:pPr><w:rPr><w:b/><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr></w:pPr>
+      <w:r><w:rPr><w:b/><w:sz w:val="28"/><w:szCs w:val="28"/></w:rPr><w:t>【简介】</w:t></w:r>
+    </w:p>{{~book.meta.brief.split('\n'): line}}
+    <w:p w:rsidR="00287328" w:rsidRDefault="00287328">
+      <w:pPr><w:spacing w:line="18pt" w:lineRule="auto"/><w:ind w:firstLineChars="200" w:firstLine="24pt"/><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:pPr>
+      <w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t>{{=line}}</w:t></w:r>
+    </w:p>{{~}}
+    <w:p w:rsidR="00287328" w:rsidRDefault="00287328">
+      <w:pPr><w:widowControl/><w:jc w:val="start"/><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:pPr>
+      <w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:br w:type="page"/></w:r>
+    </w:p>{{~book.list: chapter:index}}
+    <w:p w:rsidR="00287328" w:rsidRDefault="00287328">
+      <w:pPr><w:pStyle w:val="a3"/><w:outlineLvl w:val="9"/></w:pPr>
+      <w:r><w:t>第一章下海拍片</w:t></w:r>
+    </w:p>{{~chapter.content.split('\n'): line}}
+    <w:p w:rsidR="00287328" w:rsidRDefault="00287328">
+      <w:pPr><w:spacing w:line="18pt" w:lineRule="auto"/><w:ind w:firstLineChars="200" w:firstLine="24pt"/><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:pPr>
+      <w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t>{{=line}}</w:t></w:r>
+    </w:p>{{~}}
+    <w:p w:rsidR="00287328" w:rsidRDefault="00287328">
+      <w:pPr><w:widowControl/><w:jc w:val="start"/><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:pPr>
+      <w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:br w:type="page"/></w:r>
+    </w:p>{{~}}
+    <w:sectPr w:rsidR="00287328">
+      <w:pgSz w:w="595.30pt" w:h="841.90pt"/>
+      <w:pgMar w:top="72pt" w:right="90pt" w:bottom="72pt" w:left="90pt" w:header="42.55pt" w:footer="49.60pt" w:gutter="0pt"/>
+      <w:cols w:space="21.25pt"/>
+      <w:docGrid w:type="lines" w:linePitch="312"/>
+    </w:sectPr>
+  </w:body>
+</w:document>

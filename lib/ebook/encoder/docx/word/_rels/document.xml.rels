@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId3" Type="http://purl.oclc.org/ooxml/officeDocument/relationships/webSettings" Target="webSettings.xml"/>
+  <Relationship Id="rId2" Type="http://purl.oclc.org/ooxml/officeDocument/relationships/settings" Target="settings.xml"/>
+  <Relationship Id="rId1" Type="http://purl.oclc.org/ooxml/officeDocument/relationships/styles" Target="styles.xml"/>
+  <Relationship Id="rId5" Type="http://purl.oclc.org/ooxml/officeDocument/relationships/fontTable" Target="fontTable.xml"/>
+  <Relationship Id="rId4" Type="http://purl.oclc.org/ooxml/officeDocument/relationships/image" Target="media/cover.jpeg"/>
+</Relationships>

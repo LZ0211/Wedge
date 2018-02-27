@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" xmlns:db="urn:oasis:names:tc:opendocument:xmlns:database:1.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:smil="urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xlink="http://www.w3.org/1999/xlink" office:version="1.2">
+  <office:font-face-decls>
+    <style:font-face style:name="Calibri" svg:font-family="Calibri" style:font-family-generic="swiss" style:font-pitch="variable" svg:panose-1="2 15 5 2 2 2 4 3 2 4"/>
+    <style:font-face style:name="宋体" svg:font-family="宋体" style:font-family-generic="system" style:font-pitch="variable" svg:panose-1="2 1 6 0 3 1 1 1 1 1"/>
+    <style:font-face style:name="Times New Roman" svg:font-family="Times New Roman" style:font-family-generic="roman" style:font-pitch="variable" svg:panose-1="2 2 6 3 5 4 5 2 3 4"/>
+    <style:font-face style:name="Calibri Light" svg:font-family="Calibri Light" style:font-family-generic="swiss" style:font-pitch="variable" svg:panose-1="2 15 3 2 2 2 4 3 2 4"/>
+  </office:font-face-decls>
+  <office:automatic-styles>
+    <style:style style:name="P1" style:parent-style-name="正文" style:master-page-name="MP0" style:family="paragraph">
+      <style:paragraph-properties fo:break-before="page" fo:text-align="center"/>
+    </style:style>
+    <style:style style:name="T2" style:parent-style-name="默认段落字体" style:family="text">
+      <style:text-properties style:font-name="Times New Roman" style:font-name-complex="Times New Roman"/>
+    </style:style>
+    <style:style style:name="P3" style:parent-style-name="标题" style:family="paragraph">
+      <style:text-properties style:font-name="Times New Roman" style:font-name-complex="Times New Roman" fo:font-size="20pt" style:font-size-asian="20pt"/>
+    </style:style>
+    <style:style style:name="P4" style:parent-style-name="副标题" style:family="paragraph">
+      <style:text-properties style:font-name="Times New Roman" style:font-name-complex="Times New Roman"/>
+    </style:style>
+    <style:style style:name="P5" style:parent-style-name="正文" style:family="paragraph">
+      <style:text-properties style:font-name="Times New Roman" style:font-name-complex="Times New Roman" fo:font-weight="bold" style:font-weight-asian="bold" fo:font-size="14pt" style:font-size-asian="14pt" style:font-size-complex="14pt"/>
+    </style:style>
+    <style:style style:name="P6" style:parent-style-name="正文" style:family="paragraph">
+      <style:paragraph-properties fo:line-height="150%" fo:text-indent="0.3333in"/>
+      <style:text-properties style:font-name="Times New Roman" style:font-name-complex="Times New Roman" fo:font-size="12pt" style:font-size-asian="12pt" style:font-size-complex="12pt"/>
+    </style:style>
+    <style:style style:name="P7" style:parent-style-name="正文" style:family="paragraph">
+      <style:paragraph-properties fo:widows="2" fo:orphans="2" fo:break-before="page" fo:text-align="start"/>
+      <style:text-properties style:font-name="Times New Roman" style:font-name-complex="Times New Roman" fo:font-size="12pt" style:font-size-asian="12pt" style:font-size-complex="12pt"/>
+    </style:style>
+    <style:style style:name="P8" style:parent-style-name="标题" style:family="paragraph">
+      <style:text-properties style:font-name="Times New Roman" style:font-name-complex="Times New Roman"/>
+    </style:style>
+    <style:style style:name="P9" style:parent-style-name="正文" style:family="paragraph">
+      <style:paragraph-properties fo:line-height="150%" fo:text-indent="0.3333in"/>
+      <style:text-properties style:font-name="Times New Roman" style:font-name-complex="Times New Roman" fo:font-size="12pt" style:font-size-asian="12pt" style:font-size-complex="12pt"/>
+    </style:style>
+    <style:style style:family="graphic" style:name="a0" style:parent-style-name="Graphics">
+      <style:graphic-properties fo:border="none" fo:background-color="transparent"/>
+    </style:style>
+  </office:automatic-styles>
+  <office:body>
+    <office:text text:use-soft-page-breaks="true">
+      <text:p text:style-name="P1">
+        <text:span text:style-name="T2">
+          <draw:frame draw:style-name="a0" draw:name="cover.jpg" text:anchor-type="as-char" svg:x="0in" svg:y="0in" svg:width="3.34252in" svg:height="4.72441in" style:rel-width="scale" style:rel-height="scale">
+            <draw:image xlink:href="media/cover.jpeg" xlink:type="simple" xlink:show="embed" xlink:actuate="onLoad"/>
+            <svg:title/>
+            <svg:desc>封面</svg:desc>
+          </draw:frame>
+        </text:span>
+      </text:p>
+      <text:p text:style-name="P3">{{=book.meta.title}}</text:p>
+      <text:p text:style-name="P4">{{=book.meta.author}}</text:p>
+      <text:p text:style-name="P5">【简介】</text:p>{{~book.meta.brief.split('\n'):line}}
+      <text:p text:style-name="P6">{{=line}}</text:p>{{~}}
+      <text:p text:style-name="P7"/>{{~book.list:chapter}}
+      <text:p text:style-name="P8">
+        <text:soft-page-break/>{{=chapter.title}}
+      </text:p>{{~chapter.content.split('\n'):line}}
+      <text:p text:style-name="P9">{{=line}}</text:p>{{~}}
+      <text:p text:style-name="P7"/>{{~}}
+    </office:text>
+  </office:body>
+</office:document-content>

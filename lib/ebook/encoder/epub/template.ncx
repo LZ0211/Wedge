@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="zho">
+  <head>
+    <meta content="{{=book.meta.uuid}}" name="dtb:uid"/>
+    <meta content="1" name="dtb:depth"/>
+    <meta content="0" name="dtb:totalPageCount"/>
+    <meta content="0" name="dtb:maxPageNumber"/>
+  </head>
+  <docTitle>
+    <text>{{=book.meta.title}}</text>
+  </docTitle>
+  <docAuthor>
+    <text>{{=book.meta.author}}</text>
+  </docAuthor>
+  <navMap>
+    <navPoint id="coverpage" playOrder="1">
+      <navLabel>
+        <text>封面</text>
+      </navLabel>
+      <content src="coverpage.html"/>
+    </navPoint>{{~book.list: chapter:index}}
+    <navPoint class="chapter" id="Chapter_{{=chapter.id}}" playOrder="{{=index+2}}">
+      <navLabel>
+        <text>{{=chapter.title}}</text>
+      </navLabel>
+      <content src="{{=chapter.id}}.html"/>
+    </navPoint>{{~}}
+  </navMap>
+</ncx>

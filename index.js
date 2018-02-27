@@ -22,6 +22,7 @@ const Parser = require("./lib/Parser");
 const Book = require("./lib/Book");
 const classes = require("./lib/classes");
 const ebook = require('./lib/ebook');
+const ExceptSites = new RegExp(require("./outclude").map(x=>x.replace(/\./g,'\\.')).join('|'),'gi');
 
 class Wedge extends EventEmitter{
     constructor(dir){
@@ -537,6 +538,7 @@ class Wedge extends EventEmitter{
         };
         link.success = data=>{
             var parsedData = this.getParsedData(data,link.url);
+            //console.log(parsedData)
             var infoPage = parsedData.infoPage;
             var indexPage = parsedData.indexPage;
             if (infoPage){
@@ -565,8 +567,7 @@ class Wedge extends EventEmitter{
         var uuid = this.book.getMeta('uuid');
         //if(this.database.query('uuid='+uuid).length) return fn();
         if(!title) return this.end();
-        var except = new RegExp(Searcher.map(x=>x.name.replace(/\./g,'\\.')).join('|'),'gi');
-        if(source.match(except)) return fn();
+        if(source.match(ExceptSites)) return fn();
         this.debug('updateBookMeta');
         function like(s1,s2){
             var reFilter = /[:：？\?,；，,\.。!！_—\-]/g;

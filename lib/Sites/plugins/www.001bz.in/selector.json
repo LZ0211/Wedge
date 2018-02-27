@@ -1,8 +1,8 @@
 {
   "infoPage": {
-    "match": "!!$('div.list_box').length",
+    "match": "!!$('div.dd').length",
     "indexPage": "$.location()",
-    "footer": "$('.Layout.ft').length > 0",
+    "footer": "$('.floatBox').length",
     "filter": "$('div.words').find('a').each((i,v)=>{$(v).replaceWith($(v).text())})",
     "bookInfos": {
       "source": "$.location()",
@@ -15,16 +15,10 @@
     }
   },
   "indexPage": {
-    "match": "!!$('div.list_box').length",
+    "match": "!!$('div.dd').length",
     "infoPage": "$.location()",
-    "footer": "$('.Layout.ft').length > 0",
-    "bookIndexs": "$('div.list_box a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
-  },
-  "redirectPage": {
-    "match": "$.raw.match('window.location')",
-    "footer": "true",
-    "indexPage": "$.location($('h3 a').attr('href'))",
-    "infoPage": "$.location($('h3 a').attr('href'))"
+    "footer": "$('.floatBox').length",
+    "bookIndexs": "$('div.dd a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
     "match": "true",

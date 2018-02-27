@@ -1,0 +1,11 @@
+﻿【书名】：{{=book.meta.title}}
+【作者】：{{=book.meta.author}}
+【类型】：{{=book.meta.classes}}
+【简介】：{{=book.meta.brief.replace(/[\r\n]+/g,'\r\n')}}
+【正文】
+{{~book.list :chapter:index}}
+{{=chapter.title}}
+
+{{=chapter.content.replace(/\n/g,'\r\n')}}
+
+{{~}}

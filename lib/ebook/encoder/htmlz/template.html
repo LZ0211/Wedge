@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <title>{{=book.meta.title}}</title>
+  </head>
+  <body>
+    <div class="metadata">
+      <div style="text-align:center">
+        <img class="cover" src="cover.jpg"/>
+      </div>
+      <h1>{{=book.meta.title}}</h1>
+      <h2>{{=book.meta.author}}</h2>
+      <div class="brief">
+        <b>【简介】</b>{{~book.meta.brief.split('\n'): line}}
+        <p>{{=line}}</p>{{~}}
+      </div>
+    </div>
+    <div class="list">
+      <ul>{{~book.list:chapter}}
+        <li><a href="#{{=chapter.id}}">{{=chapter.title}}</a></li>{{~}}
+      </ul>
+    </div>{{~book.list:chapter}}
+    <div class="chapter" id="{{=chapter.id}}" name="{{=chapter.id}}">
+      <h3 class="title">{{=chapter.title}}</h3>
+      <div id="content">{{~chapter.content.split('\n'):line}}
+        <p>{{=line}}</p>{{~}}
+      </div>
+    </div>{{~}}
+  </body>
+</html>
