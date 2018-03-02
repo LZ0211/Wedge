@@ -46,7 +46,20 @@ App.config.set('request.proxyAuth',{username:'###',password:'###'});
 //生成电子书保存路径
 App.config.set('ebook.directory','E:/MyBooks/Library/ebook');
 //电子书格式，默认epub
-/*常用电子书格式
+App.config.set('ebook.formation','epub');
+/*
+是否创建电子书，子进程命令
+-1——发生修改后自动创建新的电子书(包括书籍metadata变动或有下载新章节)
+1——每次调用生成命令都会创建新的电子书
+0——关闭该功能
+*/
+App.config.set('ebook.activated',-1);
+//电子书生成后自动打开文件目录
+App.config.set('ebook.opendirectory',false);
+//电子书生成后自动打开文件
+App.config.set('ebook.openebookfile',false);
+```
+#### 电子书格式
 txt,
 fb2,
 epub,
@@ -64,20 +77,6 @@ txt.zip(txt格式的压缩文件),
 fb2.zip(fb2格式的压缩文件),
 html.zip(分章节的html压缩文件),
 wbk(作者自定义的电子书格式,高压缩率，主要用于导出备份书籍，可转换成其他书籍格式)
-*/
-App.config.set('ebook.formation','epub');
-/*
-是否创建电子书，子进程命令
--1——发生修改后自动创建新的电子书(包括书籍metadata变动或有下载新章节)
-1——每次调用生成命令都会创建新的电子书
-0——关闭该功能
-*/
-App.config.set('ebook.activated',-1);
-//电子书生成后自动打开文件目录
-App.config.set('ebook.opendirectory',false);
-//电子书生成后自动打开文件
-App.config.set('ebook.openebookfile',false);
-```
 
 #### 线程参数
 ```Javascript
