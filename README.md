@@ -44,7 +44,7 @@ App.config.set('request.proxyAuth',{username:'###',password:'###'});
 #### 电子书参数
 ```Javascript
 //生成电子书保存路径
-App.config.set('ebook.directory','E:/MyBooks/Library/ebook');
+App.config.set('ebook.directory','../ebook');
 //电子书格式，默认epub
 App.config.set('ebook.formation','epub');
 /*
@@ -54,6 +54,22 @@ App.config.set('ebook.formation','epub');
 0——关闭该功能
 */
 App.config.set('ebook.activated',-1);
+//章节过滤器，程序会自动编译成函数
+/*语法
+关键词：title,content,id,index,date,length
+逻辑：~(!),and(&&),or(||)
+正则匹配:[[]]
+字符匹配:[]
+数值范围:<x,y>(大于x且小于y),{x,y}(大于等于x且小于等于y),<x,y},{x,y>
+示例：
+筛选标题为（第【数字】章）模式的章节 —— title:[[^第\d+章]]
+筛选标题为（第200章）的章节 —— title:[第200章]
+筛选内容长度大于等于500的章节 —— length:{500,}
+筛选序列大于100且小于200的章节 —— index:<100,200>
+筛选内容【不】含有【非法】字符的章节 —— ~content:[[非法]]
+组合筛选 —— (title:[[^第\d+章]]) and (~title:[第200章])
+*/
+App.config.set('ebook.filter','length:{500,}');
 //电子书生成后自动打开文件目录
 App.config.set('ebook.opendirectory',false);
 //电子书生成后自动打开文件
@@ -63,9 +79,6 @@ App.config.set('ebook.openebookfile',false);
 txt,
 fb2,
 epub,
-~~chm~~(作者比较懒，非window系统下要自己实现LZX压缩算法，不兼容*nix系统),
-~~mobi~~(找不到电子书的结构定义，推荐用kindlegen或者calibre转换),
-~~ebk3~~(掌阅的专用格式，正在破解)
 umd,
 docx,
 odt,
@@ -76,13 +89,19 @@ json,
 txt.zip(txt格式的压缩文件),
 fb2.zip(fb2格式的压缩文件),
 html.zip(分章节的html压缩文件),
-wbk(作者自定义的电子书格式,高压缩率，主要用于导出备份书籍，可转换成其他书籍格式)
+wbk(作者自定义的电子书格式，无损高压缩率，主要用于导出备份书籍，可通过脚本工具直接转换成其他格式)
+~~chm~~(微软help文件，LZX压缩算法，非window系统下要自己实现，不兼容*nix系统，已删除)
+~~mobi~~(找不到电子书的结构定义，推荐用kindlegen或者calibre转换epub文件)
+~~azw3~~(原因同上)
+~~ebk3~~(掌阅的专用格式，封面要服务器根据uuid提供，作者强迫症比较不爽，已删除)
+~~snb~~(盛大bambook格式，bzip2压缩算法，作者的电纸书已坏，删除该格式)
 
 #### 线程参数
 ```Javascript
 //执行章节下载时的并行数目
 App.config.set('thread.execute',5);
 //批量新建小说时的并行数目
+//总线程=thread.execute*thread.new
 App.config.set('thread.new',5);
 //批量更新小说时的并行数目
 App.config.set('thread.update',5);
@@ -110,7 +129,7 @@ App.config.set('book.check',true);
 App.config.set('book.changesource',false);
 //切换新的的源后是否覆盖旧章节
 App.config.set('book.override',false);
-//章节中发现图片链接是是否下载图片到本地
+//章节中发现图片链接是是否下载图片到本地，可用于图片采集或者漫画下载
 App.config.set('book.imagelocalization',false);
 //是否从起点等原创网站搜索书籍信息
 //建议开启，当下载网站不在规则库中能够辅助搜集书籍信息
@@ -216,7 +235,7 @@ App.start()
 #### 临时添加
 App.Sites.inject(rule);
 #### 永久添加
-在wedge/lib/sites路径下
+在Wedge/lib/Sites路径下
 defaut为原创小说网站，
 plugins为盗链网站
 ![host]命名的为匹配多个网站的规则
@@ -245,7 +264,7 @@ module.exports = {
   "infoPage": {
     "match": "!!$('.btnlinks > a.read').length",//是否匹配书籍信息页面
     "indexPage": "$.location($('.btnlinks > a.read').attr('href'))",//书籍目录页的链接
-    "footer": "$('.footer').length > 0",//页面footer,防止网络延迟下的页面内容缺失，可直接填true
+    "footer": "$('.footer').length",//页面footer,防止网络延迟下的页面内容缺失，可直接填true
     "bookInfos": {//采集书籍信息
       "title": "$('#content h1').text()",//书籍名称
       "author": "$('th:contains(作者)').next('td').text()",//书籍作者
@@ -268,6 +287,7 @@ module.exports = {
     "chapterInfos": {
       "source": "$.location()",//页面地址
       "content": "$('#contents').html()"//页面内容
+      "nextPage": "$.location($('a.next').attr('href'))"//下一页链接，分页显示时使用，如漫画
     }
   }
 }
@@ -295,15 +315,19 @@ module.exports = {
 ./lib/classes/Filter.json
 ```Javascript
 {
-    "chapterTitle":[],//全局章节标题过滤规则
+    "chapterTitle":[
+        "[\\(\\[（].*？[0-9一二三四五六七八九十]更.*?[\\)\\]）]",
+        "[\\(\\[（].*?(月票|推荐|收藏).*?[\\)\\]）]",
+        "www.*(com|net|org|cn|in)"
+    ],//全局章节标题过滤规则
     "chapterBeforeFilter":[],//内置过滤前的原始html文件的过滤规则
     "chapterAfterFilter":[
         "readx();",
-        "天才壹秒记住.*为您提供精彩小说阅读。",
-        "天才一秒记住.*为您提供精彩小说阅读。",
+        "天才(壹|一)秒记住.*为您提供精彩小说阅读。",
         "^<<",
         "手机用户请浏览.*",
-        "公告：本站推荐一款免费小说APP.*"
+        "公告：本站推荐一款免费小说APP.*",
+        "[\\(（]未完待续[\\s\\S]*"
     ]//内置过滤后进一步的过滤
 }
 ```
