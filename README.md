@@ -77,23 +77,41 @@ App.config.set('ebook.openebookfile',false);
 ```
 #### 电子书格式
 txt,
+
 fb2,
+
 epub,
+
 umd,
+
 docx,
+
 odt,
+
 rtf,
+
 html,
+
 htmlz,
+
 json,
+
 txt.zip(txt格式的压缩文件),
+
 fb2.zip(fb2格式的压缩文件),
+
 html.zip(分章节的html压缩文件),
+
 wbk(作者自定义的电子书格式，无损高压缩率，主要用于导出备份书籍，可通过脚本工具直接转换成其他格式)
+
 ~~chm~~(微软help文件，LZX压缩算法，非window系统下要自己实现，不兼容*nix系统，已删除)
+
 ~~mobi~~(找不到电子书的结构定义，推荐用kindlegen或者calibre转换epub文件)
+
 ~~azw3~~(原因同上)
+
 ~~ebk3~~(掌阅的专用格式，封面要服务器根据uuid提供，作者强迫症比较不爽，已删除)
+
 ~~snb~~(盛大bambook格式，bzip2压缩算法，作者的电纸书已坏，删除该格式)
 
 #### 线程参数
