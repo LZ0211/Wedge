@@ -72,7 +72,7 @@
     </w:p>{{~book.list: chapter:index}}
     <w:p w:rsidR="00287328" w:rsidRDefault="00287328">
       <w:pPr><w:pStyle w:val="a3"/><w:outlineLvl w:val="9"/></w:pPr>
-      <w:r><w:t>第一章下海拍片</w:t></w:r>
+      <w:r><w:t>{{=chapter.title}}</w:t></w:r>
     </w:p>{{~chapter.content.split('\n'): line}}
     <w:p w:rsidR="00287328" w:rsidRDefault="00287328">
       <w:pPr><w:spacing w:line="18pt" w:lineRule="auto"/><w:ind w:firstLineChars="200" w:firstLine="24pt"/><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:pPr>
