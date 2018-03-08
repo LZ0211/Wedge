@@ -1,0 +1,6 @@
+*.DS_Store
+*._index.js
+lib/ebook/._wbk2epub
+*._replacer.json
+*._selector.json
+*._selector.js

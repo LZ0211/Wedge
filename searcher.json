@@ -46,8 +46,10 @@
     "name": ".readnovel.com"
   },
   {
-    "url": "http://www.motie.com/rest/daguan/",
-    "query": "objectType=2&queryString=%title%",
+    "url": "http://www.motie.com/ajax/search",
+    "dataType": "json",
+    "query": "type=2&queryString=%title%&pageSize=100",
+    "parse": "json.items.map(x=>['http://www.motie.com'+x.url,x.title])",
     "name": ".motie.com"
   },
   {
@@ -114,20 +116,20 @@
     "name": ".jingyu.com"
   },
   {
-    "url": "http://www.junshishu.com/SearchResults.aspx",
+    "url": "http://book.tiexue.net/SearchResults.aspx",
     "query": "keywords=%title%&noveltype=1",
     "charset": "unicode",
-    "name": ".junshishu.com"
+    "name": ".tiexue.net"
   },
   {
     "url": "http://a.heiyan.com/jsonp/search/",
-    "query": "queryString=%title%&objectType=2&page=1",
+    "query": "queryString=%title%&objectType=2&page=1&pageSize=25",
     "name": ".heiyan.com",
     "parse": "json.voRF.items.map(o=>['http://www.heiyan.com'+o.object.url,o.object.name])"
   },
   {
     "url": "http://a.ruochu.com/jsonp/search/",
-    "query": "queryString=%title%&objectType=2&page=1",
+    "query": "queryString=%title%&objectType=2&page=1&pageSize=25",
     "name": ".ruochu.com",
     "headers":{
       "referer": "http://www.ruochu.com/search/?queryString=%title%"
@@ -142,10 +144,8 @@
     "name": ".km.com"
   },
   {
-    "url": "http://3gsc.com.cn/search/index/show/pic",
-    "method": "post",
-    "data": "keytype=1&search_key=%title%&ver=new",
-    "selector": "a.Article",
+    "url": "http://zhannei.baidu.com/cse/search",
+    "data": "s=3022107875151699007&q=%title%&nsid=",
     "name": "3gsc.com.cn"
   },
   {
@@ -233,9 +233,9 @@
     "name": ".8kana.com"
   },
   {
-    "url": "http://so.msxf.net/book/search/",
+    "url": "http://so.msxf.cn/book/search/",
     "query": "q=%title%&t=name",
-    "name": ".msxf.net"
+    "name": ".msxf.cn"
   },
   {
     "url": "http://s.sfacg.com/",
@@ -249,5 +249,17 @@
     "data": "BookName=%title%&send=",
     "name": ".54tushu.com",
     "selector": ".img a"
+  },
+  {
+    "url": "http://www.ebtang.com/book/search",
+    "method": "POST",
+    "selector":"a.f14.strong",
+    "data": "page=1&rows=25&searchName=%title%&orderBy=1",
+    "name": ".ebtang.com"
+  },
+  {
+    "url": "http://www.itangyuan.com/search/book/%title%.html",
+    "selector":".bname a",
+    "name": ".itangyuan.com"
   }
 ]

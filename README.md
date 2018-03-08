@@ -306,6 +306,36 @@ module.exports = {
     "footer": "!!$('#footlink').length",
     "chapterInfos": {
       "source": "$.location()",//页面地址
+      "title": "$('h3').text()",
+      "content": "$('#contents').html()"//页面内容
+    }
+  }
+}
+```
+如果需要模拟ajax请求，以QQ读书为例，构造一个请求对象
+```Javascript
+{
+  "contentPage": {
+    "match": "/^http:\\/\\/chuangshi\\.qq\\.com\\/\\w+\\/\\w+\\/\\w+\\-r\\-\\d+\\.html/i.test($.location())",
+    "footer": "true",
+    "request":{
+      "url" : "$.location().replace('http://dushu.qq.com/read.html?bid=','http://dushu.qq.com/read/').replace('&cid=','/')",
+      "method" : "'POST'",
+      "data" : "'lang=&w=830&fontsize=14'",
+      "dataType" : "'json'",
+      "success" : "data=>{$('.readPageWrap').html(data.Content);$('div.bookreadercontent').find('p').last().remove();return $('div.bookreadercontent').html();}"
+    }
+  }
+}
+```
+如果页面是分页的，需要连续采集多个页面合成一页，如论坛或者漫画
+```Javascript
+{
+ "contentPage": {
+    "match": "!!$('#footlink').length",//是否匹配章节页
+    "footer": "!!$('#footlink').length",
+    "chapterInfos": {
+      "source": "$.location()",//页面地址
       "content": "$('#contents').html()"//页面内容
       "nextPage": "$.location($('a.next').attr('href'))"//下一页链接，分页显示时使用，如漫画
     }

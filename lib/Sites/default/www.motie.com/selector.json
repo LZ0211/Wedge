@@ -1,33 +1,33 @@
 {
-  "infoPage": {
-    "match": "/^http:\\/\\/www\\.motie\\.com\\/book\\/\\d+$/i.test($.location())",
-    "indexPage": "$.location()+'/chapter'",
-    "footer": "$('#bookReply').length > 0",
-    "bookInfos": {
-      "origin": "$.location()",
-      "title": "$('h1.p-title a').text()",
-      "author": "$('.author-info .rtext a').first().text()",
-      "classes": "$('ul.info a').eq(0).text()",
-      "isend": "$('.ico img').attr('alt')",
-      "cover": "$.html().match(/pic: '(.*pic.motieimg.com.*)?'/) && $.html().match(/pic: '(.*pic.motieimg.com.*)?'/)[1]",
-      "brief": "$('div.desc').html()"
+    "infoPage": {
+        "match": "$('.cate-list').length",
+        "indexPage": "$.location()",
+        "footer": "$('.footer-box').length",
+        "bookInfos": {
+            "origin": "$.location()",
+            "title": "$('span.name.fl').text()",
+            "author": "$('a.author.fl').text()",
+            "classes": "$('.path a').eq(1).text()",
+            "isend": "$('.tags').text()",
+            "cover": "$('.pic.fl img').attr('src')",
+            "brief": "$('.summary').html()"
+        }
+    },
+    "indexPage": {
+        "match": "$('.cate-list').length",
+        "infoPage": "$.location()",
+        "footer": "$('.footer-box').length",
+        "filter": "$('img[alt=\"vip\"]').parent('a').remove()",
+        "bookIndexs": "$('.cate-list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).find('.chapter_name').text().trim()})).toArray()"
+    },
+    "contentPage": {
+        "match": "/^http:\\/\\/www\\.motie\\.com\\/book\\/\\d+_\\d+$/i.test($.location())",
+        "footer": "true",
+        "request": {
+          "url":"$.location().replace('http://www.motie.com/book/','http://www.motie.com/ajax/chapter/').replace('_','/')",
+          "method":"'POST'",
+          "data":"'chapterId='+$.location().replace(/.*_/,'')",
+          "success":"data=>{var str = data.toString();$('.read-box').html(str);str.match(/\\.([^{}]*) ?{display:NONE;}/gi).map(name=>name.replace(/ ?{display:NONE;}/gi,'')).forEach(x=>$(x).remove());return $('.page-content').map((i,v)=>$(v).text()).toArray().join('\\n')}"
+        }
     }
-  },
-  "indexPage": {
-    "match": "/^http:\\/\\/www\\.motie\\.com\\/book\\/\\d+\\/chapter$/i.test($.location())",
-    "infoPage": "$.location().replace('/chapter','')",
-    "footer": "$('.side-list').length > 0",
-    "filter": "$('img').parent('a').remove()",
-    "filter1": "$('span.desc').text('')",
-    "bookIndexs": "$('ul.list > li > a').has('span.desc').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text().trim()})).toArray()"
-  },
-  "contentPage": {
-    "match": "/^http:\\/\\/www\\.motie\\.com\\/book\\/\\d+_\\d+$/i.test($.location())",
-    "footer": "$('.page-bottom').length > 0",
-    "chapterInfos": {
-      "title": "$('h1').text()",
-      "source": "$.location()",
-      "content": "$('.page-content').map((i,v)=>$(v).text()).toArray().sort((a,b)=>a.length-b.length).pop()"
-    }
-  }
 }

@@ -1,0 +1,33 @@
+{
+  "infoPage": {
+    "match": "/^http:\\/\\/www\\.ebtang\\.com\\/book\\/\\d+\\/?$/i.test($.location())",
+    "indexPage": "$.location($('a.wdpt.fl').attr('href'))",
+    "footer": "$('.footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('div > h1').text()",
+      "author": "$('div.zp-wdrg > div.sec.ac > p > a').text()",
+      "classes": "$('div.zp-wdlf > div > p > span').text().split('|')[1]",
+      "isend": "!!$('div.zp-wdlf > img').attr('src').match('over.jpg')",
+      "cover": "$.location($('p.bords > img').attr('src'))",
+      "brief": "$('div.minh > pre').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/directory/i.test($.location())",
+    "infoPage": "$.location('./')",
+    "filter": "$('a.vip').remove()",
+    "footer": "$('.footer').length",
+    "bookIndexs": "$('ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "$('#bookChapterForm').length",
+    "footer": "true",
+    "request": {
+      "url": "$.location()+'/more'",
+      "method": "'POST'",
+      "data": "'nextId='+$('#nextId').val()+'&randomString='+$('#randomString').val()+'&curId='",
+      "success": "data=>{$('#maincontent').html(data.toString());return $('pre').html()}"
+    }
+  }
+}
