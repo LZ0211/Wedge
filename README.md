@@ -76,43 +76,26 @@ App.config.set('ebook.opendirectory',false);
 App.config.set('ebook.openebookfile',false);
 ```
 #### 电子书格式
-txt,
-
-fb2,
-
-epub,
-
-umd,
-
-docx,
-
-odt,
-
-rtf,
-
-html,
-
-htmlz,
-
-json,
-
-txt.zip(txt格式的压缩文件),
-
-fb2.zip(fb2格式的压缩文件),
-
-html.zip(分章节的html压缩文件),
-
-wbk(作者自定义的电子书格式，无损高压缩率，主要用于导出备份书籍，可通过脚本工具直接转换成其他格式)
-
-~~chm~~(微软help文件，LZX压缩算法，非window系统下要自己实现，不兼容*nix系统，已删除)
-
-~~mobi~~(找不到电子书的结构定义，推荐用kindlegen或者calibre转换epub文件)
-
-~~azw3~~(原因同上)
-
-~~ebk3~~(掌阅的专用格式，封面要服务器根据uuid提供，作者强迫症比较不爽，已删除)
-
-~~snb~~(盛大bambook格式，bzip2压缩算法，作者的电纸书已坏，删除该格式)
+txt——这个不用介绍了，纯文本格式的，编码用的utf-8
+fb2——FictionBook格式，实际上就是一个xml文件
+epub——Electronic Publication格式，文件实际上是一个zip压缩文件，内部是网页文件、元数据文件和索引文件
+umd——Universal Mobile Document格式，有专门的数据结构，压缩算法还是DEFLATE
+docx——office的docuemnt格式，文件实际上是一个zip压缩包，内部文件是xml格式，基于open document标准
+odt——OpenDocument Tex格式，和docx类似，也是一个xml文件的压缩包
+rtf——Rich Text Format格式
+html——单页网页文件
+htmlz——压缩的单页网页文件+带元数据文件
+json——JSON格式
+txt.zip——txt格式的压缩文件
+fb2.zip——fb2格式的压缩文件
+html.zip——分章节的html压缩文件
+wbk——作者自定义的电子书格式，无损高压缩率，主要用于导出备份书籍，可直接通过作者提供的脚本工具转换成其他格式
+~~pdf~~——Portable Document Format格式，自己实现PDF排版难度太大，推荐生成html后用浏览器保存为pdf
+~~chm~~——微软help文件，LZX压缩算法，非window系统下要自己实现，所以不兼容*nix系统，已删除
+~~mobi~~——找不到电子书的结构定义，推荐用kindlegen或者calibre转换epub文件
+~~azw3~~——同上
+~~ebk3~~——掌阅的专用格式，封面要服务器根据uuid提供，作者强迫症比较不爽，已删除
+~~snb~~——盛大bambook格式，bzip2压缩算法，作者的电纸书已坏，删除该格式
 
 #### 线程参数
 ```Javascript
