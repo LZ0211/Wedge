@@ -4,3 +4,6 @@ lib/ebook/._wbk2epub
 *._replacer.json
 *._selector.json
 *._selector.js
+lib/ebook/encoder/mobi/._example.mobi
+lib/request/cookies/cookies.json
+lib/request/cookies/cookies.json

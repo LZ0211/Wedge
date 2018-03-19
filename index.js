@@ -563,11 +563,13 @@ class Wedge extends EventEmitter{
         if (!this.config.get('book.searchmeta')) return fn();
         var title = this.book.getMeta('title');
         var source = this.book.getMeta('source');
+        var origin = this.book.getMeta('origin');
         var author = this.book.getMeta('author');
         var uuid = this.book.getMeta('uuid');
         //if(this.database.query('uuid='+uuid).length) return fn();
         if(!title) return this.end();
         if(source.match(ExceptSites)) return fn();
+        if(origin.match(ExceptSites)) return this.getBookMeta(origin,fn);
         this.debug('updateBookMeta');
         function like(s1,s2){
             var reFilter = /[:：？\?,；，,\.。!！_—\-]/g;

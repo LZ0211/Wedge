@@ -17,7 +17,7 @@
         "incap_ses_878_1454401": "incap_ses_878_1454401=TvkmUNlFmAERH85ycEgvDFUTF1oAAAAAoo0ZiFTiGbCE3LuDr80vsw==; path=/; Domain=.luoqiu.com"
     },
     "www.xbqge.com/;HttpOnly": {
-        "_D_SID": "_D_SID=CFB944284C632394EC6EA5EA1F7E2C1A; path=/;HttpOnly"
+        "_D_SID": "_D_SID=CFB944280D7AB0FEEC64D0B44238E4C2; path=/;HttpOnly"
     },
     ".qidian.com/": {
         "_csrfToken": "_csrfToken=olt4IrWwH6xpJKqEswJjb7XgLqQ4gtxXiqHOBjyf; expires=Sat, 22-Sep-2018 17:26:26 GMT; path=/; domain=.qidian.com",
@@ -29,8 +29,8 @@
     },
     "book.qq.com/": {
         "PHPSESSID": "PHPSESSID=oleaf7c64o99tssjj3j5hemjo5; path=/",
-        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Wed, 07-Mar-2018 08:22:09 GMT; Max-Age=-3600; path=/",
-        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Wed, 07-Mar-2018 08:22:09 GMT; Max-Age=-3600; path=/"
+        "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Sat, 17-Mar-2018 17:19:29 GMT; Max-Age=-3600; path=/",
+        "wxuid": "wxuid=czowOiIiOw%3D%3D; expires=Sat, 17-Mar-2018 17:19:29 GMT; Max-Age=-3600; path=/"
     },
     "ebook.qq.com/": {
         "pubtoken": "pubtoken=czowOiIiOw%3D%3D; expires=Wed, 07-Mar-2018 08:22:09 GMT; Max-Age=-3600; path=/",
@@ -233,7 +233,8 @@
         "fikker-NSb1-XsLe": "fikker-NSb1-XsLe=0u6mZ5NE2mjsJSIIrWFCnSDKpil1Zo4C; expires=Thu, 25 Jan 2018 21:26:23 GMT; domain=.73xs.cc; max-age=7200; path=/",
         "fikker-KfkR-L8qT": "fikker-KfkR-L8qT=oZkOO4s6WfcLC03jYpoxWDChyZmTuRWb; expires=Wed, 14 Feb 2018 08:28:32 GMT; domain=.73xs.cc; max-age=7200; path=/",
         "fikker-XY07-MwF3": "fikker-XY07-MwF3=vIMLT36oV50M6k0KMi0L4WhQvilLpwri; expires=Tue, 27 Feb 2018 21:10:17 GMT; domain=.73xs.cc; max-age=7200; path=/",
-        "fikker-Ig2u-NMvc": "fikker-Ig2u-NMvc=IG4OFsvQDC2o4g4ePLVeLQOKpMBuTiFK; expires=Mon, 05 Mar 2018 16:53:35 GMT; domain=.73xs.cc; max-age=7200; path=/"
+        "fikker-Ig2u-NMvc": "fikker-Ig2u-NMvc=IG4OFsvQDC2o4g4ePLVeLQOKpMBuTiFK; expires=Mon, 05 Mar 2018 16:53:35 GMT; domain=.73xs.cc; max-age=7200; path=/",
+        "fikker-HmDq-lCLQ": "fikker-HmDq-lCLQ=r9V5RKF9BQdUMsjs6GR1KGpEVSLATYd5; expires=Sun, 11 Mar 2018 20:28:08 GMT; domain=.73xs.cc; max-age=7200; path=/"
     },
     "book.tiexue.net/": {
         "__jsluid": "__jsluid=991877d64d0f22d85bc05d444b3d9a7e; max-age=31536000; path=/; HttpOnly"
@@ -291,9 +292,9 @@
     },
     "www.upu.cc/": {
         "PHPSESSID": "PHPSESSID=1pqea9de2ae35k27r3el4rgsnt; path=/",
-        "last_time": "last_time=1520232978; expires=Tue, 06-Mar-2018 06:56:18 GMT; Max-Age=86400; path=/",
-        "last_page": "last_page=L2Jvb2svY2h1YW55dWVzaG91emUv; expires=Tue, 06-Mar-2018 06:56:18 GMT; Max-Age=86400; path=/",
-        "pageviewnum": "pageviewnum=47; expires=Tue, 06-Mar-2018 06:56:18 GMT; Max-Age=86400; path=/",
+        "last_time": "last_time=1521313195; expires=Sun, 18-Mar-2018 18:59:55 GMT; Max-Age=86400; path=/",
+        "last_page": "last_page=L2Jvb2svY2h1YW55dWVzaG91emUv; expires=Sun, 18-Mar-2018 18:59:55 GMT; Max-Age=86400; path=/",
+        "pageviewnum": "pageviewnum=51; expires=Sun, 18-Mar-2018 18:59:55 GMT; Max-Age=86400; path=/",
         "viewlog": "viewlog=chuanyueshouze%23%23%E7%A9%BF%E8%B6%8A%E5%AE%88%E5%88%99%23%23586.0%23%23%E7%AC%AC586%E7%AB%A0+%E5%BD%92%E9%9A%90+%E5%85%A8%E4%B9%A6%E5%AE%8C; expires=Sun, 06-Jan-2019 07:15:54 GMT; Max-Age=31536000; path=/",
         "today_viewtime": "today_viewtime=1515222954; expires=Sun, 07-Jan-2018 07:15:54 GMT; Max-Age=86400; path=/",
         "today_viewnum": "today_viewnum=1; expires=Sun, 07-Jan-2018 07:15:54 GMT; Max-Age=86400; path=/"
@@ -310,14 +311,16 @@
         "fikker-NSb1-XsLe": "fikker-NSb1-XsLe=0u6mZ5NE2mjsJSIIrWFCnSDKpil1Zo4C; expires=Thu, 25 Jan 2018 21:26:23 GMT; max-age=7200; path=/",
         "fikker-KfkR-L8qT": "fikker-KfkR-L8qT=oZkOO4s6WfcLC03jYpoxWDChyZmTuRWb; expires=Wed, 14 Feb 2018 08:28:32 GMT; max-age=7200; path=/",
         "fikker-XY07-MwF3": "fikker-XY07-MwF3=vIMLT36oV50M6k0KMi0L4WhQvilLpwri; expires=Tue, 27 Feb 2018 21:10:17 GMT; max-age=7200; path=/",
-        "fikker-Ig2u-NMvc": "fikker-Ig2u-NMvc=IG4OFsvQDC2o4g4ePLVeLQOKpMBuTiFK; expires=Mon, 05 Mar 2018 16:53:35 GMT; max-age=7200; path=/"
+        "fikker-Ig2u-NMvc": "fikker-Ig2u-NMvc=IG4OFsvQDC2o4g4ePLVeLQOKpMBuTiFK; expires=Mon, 05 Mar 2018 16:53:35 GMT; max-age=7200; path=/",
+        "fikker-HmDq-lCLQ": "fikker-HmDq-lCLQ=r9V5RKF9BQdUMsjs6GR1KGpEVSLATYd5; expires=Sun, 11 Mar 2018 20:28:08 GMT; max-age=7200; path=/"
     },
     ".cc/": {
         "fikker-BunS-6CXm": "fikker-BunS-6CXm=T1M9PQn5lE2SbALGr5bSlexiL1TYfKpC; expires=Mon, 15 Jan 2018 13:03:27 GMT; domain=.cc; max-age=7200; path=/",
         "fikker-NSb1-XsLe": "fikker-NSb1-XsLe=0u6mZ5NE2mjsJSIIrWFCnSDKpil1Zo4C; expires=Thu, 25 Jan 2018 21:26:23 GMT; domain=.cc; max-age=7200; path=/",
         "fikker-KfkR-L8qT": "fikker-KfkR-L8qT=oZkOO4s6WfcLC03jYpoxWDChyZmTuRWb; expires=Wed, 14 Feb 2018 08:28:32 GMT; domain=.cc; max-age=7200; path=/",
         "fikker-XY07-MwF3": "fikker-XY07-MwF3=vIMLT36oV50M6k0KMi0L4WhQvilLpwri; expires=Tue, 27 Feb 2018 21:10:17 GMT; domain=.cc; max-age=7200; path=/",
-        "fikker-Ig2u-NMvc": "fikker-Ig2u-NMvc=IG4OFsvQDC2o4g4ePLVeLQOKpMBuTiFK; expires=Mon, 05 Mar 2018 16:53:35 GMT; domain=.cc; max-age=7200; path=/"
+        "fikker-Ig2u-NMvc": "fikker-Ig2u-NMvc=IG4OFsvQDC2o4g4ePLVeLQOKpMBuTiFK; expires=Mon, 05 Mar 2018 16:53:35 GMT; domain=.cc; max-age=7200; path=/",
+        "fikker-HmDq-lCLQ": "fikker-HmDq-lCLQ=r9V5RKF9BQdUMsjs6GR1KGpEVSLATYd5; expires=Sun, 11 Mar 2018 20:28:08 GMT; domain=.cc; max-age=7200; path=/"
     },
     "www.zwdu.com/": {
         "wP_v": "wP_v=c4ed4bdae987oW1OZQQlk2F2FVQTLzKiv2SlT01jc2nkluaO3cqywW4imknX8VHL                "
@@ -327,5 +330,8 @@
     },
     "se.qidian.com/": {
         "wP_h": "wP_h=e0a906fac32cf1cbd323128675fc32177f232145                                        "
+    },
+    ".shubaoan.com/": {
+        "__cfduid": "__cfduid=d9cf1cdc51ca69c28abf229263f157cd21520510566; expires=Fri, 08-Mar-19 12:02:46 GMT; path=/; domain=.shubaoan.com; HttpOnly"
     }
 }

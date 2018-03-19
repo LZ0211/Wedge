@@ -9,7 +9,7 @@ module.exports = function (){
                 url:url,
                 success:data=>{
                     var $ = this.Parser(data,url);
-                    $(selector).map((i,v)=>$.location($(v).attr('href'))).toArray().forEach(push);
+                    selector($).forEach(push);
                     return then();
                 },
                 error:()=>this.request(options)
@@ -18,8 +18,19 @@ module.exports = function (){
         }
         var final = ()=>{
             var sources = {};
-            this.database.attr('source').forEach(url=>sources[url]=true);
-            this.newBooks(Quests.filter(url=>!sources[url]));
+            this.database.sql('SELECT uuid, source, isend FROM book_metadatas;').forEach(record=>sources[record.source]=record);
+            var inDB = [];
+            var outDB = [];
+            Quests.forEach(url=>{
+                var record = sources[url];
+                if(record && !record.isend){
+                    inDB.push(record.uuid);
+                }else{
+                    outDB.push(url);
+                }
+            });
+            this.newBooks(outDB);
+            this.updateBooks(inDB);
         }
         this.Thread()
         .use(getLinks)
