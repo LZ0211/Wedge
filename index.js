@@ -392,6 +392,8 @@ class Wedge extends EventEmitter{
             this.book = Book();
             var buf = fs.readFileSync(filename);
             ebook.unwbk(buf,book=>{
+                var record = this.database.query(`uuid=${book.meta.uuid}`)[0];
+                if(record && !this.config.get('book.changesource')) return this.end();
                 this.bookdir = Path.resolve(book.meta.uuid);
                 fs.mkdirsSync(this.bookdir);
                 this.book.localization(this.bookdir);
@@ -405,6 +407,7 @@ class Wedge extends EventEmitter{
                 .end(()=>{
                     this.book.localization(this.bookdir);
                     this.sendToDataBase(fn);
+                    this.end();
                 }).start();
             });
         }catch(e){
@@ -568,8 +571,7 @@ class Wedge extends EventEmitter{
         var uuid = this.book.getMeta('uuid');
         //if(this.database.query('uuid='+uuid).length) return fn();
         if(!title) return this.end();
-        if(source.match(ExceptSites)) return fn();
-        if(origin.match(ExceptSites)) return this.getBookMeta(origin,fn);
+        //if(source.match(ExceptSites)) return fn();
         this.debug('updateBookMeta');
         function like(s1,s2){
             var reFilter = /[:：？\?,；，,\.。!！_—\-]/g;
@@ -580,29 +582,35 @@ class Wedge extends EventEmitter{
             return false;
         }
         var app = this.spawn();
+        var update = ()=>{
+            var meta = app.book.metaValue();
+            for (var x in meta){
+                if (meta[x] === '') return app.end();
+            }
+            if (!like(meta.title,title)) return app.end();
+            if (!like(meta.author,author)) return app.end();
+            delete meta.source;
+            this.book.setMeta(meta);
+            app.debug('updateMeta');
+            return fn();
+        }
+        if(origin.match(ExceptSites)){
+            app.end(fn);
+            app.getBookMeta(origin,update);
+            return this;
+        }
         var search = (site,next)=>{
             this.searchInSite(title,site,list=>{
                 Thread()
                 .use((link,nextFn)=>{
                     app.debug(link);
                     app.end(nextFn);
-                    app.getBookMeta(link,()=>{
-                        var meta = app.book.metaValue();
-                        for (var x in meta){
-                            if (meta[x] === '') return app.end();
-                        }
-                        if (!like(meta.title,title)) return app.end();
-                        if (!like(meta.author,author)) return app.end();
-                        delete meta.source;
-                        this.book.setMeta(meta);
-                        app.debug('updateMeta');
-                        return fn();
-                    });
+                    app.getBookMeta(link,update);
                 })
                 .end(next)
                 .log(this.debug.bind(this))
                 .label('searchBookMeta')
-                .queue(list.filter(link=>(Array.isArray(link) && ~link[1].indexOf(title))).map(link=>link[0]))
+                .queue(list.filter(link=>(Array.isArray(link) && link[1] && ~link[1].indexOf(title))).map(link=>link[0]))
                 .start();
             });
         };
@@ -778,43 +786,41 @@ class Wedge extends EventEmitter{
 
     filterBookIndex(indexs){
         if (!Array.isArray(indexs)) return [];
-        var Ids = this.book.hashBy('id');
-        var Sources = this.book.hashBy('source');
-        var Titles = this.book.hashBy('title');
-        var startNum = Math.max.apply(Math,Object.keys(Ids).map(parseInt).filter(x=>!isNaN(x)).concat([0]));
-        var SelfIds = {};
-        var SelfSources = {};
-        var SelfTitles = {};
+        var uuid = this.book.getMeta('uuid');
+        var Ids = this.cache.get(uuid+'_Ids') || this.book.hashBy('id') || {};
+        var Sources = this.cache.get(uuid+'_Sources') || this.book.hashBy('source') || {};
+        var Titles = this.cache.get(uuid+'_Titles') || this.book.hashBy('title') || {};
         var newIndexs = [];
         var titleUnique = this.config.get('book.unique.title');
         var idUnique = this.config.get('book.unique.id');
-        //过滤重复的链接
+        //格式化下载链接
         indexs = indexs.map(util.formatLink);
+        //过滤无效链接
         indexs = indexs.filter(index=>index.url && !~index.url.indexOf('#') && !~index.url.indexOf('javascript:'));
-        indexs.forEach(index=>{
-            if (index.url in SelfSources) return;
-            SelfSources[index.url] = true;
-            newIndexs.push(index);
-        });
         //创建ID
-        newIndexs.forEach((item,index)=>item.id = classes.Id(item.id || index).val());
-        //过滤已下载的链接
-        indexs = newIndexs.filter(index=>!Sources[index.url]);
-        if (idUnique){
-            indexs = indexs.filter(index=>!Ids[index.id]);
-        }
-        if (titleUnique){
-            indexs = indexs.filter(index=>!Titles[index.text]);
-        }
-        //过滤Id重复或者标题重复的链接
-        newIndexs = [];
+        indexs.forEach((item,index)=>item.id = classes.Id(item.id || index).val());
+        //过滤重复的链接
         indexs.forEach(index=>{
-            if (index.id in SelfIds && idUnique) return;
-            if (index.text in SelfTitles && titleUnique) return;
-            SelfIds[index.id] = true;
-            SelfTitles[index.text] = true;
+            if (index.url in Sources) return;
+            if (index.id in Ids && idUnique) return;
+            if (index.text in Titles && titleUnique) return;
+            Sources[index.url] = true;
+            Ids[index.id] = true;
+            Titles[index.text] = true;
             newIndexs.push(index);
         });
+        this.cache.set(uuid+'_Ids',Ids,true);
+        this.cache.set(uuid+'_Sources',Sources,true);
+        this.cache.set(uuid+'_Titles',Titles,true);
+        if(!this.cache.get(uuid)){
+            this.cache.set(uuid,true,true);
+            this.end(()=>{//清理缓存
+                this.cache.set(uuid+'_Ids',false);
+                this.cache.set(uuid+'_Sources',false);
+                this.cache.set(uuid+'_Titles',false);
+                this.cache.set(uuid,false);
+            });
+        }
         return newIndexs;
     }
 
@@ -999,27 +1005,38 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         if (!chapter)return fn(null);
         if (!this.config.get('book.deepdownload')) return fn(chapter);
-        var maxDepth = this.config.get('book.maxDepth') || 1;
+        var maxDepth = this.config.get('book.maxDepth') || Infinity;
         var deepnow = chapter.deep;
         if (deepnow >= maxDepth) return fn(chapter);
-        var $ = Parser(chapter.content,chapter.source);
-        var links = $('a').map((i,v)=>({url:$.location($(v).attr('href'))})).toArray();
-        links.filter(link=>link.url);
-        links = this.filterBookIndex(links);
         deepnow += 1;
-        links.forEach(link=>link.deep = deepnow);
-        links.forEach((link,index)=>link.id = chapter.id + index);
-        if (!links.length) return fn(chapter);
-        this.debug(links);
-        this.debug('getDeepChapter');
-        Thread()
-        .use(this.getChapter.bind(this))
-        .end(()=>fn(chapter))
-        .queue(links)
-        .log(this.debug.bind(this))
-        .label('getDeepChapter')
-        .start();
-        return this;
+        var $ = Parser(chapter.content,chapter.source);
+        var links = $('a').map((i,v)=>({
+            url:$.location($(v).attr('href')),
+            text:$(v).text().trim(),
+            deep:deepnow,
+            id:chapter.id+'_'+i
+        })).toArray();
+        links = this.filterBookIndex(links);
+        if (links.length){
+            this.debug(links);
+            this.debug('getDeepChapter');
+            this.chapterThread.queue(links);
+        }
+        return fn(chapter);
+    }
+
+    getNextChapter(chapter,fn){
+        fn = this.next(fn);
+        if (!chapter)return fn(null);
+        if (!this.config.get('book.nextLink')) return fn(chapter);
+        var nextLink = chapter.nextLink;
+        if (!nextLink) return fn(chapter);
+        nextLink.id = classes.Id(nextLink.id || nextLink.href || nextLink.url);
+        var nextLinks = this.filterBookIndex([nextLink]);
+        if(nextLinks.length){
+            this.chapterThread.queue(nextLinks);
+        }
+        return fn(chapter);
     }
 
     saveChapter(chapter,fn){
@@ -1041,6 +1058,7 @@ class Wedge extends EventEmitter{
             this.getChapterContent.bind(this),
             this.mergeChapterContent.bind(this),
             this.getDeepChapter.bind(this),
+            this.getNextChapter.bind(this),
             this.getChapterImages.bind(this),
             this.saveChapter.bind(this),
             fn,
@@ -1051,7 +1069,7 @@ class Wedge extends EventEmitter{
     getChapters(links,fn){
         fn = this.next(fn);
         this.debug('getChapters');
-        Thread()
+        this.chapterThread = Thread()
         .use(this.getChapter.bind(this))
         .end(fn)
         .queue(links)

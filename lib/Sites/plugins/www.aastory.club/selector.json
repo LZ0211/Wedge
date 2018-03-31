@@ -1,0 +1,33 @@
+{
+  "infoPage": {
+    "match": "$('.xiaoshuomulu a').length",
+    "indexPage": "$.location($('.xiaoshuomulu a').attr('href'))",
+    "footer": "$('#footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('h3.book_name').text().trim()",
+      "author": "$('.author').text().trim()",
+      "classes": "$('.xinxi_content span').eq(0).text()",
+      "isend": "$('.xinxi_content span').eq(1).text()",
+      "cover": "$.location($('.book_info_top_l > img').attr('src'))",
+      "brief": "$('.jianjieneirong').html()"
+    }
+  },
+  "indexPage": {
+    "match": "$('.section_list').length",
+    "infoPage": "$.location($('.nav a').eq(2).attr('href'))",
+    "footer": "$('#footer').length",
+    "bookIndexs": "$('.section_list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "$('.chapter_title').length",
+    "footer": "true",
+    "request": {
+      "url": "$.location().replace('https://www.aastory.club/read.php?id=','https://www.aastory.club/_getcontent.php?id=') + '&v=' + $.raw.match(/&v=([^\",]+)/)[1]",
+      "success": "data=>$.decode(data,'gbk')",
+      "headers": {
+        "referer": "$.location()"
+      }
+    }
+  }
+}

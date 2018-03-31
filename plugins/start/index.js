@@ -303,6 +303,9 @@ module.exports = function (){
                 text:'刷新书籍信息',
                 func:[[],multInput(uuids=>app.end(refresh).refreshBooks(uuids))]
             },{
+                text:'导入书籍',
+                func:[[],multInput(files=>app.Thread().use((file,next)=>app.spawn().end(next).importWBK(file.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))).end(refresh).queue(files).start())]
+            },{
                 text:'导出书籍',
                 func:[[],multInput(uuids=>app.end(refresh).outportBooks(uuids))]
             },{

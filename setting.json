@@ -78,7 +78,7 @@
   },
   "database": {
     "sync": true,
-    "check": true,
+    "check": false,
     "primary": "uuid"
   },
   "app": {

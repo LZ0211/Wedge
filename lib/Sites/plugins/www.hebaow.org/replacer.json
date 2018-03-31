@@ -1,0 +1,32 @@
+{
+  "infoPage": {
+    "match": null,
+    "indexPage": null,
+    "footer": null,
+    "bookInfos": {
+      "source": null,
+      "title": ["最新章节"],
+      "author": ["TXT下载"],
+      "classes": [".*?类&nbsp;别：","载入中.*"],
+      "isend": null,
+      "cover": null,
+      "brief": ["介绍："],
+      "keywords": null
+    }
+  },
+  "indexPage": {
+    "match": null,
+    "infoPage": null,
+    "footer": null,
+    "bookIndexs": null
+  },
+  "contentPage": {
+    "match": null,
+    "footer": null,
+    "chapterInfos": {
+      "title": null,
+      "source": null,
+      "content": ["《.*?[荷包网]+.*?》","[^<>]*?手机访问本站[^<>]*","\\(.*?www.hebaow.org.*?\\)"]
+    }
+  }
+}
