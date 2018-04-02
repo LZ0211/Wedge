@@ -885,13 +885,6 @@ class Wedge extends EventEmitter{
             this.mergeChapterContent.bind(this),
             (nextChapter,next)=>{
                 if(!nextChapter) return fn(null);
-                if (nextChapter.id !== chapter.id){
-                    Thread.series([
-                        this.getChapterImages.bind(this),
-                        this.saveChapter.bind(this),
-                        ()=>next(chapter)
-                    ])(nextChapter);
-                }
                 if (chapter.content && chapter.content == nextChapter.content) return fn(chapter);
                 if (chapter && chapter.content && nextChapter.content){
                     chapter.content += '\n';
@@ -902,7 +895,7 @@ class Wedge extends EventEmitter{
         ];
         if (chapter.nextPages){
             links = chapter.nextPages.map(util.formatLink).filter(link=>link.url !== chapter.source);
-            links.forEach(link=>link.id=chapter.id);
+            links.forEach((link,idx)=>link.id=chapter.id+'_'+idx);
             links = this.filterBookIndex(links);
             if (!links.length) return fn(chapter);
             this.debug('mergeChapters');
@@ -917,7 +910,7 @@ class Wedge extends EventEmitter{
         }
         if (chapter.nextPage){
             links = [chapter.nextPage].map(util.formatLink).filter(link=>link.url !== chapter.source);
-            links.forEach(link=>link.id=chapter.id);
+            links.forEach((link,idx)=>link.id=chapter.id+'_'+idx);
             links = this.filterBookIndex(links);
             if (!links.length) return fn(chapter);
             this.debug('mergeChapter');
@@ -1028,13 +1021,13 @@ class Wedge extends EventEmitter{
     getNextChapter(chapter,fn){
         fn = this.next(fn);
         if (!chapter)return fn(null);
-        if (!this.config.get('book.nextLink')) return fn(chapter);
-        var nextLink = chapter.nextLink;
-        if (!nextLink) return fn(chapter);
-        nextLink.id = classes.Id(nextLink.id || nextLink.href || nextLink.url);
-        var nextLinks = this.filterBookIndex([nextLink]);
-        if(nextLinks.length){
-            this.chapterThread.queue(nextLinks);
+        if (!this.config.get('book.nextChapter')) return fn(chapter);
+        var nextChapter = chapter.nextChapter;
+        if (!nextChapter) return fn(chapter);
+        nextChapter.id = classes.Id(nextChapter.id || nextChapter.href || nextChapter.url);
+        var nextChapters = this.filterBookIndex([nextChapter]);
+        if(nextChapters.length){
+            this.chapterThread.queue(nextChapters);
         }
         return fn(chapter);
     }
