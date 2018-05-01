@@ -17,7 +17,7 @@
     "match": "/^http:\\/\\/www\\.quledu\\.net\\/wcxs\\-\\d+\\/$/i.test($.location())",
     "infoPage": "$.location()",
     "footer": "$('.footer').length > 0",
-    "bookIndexs": "$('ul.list-group.list-charts').eq(1).find('a').map((i,v)=>({href:$.location($(v).attr('href').replace('www.quledu','m.quledu')),text:$(v).text()})).toArray()"
+    "bookIndexs": "$('ul.list-group.list-charts').eq(1).find('a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
     "match": "/^http:\\/\\/www\\.quledu\\.net\\/wcxs\\-\\d+\\-\\d+.html$/i.test($.location())",

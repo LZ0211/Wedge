@@ -26,7 +26,12 @@
     "chapterInfos": {
       "title": "$('.index_box h2').text()",
       "source": "$.location()",
-      "content": "$('.n_bd').html()"
+      "content": "$('.n_bd').html()",
+      "nextLink": {
+        "href": "$.location($('.pagea a').last().attr('href'))",
+        "text": "$('.pagea a').last().text()",
+        "id": "($('.pagea a').last().attr('href').match(/(\\d+)\\.html/)||[0,0])[1]"
+      }
     }
   }
 }

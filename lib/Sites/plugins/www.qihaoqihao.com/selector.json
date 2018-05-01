@@ -17,15 +17,17 @@
     "match": "$('.panel-chapterlist').length",
     "infoPage": "$.location()",
     "footer": "$('.footer').length > 0",
-    "bookIndexs": "$('.panel-chapterlist').find('a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+    "bookIndexs": "$('.panel-chapterlist').eq(1).find('a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
     "match": "$('#htmlContent').length",
     "footer": "true",
+    "filter": "$('#htmlContent').find('div,script').remove()",
     "chapterInfos": {
       "title": "$('.readTitle').text()",
       "source": "$.location()",
-      "content": "$('#htmlContent').html()"
+      "content": "$('#htmlContent').html()",
+      "nextPage": "$.location($('a:contains(下一页)').attr('href'))"
     }
   }
 }
