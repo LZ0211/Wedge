@@ -70,8 +70,8 @@
     "deepdownload": false,
     "maxdepth": 0,
     "localization": true,
+    "imageExts": [".jpg",".jpeg",".png",".gif",".tif",".webp",".bmp",".tga"],
     "unique":{
-      "id":true,
       "source":true,
       "title":false
     }

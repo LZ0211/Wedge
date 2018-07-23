@@ -150,13 +150,13 @@ module.exports = function (){
                 options:[
                     returnOption,
                     main,
-                    {text:'更新书籍',func:[[],()=>app.updateBooks(items.map(item=>item.uuid)).end(goBack)]},
-                    {text:'刷新书籍信息',func:[[],()=>app.refreshBooks(items.map(item=>item.uuid)).end(goBack)]},
-                    {text:'重新下载书籍',func:[[],()=>app.reDownloadBooks(items.map(item=>item.uuid)).end(goBack)]},
-                    {text:'导出书籍',func:[[],()=>app.outportBooks(items.map(item=>item.uuid)).end(goBack)]},
-                    {text:'生成电子书',func:[[],()=>app.ebooks(items.map(item=>item.uuid)).end(goBack)]},
-                    {text:'删除书籍',func:[[],()=>app.deleteBooks(items.map(item=>item.uuid)).end(goBack)]},
-                    {text:'删除书籍记录',func:[[],()=>app.removeBookRecords(items.map(item=>item.uuid)).end(goBack)]},
+                    {text:'更新书籍',func:[[],()=>app.updateBooks(items.map(item=>item.uuid))]},
+                    {text:'刷新书籍信息',func:[[],()=>app.refreshBooks(items.map(item=>item.uuid))]},
+                    {text:'重新下载书籍',func:[[],()=>app.reDownloadBooks(items.map(item=>item.uuid))]},
+                    {text:'导出书籍',func:[[],()=>app.outportBooks(items.map(item=>item.uuid))]},
+                    {text:'生成电子书',func:[[],()=>app.ebooks(items.map(item=>item.uuid))]},
+                    {text:'删除书籍',func:[[],()=>app.deleteBooks(items.map(item=>item.uuid))]},
+                    {text:'删除书籍记录',func:[[],()=>app.removeBookRecords(items.map(item=>item.uuid))]},
                     exit
                 ]
             },exit
@@ -188,34 +188,34 @@ module.exports = function (){
         {   text:'返回',func: [[],goBack]},
         {
             text:'新建书籍',
-            func:[['请输入下载链接：'],url=>app.end(refresh).newBook(url)]
+            func:[['请输入下载链接：'],url=>app.newBook(url)]
         },{
             text:'更新书籍',
-            func:[['请输入书籍ID：'],uuid=>app.end(refresh).updateBook(uuid)]
+            func:[['请输入书籍ID：'],uuid=>app.updateBook(uuid)]
         },{
             text:'重新下载书籍',
-            func:[['请输入书籍ID：'],uuid=>app.end(refresh).reDownloadBook(uuid)]
+            func:[['请输入书籍ID：'],uuid=>app.reDownloadBook(uuid)]
         },{
             text:'刷新书籍信息',
-            func:[['请输入书籍ID：'],uuid=>app.end(refresh).refreshBook(uuid)]
+            func:[['请输入书籍ID：'],uuid=>app.refreshBook(uuid)]
         },{
             text:'生成电子书',
-            func:[['请输入书籍ID：'],uuid=>app.end(refresh).ebook(uuid)]
+            func:[['请输入书籍ID：'],uuid=>app.ebook(uuid)]
         },{
             text:'导入书籍',
-            func:[['拖拽wbk文件到窗口：'],file=>app.end(refresh).importWBK(file.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))]
+            func:[['拖拽wbk文件到窗口：'],file=>app.importWBK(file.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))]
         },{
             text:'导出书籍',
-            func:[['请输入书籍ID：'],uuid=>app.end(refresh).outportBook(uuid)]
+            func:[['请输入书籍ID：'],uuid=>app.outportBook(uuid)]
         },{
             text:'删除书籍',
-            func:[['请输入书籍ID：'],uuid=>app.end(refresh).deleteBook(uuid)]
+            func:[['请输入书籍ID：'],uuid=>app.deleteBook(uuid)]
         },{
             text:'删除书籍记录',
-            func:[['请输入书籍ID：'],uuid=>app.end(refresh).removeBookRecord(uuid)]
+            func:[['请输入书籍ID：'],uuid=>app.removeBookRecord(uuid)]
         },{
             text:'导入书籍记录',
-            func:[['请输入书籍ID：'],uuid=>app.end(refresh).importBookRecord(uuid)]
+            func:[['请输入书籍ID：'],uuid=>app.importBookRecord(uuid)]
         },{
             text:'修改书籍信息',
             func:[['请输入书籍ID：'],uuid=>{
@@ -292,37 +292,37 @@ module.exports = function (){
             text:'批量操作',
             options:[returnOption,{
                 text:'新建书籍',
-                func:[[],multInput(urls=>app.end(refresh).newBooks(urls))]
+                func:[[],multInput(urls=>app.newBooks(urls))]
             },{
                 text:'更新书籍',
-                func:[[],multInput(uuids=>app.end(refresh).updateBooks(uuids))]
+                func:[[],multInput(uuids=>app.updateBooks(uuids))]
             },{
                 text:'重新下载书籍',
-                func:[[],multInput(uuids=>app.end(refresh).reDownloadBooks(uuids))]
+                func:[[],multInput(uuids=>app.reDownloadBooks(uuids))]
             },{
                 text:'刷新书籍信息',
-                func:[[],multInput(uuids=>app.end(refresh).refreshBooks(uuids))]
+                func:[[],multInput(uuids=>app.refreshBooks(uuids))]
             },{
                 text:'导入书籍',
-                func:[[],multInput(files=>app.Thread().use((file,next)=>app.spawn().end(next).importWBK(file.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))).end(refresh).queue(files).start())]
+                func:[[],multInput(files=>app.Thread().use((file,next)=>app.spawn().end(next).importWBK(file.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))).queue(files).start())]
             },{
                 text:'导出书籍',
-                func:[[],multInput(uuids=>app.end(refresh).outportBooks(uuids))]
+                func:[[],multInput(uuids=>app.outportBooks(uuids))]
             },{
                 text:'生成电子书',
-                func:[[],multInput(uuids=>app.end(refresh).ebooks(uuids))]
+                func:[[],multInput(uuids=>app.ebooks(uuids))]
             },{
                 text:'转换电子书',
-                func:[[],multInput(uuids=>app.end(refresh).convertEbooks(uuids.map(uuid=>uuid.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))))]
+                func:[[],multInput(uuids=>app.convertEbooks(uuids.map(uuid=>uuid.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))))]
             },{
                 text:'删除书籍',
-                func:[[],multInput(uuids=>app.end(refresh).deleteBooks(uuids))]
+                func:[[],multInput(uuids=>app.deleteBooks(uuids))]
             },{
                 text:'删除书籍记录',
-                func:[[],multInput(uuids=>app.end(refresh).removeBookRecords(uuids))]
+                func:[[],multInput(uuids=>app.removeBookRecords(uuids))]
             },{
                 text:'导入书籍记录',
-                func:[[],multInput(uuids=>app.end(refresh).importBookRecords(uuids))]
+                func:[[],multInput(uuids=>app.importBookRecords(uuids))]
             },exit]
         },{
             text:'数据库检索',
@@ -343,16 +343,16 @@ module.exports = function (){
             ]
         },{
             text:'电子书格式转换',
-            func: [['拖拽wbk文件到窗口：'],file=>app.end(refresh).convertEbook(file.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))]
+            func: [['拖拽wbk文件到窗口：'],file=>app.convertEbook(file.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))]
         },{
             text:'发送到手机[需在同一局域网下]',
             options:[
                 returnOption,{
                     text: '发送到iReader',
-                    func:[[],()=>app.end(refresh).sendToiReader()]
+                    func:[[],()=>app.sendToiReader()]
                 },{
                     text: '发送到QQ阅读',
-                    func:[[],()=>app.end(refresh).sendToQQ()]
+                    func:[[],()=>app.sendToQQ()]
                 },exit
             ]
         },{
@@ -435,7 +435,7 @@ module.exports = function (){
             ]
         },{
             text:'测试规则',
-            func:[['请输入网址：'],url=>app.end(refresh).testRuleCmd(url)]
+            func:[['请输入网址：'],url=>app.testRuleCmd(url)]
         },exit
     ]
     
@@ -464,4 +464,5 @@ module.exports = function (){
         });
     }
     this.start =showmainOptions;
+    this.on('end',refresh);
 }

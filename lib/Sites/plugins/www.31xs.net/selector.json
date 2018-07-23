@@ -17,7 +17,8 @@
     "match": "/\\/\\d+\\/\\d+\\/$/i.test($.location())",
     "infoPage": "$.location()",
     "footer": "$('#footer').length > 0",
-    "bookIndexs": "$('#list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray().sort((a,b)=>a.href.replace(/\\/$/).split('/').pop().replace(/\\D/g,'') - b.href.replace(/\\/$/).split('/').pop().replace(/\\D/g,''))"
+    "filter": "$('#list #report').parent().prevAll().remove()",
+    "bookIndexs": "$('#list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
     "match": "/\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
