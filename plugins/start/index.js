@@ -463,6 +463,8 @@ module.exports = function (){
             }
         });
     }
-    this.start =showmainOptions;
-    this.on('end',refresh);
+    this.start = function(){
+        showmainOptions();
+        this.on('end',refresh);
+    }
 }
