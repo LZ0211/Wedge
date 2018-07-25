@@ -22,6 +22,7 @@ const Parser = require("./lib/Parser");
 const Book = require("./lib/Book");
 const classes = require("./lib/classes");
 const ebook = require('./lib/ebook');
+const threadLimit = require('./threadLimit');
 const ExceptSites = new RegExp(require("./outclude").map(x=>x.replace(/\./g,'\\.')).join('|'),'gi');
 
 class Wedge extends EventEmitter{
@@ -228,6 +229,11 @@ class Wedge extends EventEmitter{
         options.success = options.success || this.noop;
         options.error = options.error || this.noop;
 
+        var pac = this.config.get('request.proxyAutoConfig');
+        if(pac){
+            pac = new RegExp(pac,'gi');
+        }
+
         if (options.method === 'GET'){
             var data = this.cache.get(options.url);
             if (data) return options.success(data);
@@ -236,7 +242,7 @@ class Wedge extends EventEmitter{
         var req = new request.Request(options.url, options.method);
         options.timeout && req.timeout(options.timeout);
         options.reconnect && req.reconnect(options.reconnect);
-        options.proxy && req.proxy(options.proxy);
+        options.proxy && options.url.match(pac) && req.proxy(options.proxy);
         options.proxyAuth && req.proxyAuth(options.proxyAuth);
         options.dataType && req.accept(options.dataType);
         options.data && options.method === 'POST' && req.send(options.data);
@@ -1077,6 +1083,8 @@ class Wedge extends EventEmitter{
 
     getChapters(links,fn){
         fn = this.next(fn);
+        var source = this.book.getMeta('source');
+        var threads = threadLimit[URL.parse(source).hostname];
         this.debug('getChapters');
         this.chapterThread = Thread()
         .use(this.getChapter.bind(this))
@@ -1084,7 +1092,7 @@ class Wedge extends EventEmitter{
         .queue(links)
         .log(this.debug.bind(this))
         .interval(this.config.get('thread.interval'))
-        .setThread(this.config.get('thread.execute'))
+        .setThread(threads || this.config.get('thread.execute'))
         .label('getChapters')
         .start();
         return this;
