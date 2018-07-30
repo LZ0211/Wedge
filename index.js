@@ -946,73 +946,74 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         if (!chapter)return fn(null);
         if (!this.config.get('book.imageLocalization')) return fn(chapter);
-        var content = chapter.content;
-        var $ = Parser(content,chapter.source);
-        var $imgs = $('img');
-        var imgs = $imgs.map((i,v)=>({url:$.location($(v).attr('src')),index:i,headers:{referer:$.location()}})).toArray();
+        let content = chapter.content,
+            $ = Parser(content,chapter.source),
+            $imgs = $('img'),
+            imgs = $imgs.map((i,v)=>({url:$.location($(v).attr('src')),index:i,headers:{referer:$.location()}})).toArray();
         if (!imgs.length) return fn(chapter);
         this.debug('getChapterImages');
-        var repImg = img=>$imgs.eq(img.index).replaceWith('<img src="'+img.src+'" />');
-        var ChapterId = classes.Id(chapter.id).val();
-        var imgFolder = Path.join(this.bookdir,ChapterId);
-        var isEmpty = true;
-        var imgExts = new RegExp('^('+(this.config.get('book.imageExts')||(['','.jpg','.png','.gif','.png','.tif','.webp','.bmp','.tga','.ppm','.pgm','.jpeg','.pbm','.pcx','.jpm','.jng','.ico'])).join('|')+')$','i');
-        var isImgFile = ext=>imgExts.test(ext);
-        var getImgFile = (img,then)=>{
-            var times = parseInt(this.config.get('app.retry.image'));
-            times = isNaN(times) ? 3 : times;
-            img.success = data=>{
-                fs.writeFile(img.file,data,then);
-                repImg(img);
-                isEmpty = false;
-            };
-            img.error = ()=>{
-                if (--times <= 0){
-                    chapter = null;
-                    $imgs.eq(img.index).replaceWith('<img src="'+img.url+'" />');
+        let ChapterId = classes.Id(chapter.id).val(),
+            imgFolder = Path.join(this.bookdir,ChapterId),
+            isEmpty = true,
+            successAll = true,
+            hash = {},
+            imgExts = new RegExp('^('+(this.config.get('book.imageExts')||(['','.jpg','.png','.gif','.png','.tif','.webp','.bmp','.tga','.ppm','.pgm','.jpeg','.pbm','.pcx','.jpm','.jng','.ico'])).join('|')+')$','i'),
+            isImgFile = ext=>imgExts.test(ext),
+            hasImgFile = img=>hash[img.name],
+            repImg = img=>$imgs.eq(img.index).replaceWith('<img src="'+img.src+'" />'),
+            getImgFile = (img,then)=>{
+                let times = parseInt(this.config.get('app.retry.image'));
+                times = isNaN(times) ? 3 : times;
+                img.success = data=>{
+                    fs.writeFile(img.file,data,then);
+                    repImg(img);
+                    isEmpty = false;
+                };
+                img.error = ()=>{
+                    if (--times > 0) this.request(img);
+                    successAll = false;
                     return then();
-                }
+                    
+                };
                 this.request(img);
+            },
+            final = ()=>{
+                isEmpty && fs.rmdirsSync(imgFolder);
+                if (!successAll) return fn(null);
+                chapter.content = $.html();
+                return fn(chapter);
             };
-            this.request(img);
-        };
-        var final = ()=>{
-            isEmpty && fs.rmdirsSync(imgFolder);
-            if (!chapter) return fn(null);
-            chapter.content = $.html();
-            return fn(chapter);
-        };
-        imgs.forEach(img=>img.path = URL.parse(img.url).pathname);
-        imgs = imgs.filter(img=>img.path);
-        imgs.forEach(img=>img.ext = Path.extname(img.path));
-        imgs = imgs.filter(img=>isImgFile(img.ext));
-        imgs.forEach((img,index)=>{
+
+        fs.mkdirsSync(imgFolder);
+        try{
+            fs.readdirSync(imgFolder).forEach(file=>hash[file]=true);
+        }catch(e){}
+
+        imgs = imgs.filter((img,idx)=>{
+            img.path = URL.parse(img.url).pathname;
+            if(!img.path) return false;
+            img.ext = Path.extname(img.path);
+            if(!isImgFile(img.ext)) return false;
             img.ext = img.ext || '.jpeg';
-            img.id = classes.Id(index).val();
+            img.id = classes.Id(idx).val();
             img.name = img.id + img.ext;
             img.src = ChapterId + '/' + img.name;
             img.file = Path.join(imgFolder,img.name);
-        });
-        fs.mkdirsSync(imgFolder);
-        fs.readdir(imgFolder,(err,files)=>{
-            if(err) files = [];
-            var hash = {};
-            files.forEach(file=>hash[file]=true);
-            var hasFiles = imgs.filter(img=>hash[img.name]);
-            var noFiles = imgs.filter(img=>!hash[img.name]);
-            if (hasFiles.length){
+            if(hasImgFile(img)){
+                repImg(img)
                 isEmpty = false;
-                hasFiles.forEach(repImg);
+                return false;
             }
-            Thread()
-            .use(getImgFile)
-            .end(final)
-            .setThread(this.config.get('thread.image'))
-            .queue(noFiles)
-            .label('getChapterImages')
-            .log(this.debug.bind(this))
-            .start();
+            return true;
         });
+        Thread()
+        .use(getImgFile)
+        .end(final)
+        .setThread(this.config.get('thread.image'))
+        .queue(imgs)
+        .label('getChapterImages')
+        .log(this.debug.bind(this))
+        .start();
         return this;
     }
 
