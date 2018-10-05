@@ -27,7 +27,7 @@ module.exports = function (){
             if (!script) return fn();
             var window = {};
             (new Function("window",script))(window);
-            var str = new Buffer(window.globals.ticket,"base64").toString();
+            var str = Buffer.from(window.globals.ticket,"base64").toString();
             Info.set(JSON.parse(str));
             Info.set('sourceUrl',url);
             $(".lrc_info_clip.lrc-tab-content").find('a').each((i,v)=>$(v).replaceWith($(v).html()));

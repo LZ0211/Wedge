@@ -6,6 +6,7 @@ const querystring = require("querystring");
 const EventEmitter = require("events");
 const child_process = require("child_process");
 const readline = require("readline");
+const decoder = require("iconv-lite");
 const Random = require("./lib/JSrandom");
 const Log = require("./lib/Log");
 const Hash = require("./lib/Hash");
@@ -16,8 +17,7 @@ const Thread = require("./lib/Thread");
 const Cache = require("./lib/Cache");
 const setting = require("./setting");
 const Searcher = require("./searcher");
-const decoder = require("./lib/decoder");
-const Sites = require("./lib/Sites");
+const Sites = require("./Sites");
 const Parser = require("./lib/Parser");
 const Book = require("./lib/Book");
 const classes = require("./lib/classes");
@@ -75,7 +75,7 @@ class Wedge extends EventEmitter{
         if(this.getConfig('app.debug')){
             this.debug = function(...msg){
                 this.log(`[${this.label}]:${msg.join(' ')}`);
-            }
+            };
         }else{
             this.debug = this.noop;
         }
@@ -89,7 +89,7 @@ class Wedge extends EventEmitter{
         this.updateBookCmd = this.CMD('loadBook > checkBookCover > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end');
 
         //redownload
-        this.reDownloadCmd = this.CMD('loadBook > updateBookMeta > getBookCover > checkBookCover > emptyBookIndex > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end')
+        this.reDownloadCmd = this.CMD('loadBook > updateBookMeta > getBookCover > checkBookCover > emptyBookIndex > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end');
 
         //refreshBookCmd
         this.refreshBookCmd = this.CMD('loadBook > updateBookMeta > getBookCover > checkBookCover > saveBook > sendToDataBase > generateEbook > end');
@@ -334,11 +334,11 @@ class Wedge extends EventEmitter{
                             return next();
                         },
                         error:next
-                    })
+                    });
                 })
                 .setThread(10)
                 .end(()=>fn(links.filter(link=>~link[0].indexOf(site.name))))
-                .start()
+                .start();
             }
             return fn(links);
         };
@@ -391,7 +391,7 @@ class Wedge extends EventEmitter{
 
     searchBook(title,fn){
         fn = this.next(fn);
-        title = title.replace(/[:：？\?,；，,\.。!！_—\-]/g,'');
+        title = title.replace(/[:：？\?,；，,.。!！_—\-]/g,'');
         var filterFun = links=>fn(links.filter(link=>link[1] == title));
         this.fuzzysearchBook(title,filterFun);
         return this;
@@ -414,7 +414,7 @@ class Wedge extends EventEmitter{
                 Thread()
                 .use((chapter,next)=>{
                     this.book.pushList(chapter);
-                    this.book.pushChapter(chapter,next);
+                    fs.writeFile(Path.join(this.bookdir,chapter.id + '.json'),JSON.stringify(chapter),next);
                 }).queue(book.list).threads(20).label('importWBKChapter')
                 .end(()=>{
                     this.book.localizationSync(this.bookdir);
@@ -485,7 +485,7 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         if (!this.book.location()) return this.end();
         this.book.emptyList();
-        return fn()
+        return fn();
     }
 
     getParsedData(data,url){
@@ -586,7 +586,7 @@ class Wedge extends EventEmitter{
         //if(source.match(ExceptSites)) return fn();
         this.debug('updateBookMeta');
         function like(s1,s2){
-            var reFilter = /[:：？\?,；，,\.。!！_—\-]/g;
+            var reFilter = /[:：？\?,；，,.。!！_—\-]/g;
             s1 = s1.replace(reFilter,'');
             s2 = s2.replace(reFilter,'');
             if (~s1.indexOf(s2)) return true;
@@ -605,7 +605,7 @@ class Wedge extends EventEmitter{
             this.book.setMeta(meta);
             app.debug('updateMeta');
             return fn();
-        }
+        };
         if(origin.match(ExceptSites)){
             app.end(fn);
             app.getBookMeta(origin,update);
@@ -723,13 +723,13 @@ class Wedge extends EventEmitter{
         this.debug('saveBook');
         this.book.setMeta('date',+new Date);
         this.book.localizationSync(this.bookdir);
-        fn()
+        fn();
         return this;
     }
 
     getBookIndex(link,fn){
         fn = this.next(fn);
-        var link = util.checkUrlValid(link);
+        link = util.checkUrlValid(link);
         var times = util.parseInteger(this.config.get('app.retry.index'),3);
         var setIndex = bookIndex=>{
             if(Array.isArray(bookIndex)){
@@ -850,7 +850,7 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         this.debug('getChapterContent');
         var times = util.parseInteger(this.config.get('app.retry.chapter'),3);
-        var link = util.checkUrlValid(link);
+        link = util.checkUrlValid(link);
         if (!link) return fn(null);
         var setContent = chapter=>{
             if(!chapter) return fn(null);
@@ -987,7 +987,7 @@ class Wedge extends EventEmitter{
         fs.mkdirsSync(imgFolder);
         try{
             fs.readdirSync(imgFolder).forEach(file=>hash[file]=true);
-        }catch(e){}
+        }catch(e){/*pass*/}
 
         imgs = imgs.filter((img,idx)=>{
             img.path = URL.parse(img.url).pathname;
@@ -1000,7 +1000,7 @@ class Wedge extends EventEmitter{
             img.src = ChapterId + '/' + img.name;
             img.file = Path.join(imgFolder,img.name);
             if(hasImgFile(img)){
-                repImg(img)
+                repImg(img);
                 isEmpty = false;
                 return false;
             }
@@ -1432,7 +1432,7 @@ module.exports = Wedge;
 
 util.encodeURI = function (str,charset){
     if(charset === 'unicode') return str.split('').map(x=>'%u'+x.charCodeAt().toString(16).toUpperCase()).join('');
-    if(charset === 'base64') return new Buffer(str).toString('base64');
+    if(charset === 'base64') return Buffer.from(str).toString('base64');
     if (!charset) return encodeURIComponent(str);
     var buffer = decoder.encode(str,charset);
     var code = '';
@@ -1446,15 +1446,15 @@ util.encodeURI = function (str,charset){
 util.decodeURI = function (str,charset){
     if (!charset) return decodeURIComponent(str);
     if (charset === 'unicode') return str.split('%u').slice(1).map(x=>String.fromCharCode(parseInt(x,16))).join('');
-    if (charset === 'base64') return new Buffer(str,'base64').toString();
+    if (charset === 'base64') return Buffer.from(str,'base64').toString();
     var array = str.split('%').slice(1).map(x=>parseInt(x,16));
-    return decoder.decode(new Buffer(array),charset);
+    return decoder.decode(Buffer.from(array),charset);
 };
 
 util.encode = function(str,charset){
-    if(!charset) return new Buffer(str);
+    if(!charset) return Buffer.from(str);
     if(charset === 'unicode') return str.split('').map(x=>'\\u'+x.charCodeAt().toString(16).toUpperCase()).join('');
-    if(charset === 'base64') return new Buffer(str).toString('base64');
+    if(charset === 'base64') return Buffer.from(str).toString('base64');
     if(charset === 'html') return str.split('').map(x=>'&#'+x.charCodeAt().toString() + ';').join('');
     return decoder.encode(str,charset);
 };
@@ -1462,7 +1462,7 @@ util.encode = function(str,charset){
 util.decode = function(str,charset){
     if(charset) return str.toString();
     if(charset === 'unicode') return str.split('\\u').slice(1).map(x=>String.fromCharCode(parseInt(x,16))).join('');
-    if(charset === 'base64') return new Buffer(str,'base64').toString();
+    if(charset === 'base64') return Buffer.from(str,'base64').toString();
     if(charset === 'html') return str.replace(/&#(x)?([^&]{1,5});?/ig,function($, $1, $2){
         return String.fromCharCode(parseInt($2, $1 ? 16 : 10));
     });

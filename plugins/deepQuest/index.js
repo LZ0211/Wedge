@@ -23,8 +23,10 @@ module.exports = function (){
             var outDB = [];
             Quests.forEach(url=>{
                 var record = sources[url];
-                if(record && !record.isend){
-                    inDB.push(record.uuid);
+                if(record){
+                    if(!record.isend){
+                        inDB.push(record.uuid);
+                    }
                 }else{
                     outDB.push(url);
                 }

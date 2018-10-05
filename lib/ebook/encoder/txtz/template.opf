@@ -1,0 +1,16 @@
+<metadata>
+  <dc-metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:oebpackage="http://openebook.org/namespaces/oeb-package/1.0/">
+    <dc:Title>{{=book.meta.title}}</dc:Title>
+    <dc:Language>zh</dc:Language>
+    <dc:Description>{{=book.meta.brief}}</dc:Description>
+    <dc:Publisher>Wedge</dc:Publisher>
+    <dc:Creator file-as="{{=book.meta.author}}" role="aut">{{=book.meta.author}}</dc:Creator>
+    <dc:Subject>{{=book.meta.classes}}</dc:Subject>
+    <dc:Date>{{=(new Date(book.meta.date)).formation('yyyy-MM-ddThh:mm:ss')}}</dc:Date>
+    <dc:Identifier id="uuid_id" scheme="uuid">{{=book.meta.uuid}}</dc:Identifier>
+  </dc-metadata>
+  <x-metadata>
+    <meta name="cover" content="cover"/>
+    <meta name="ms-chaptertour" content="chaptertour"/>
+  </x-metadata>
+</metadata>

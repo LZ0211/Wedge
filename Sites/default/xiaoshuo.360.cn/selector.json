@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/\\/novel\\//i.test($.location())",
+    "indexPage": "$.location($('a:contains(目录)').attr('href'))",
+    "footer": "!!$('footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.crumb li').eq(-1).text().trim()",
+      "author": "$('.author').eq(0).text().trim()",
+      "classes": "$('.crumb a').eq(1).text().trim()",
+      "isend": "$('.novel_status').attr('data-status') > 1",
+      "cover": "$.location($('.img img').attr('src'))",
+      "brief": "$('.brief').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/\\/chaplist\\//i.test($.location())",
+    "infoPage": "$.location($('.crumb a').last().attr('href'))",
+    "footer": "!!$('footer').length",
+    "filter": "$('.vip').remove()",
+    "bookIndexs": "$('.chapter-list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/\\/chapter\\//i.test($.location())",
+    "footer": "true",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "Buffer.from($('script').filter((i,v)=>$(v).text().match('var c=')).text().replace(/var c=\"(.*)?\";/,'$1'),'base64').toString()"
+    }
+  }
+}

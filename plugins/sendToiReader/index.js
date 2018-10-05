@@ -28,9 +28,9 @@ module.exports = function(){
             + 'Submit Query\r\n'
             + '\r\n'
             + '--' + boundary + '--';
-        payload.push(new Buffer(head));
+        payload.push(Buffer.from(head));
         payload.push(body);
-        payload.push(new Buffer(tail));
+        payload.push(Buffer.from(tail));
         payload = Buffer.concat(payload);
         request.post(Ip)
         .setHeader('Content-Type', 'multipart/form-data; boundary=' + boundary)
@@ -41,13 +41,13 @@ module.exports = function(){
         });
     }
     var formatIp = (ip,fn)=>{
-        var regexp = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/g;
+        var regexp = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+)/g;
         var found = ip.match(regexp);
         if (!found){
             console.log("IP地址不正确");
             return getIP(fn);
         }
-        Ip = 'http://' + found[0] + ':15000/?action=addBook';
+        Ip = 'http://' + found[0] + '/?action=addBook';
         return fn();
     }
     var getIP = fn=>this.prompt(["请输入IP地址："],ip=>formatIp(ip,fn));
