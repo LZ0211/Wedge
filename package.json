@@ -1,0 +1,31 @@
+{
+  "name": "Wedge",
+  "version": "3.1.0",
+  "description": "An ebook downloader engine",
+  "main": "index.js",
+  "bugs": {
+    "url": "https://github.com/LZ0211/Wedge/issues"
+  },
+  "dependencies": {
+    "iconv-lite": ">= 0.4.24",
+    "cheerio": ">= 0.22.0"
+  },
+  "keywords": [
+    "wedge",
+    "ebook",
+    "downloader",
+    "crawler",
+    "epub",
+    "fb2",
+    "umd"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LZ0211/Wedge.git"
+  },
+  "author": {
+    "name": "LZ0211",
+    "email": "1491097321@qq.com"
+  }
+}

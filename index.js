@@ -15,15 +15,16 @@ const request = require("./lib/request");
 const util = require("./lib/util");
 const Thread = require("./lib/Thread");
 const Cache = require("./lib/Cache");
-const setting = require("./setting");
-const Searcher = require("./searcher");
-const Sites = require("./Sites");
+const setting = require("./config/setting");
+const Searcher = require("./config/searcher");
+const Sites = require("./config/Sites");
 const Parser = require("./lib/Parser");
 const Book = require("./lib/Book");
 const classes = require("./lib/classes");
 const ebook = require('./lib/ebook');
-const threadLimit = require('./threadLimit');
-const ExceptSites = new RegExp(require("./outclude").map(x=>x.replace(/\./g,'\\.')).join('|'),'gi');
+const threadLimit = require('./config/threadLimit');
+const outclude = require("./config/outclude");
+const ExceptSites = new RegExp(outclude.map(x=>x.replace(/\./g,'\\.')).join('|'),'gi');
 
 class Wedge extends EventEmitter{
     constructor(dir){
@@ -230,8 +231,13 @@ class Wedge extends EventEmitter{
         options.error = options.error || this.noop;
 
         var pac = this.config.get('request.proxyAutoConfig');
-        if(pac){
-            pac = new RegExp(pac,'gi');
+        var proxyMatched = false;
+        if('string' === typeof pac){
+            proxyMatched = (new RegExp(pac,'gi')).test(options.url);
+        }else if('function' === typeof pac){
+            proxyMatched = pac(options.url);
+        }else{
+            proxyMatched = false;
         }
 
         if (options.method === 'GET'){
@@ -242,7 +248,7 @@ class Wedge extends EventEmitter{
         var req = new request.Request(options.url, options.method);
         options.timeout && req.timeout(options.timeout);
         options.reconnect && req.reconnect(options.reconnect);
-        options.proxy && options.url.match(pac) && req.proxy(options.proxy);
+        options.proxy && proxyMatched && req.proxy(options.proxy);
         options.proxyAuth && req.proxyAuth(options.proxyAuth);
         options.dataType && req.accept(options.dataType);
         options.data && options.method === 'POST' && req.send(options.data);
@@ -444,6 +450,36 @@ class Wedge extends EventEmitter{
         return this;
     }
 
+    aliasBookSource(fn){
+        fn = this.next(fn);
+        var aliasList = this.config.get('book.alias');
+        if(!aliasList) return fn();
+        var source = this.book.getMeta('source');
+        for(var site in aliasList){
+            if(source.indexOf(site) >= 0){
+                source = source.replace(site,aliasList[site]);
+                this.book.setMeta('source',source);
+            }
+        }
+        return fn();
+    }
+
+    aliasChapterSource(fn){
+        fn = this.next(fn);
+        var aliasList = this.config.get('book.alias');
+        if(!aliasList) return fn();
+        var chapters = this.book.hashBy('source');
+        for(var site in aliasList){
+            var newsite = aliasList[site];
+            for(var source in chapters){
+                if(source.indexOf(site) >= 0){
+                    chapters[source].source = source.replace(site,newsite);
+                }
+            }
+        }
+        return fn();
+    }
+
     loadBook(dir,fn){
         fn = this.next(fn);
         if (!fs.existsSync(dir)){
@@ -452,7 +488,7 @@ class Wedge extends EventEmitter{
             }
             return this.end();
         }
-        this.CMD('loadBookIndex > checkBookIndex',[fn])(dir);
+        this.CMD('loadBookIndex > checkBookIndex > aliasBookSource > aliasChapterSource',[fn])(dir);
         return this;
     }
 
@@ -580,7 +616,7 @@ class Wedge extends EventEmitter{
         var source = this.book.getMeta('source');
         var origin = this.book.getMeta('origin');
         var author = this.book.getMeta('author');
-        var uuid = this.book.getMeta('uuid');
+        //var uuid = this.book.getMeta('uuid');
         //if(this.database.query('uuid='+uuid).length) return fn();
         if(!title) return this.end();
         //if(source.match(ExceptSites)) return fn();

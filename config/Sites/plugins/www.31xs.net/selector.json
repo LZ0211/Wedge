@@ -17,7 +17,7 @@
     "match": "/\\/\\d+\\/\\d+\\/$/i.test($.location())",
     "infoPage": "$.location()",
     "footer": "$('#footer').length > 0",
-    "filter": "$('#list #report').parent().prevAll().remove()",
+    "filter": "$('#list dt').eq(1).prevAll('dd').remove()",
     "bookIndexs": "$('#list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {

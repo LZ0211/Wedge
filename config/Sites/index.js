@@ -42,13 +42,11 @@ function compile(options){
 var Sites = [];
 
 function clearCache(modulePath) {
-    var module = require.cache[modulePath];
-    if (!module) return;
-    if (module.parent) {
-        var modules = module.parent.children;
-        modules.splice(modules.indexOf(module), 1);
+    for(var x in require.cache){
+        if(~x.indexOf(modulePath)){
+            require.cache[x] = null;
+        }
     }
-    require.cache[modulePath] = null;
 }
 
 function addRule(root,listen){

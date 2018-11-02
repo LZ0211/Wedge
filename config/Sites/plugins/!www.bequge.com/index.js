@@ -22,8 +22,6 @@ module.exports = {
         "www.shuhuangge.org",
         "www.beidouxin.com",
         "www.00ksw.net",
-        "www.31xs.com",
-        "www.31xs.org",
         "www.81zw.com",
         "www.baquge.com",
         "www.biquge.cm",
@@ -75,7 +73,8 @@ module.exports = {
         "www.ttzw.com",
         "www.shuangde.cc",
         "www.woquge.com",
-        "www.shubaoan.com"
+        "www.shubaoan.com",
+        "www.biqudd.com"
     ],
     "selector":require("./selector"),
     "replacer":require("./replacer")
