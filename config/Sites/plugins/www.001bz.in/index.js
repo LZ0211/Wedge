@@ -5,6 +5,7 @@ module.exports = {
         "www.diyibanzhu.in",
         "www.diyibanzhu.xyz",
         "www.diyibanzhu.org",
+        "www.diyibanzhu.life"
     ],
     "charset":"gbk",
     "selector":require("./selector"),

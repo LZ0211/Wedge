@@ -78,8 +78,8 @@
     "name": ".ihuaben.com"
   },
   {
-    "url": "http://so.kanshu.com/search/searchlist.php",
-    "query": "searchtype=0&tn=SE_pshl0004_7x3dksqe&sort=2&keys=%title%",
+    "url": "http://so.kanshu.com/searchList/searchListGO",
+    "query": "searchtype=0&sort=2&keys=%title%",
     "name": ".kanshu.com"
   },
   {

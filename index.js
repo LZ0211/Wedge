@@ -613,7 +613,7 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         if (!this.config.get('book.searchmeta')) return fn();
         var title = this.book.getMeta('title');
-        var source = this.book.getMeta('source');
+        //var source = this.book.getMeta('source');
         var origin = this.book.getMeta('origin');
         var author = this.book.getMeta('author');
         //var uuid = this.book.getMeta('uuid');
@@ -765,7 +765,8 @@ class Wedge extends EventEmitter{
 
     getBookIndex(link,fn){
         fn = this.next(fn);
-        link = util.checkUrlValid(link);
+        link = util.formatLink(link);
+        //console.log(link)
         var times = util.parseInteger(this.config.get('app.retry.index'),3);
         var setIndex = bookIndex=>{
             if(Array.isArray(bookIndex)){
@@ -790,6 +791,23 @@ class Wedge extends EventEmitter{
                     return requestIndex(result.request);
                 }
                 if(!result.request && !result.bookIndexs) return setIndex(result);
+                if(result.nextPage){
+                    var nextPage = result.nextPage;
+                    if(nextPage && typeof nextPage === 'string' && nextPage !== link.url){
+                        nextPage = URL.resolve(link.url,nextPage);
+                        return this.getBookIndex(nextPage,indexs=>{
+                            var bookIndexs = Array.isArray(result.bookIndexs) ? result.bookIndexs : [];
+                            setIndex(bookIndexs.concat(indexs));
+                        });
+                    }
+                    if(nextPage && typeof nextPage === 'object' && nextPage.url && nextPage.url !== link.url){
+                        nextPage.url = URL.resolve(link.url,nextPage.url);
+                        return this.getBookIndex(nextPage,indexs=>{
+                            var bookIndexs = Array.isArray(result.bookIndexs) ? result.bookIndexs : [];
+                            setIndex(bookIndexs.concat(indexs));
+                        });
+                    }
+                }
                 return setIndex(result.bookIndexs);
             };
             options.error = error=>{
@@ -808,28 +826,30 @@ class Wedge extends EventEmitter{
     getBookIndexs(fn){
         fn = this.next(fn);
         this.debug('getBookIndexs');
-        var links = this.book.getMeta('source'),
+        var source = this.book.getMeta('source'),
+            links = util.checkUrlValid(source),
             indexs = [],
             push = item=>indexs.push(item);
-        links = links.split('|').filter(x=>x);
-        links = links.map(link=>{
-            try{
-                return JSON.parse(link);
-            }catch (e){
-                return {url:link};
+        if(links.length === 0) return this.end()
+        if(links.length === 1) return this.getBookIndex(links[0],items=>fn(this.filterBookIndex(items)));
+        var app = this.spawn();
+        app.getBookMeta(links[0],()=>{
+            var _links = util.checkUrlValid(app.book.getMeta('source'));
+            if(_links.length > links.length){
+                links = _links
             }
+            Thread()
+            .use((link,next)=>this.getBookIndex(link,items=>{
+                items.forEach(push);
+                return next();
+            }))
+            .end(()=>fn(this.filterBookIndex(indexs)))
+            .queue(links)
+            .log(this.debug.bind(this))
+            .label('getBookIndexs')
+            .setThread(this.config.get('thread.index'))
+            .start();
         });
-        Thread()
-        .use((link,next)=>this.getBookIndex(link,items=>{
-            items.forEach(push);
-            return next();
-        }))
-        .end(()=>fn(this.filterBookIndex(indexs)))
-        .queue(links)
-        .log(this.debug.bind(this))
-        .label('getBookIndexs')
-        .setThread(this.config.get('thread.index'))
-        .start();
         return this;
     }
 
@@ -886,7 +906,7 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         this.debug('getChapterContent');
         var times = util.parseInteger(this.config.get('app.retry.chapter'),3);
-        link = util.checkUrlValid(link);
+        link = util.formatLink(link);
         if (!link) return fn(null);
         var setContent = chapter=>{
             if(!chapter) return fn(null);
@@ -1541,7 +1561,7 @@ util.checkUrlValid = function (url){
         links = url.map(util.formatLink).filter(link=>link.url && link.url.indexOf("#")!==0 && !~link.url.indexOf("javascript:"));
         if (links.length) return links;
     }else if (typeof url == 'object'){
-        return util.formatLink(url);
+        return [util.formatLink(url)];
     }
     return false;
 };
