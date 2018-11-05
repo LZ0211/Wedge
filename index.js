@@ -315,6 +315,7 @@ class Wedge extends EventEmitter{
             .replace('%random%',Math.random());
         var method = (site.method || 'GET').toUpperCase();
         var data = site.data && site.data.replace('%title%',title);
+        var filterFn = link=>~link[0].indexOf(site.name);
         var success = data=>{
             if(site.parse){
                 var parser = new Function('json','try{return (' + site.parse + ')}catch(e){return []}');
@@ -324,29 +325,30 @@ class Wedge extends EventEmitter{
                 var selector = site.selector || ':header a,img a';
                 $(selector).filter((i,v)=>~$(v).text().indexOf(title)).each((i,v)=>links.push([
                     $.location($(v).attr('href')),
-                    $(v).text().trim()
+                    util.replace($(v).text(),site.replace).trim()
                 ]));
             }
             if(site.engine){
+                var _links = [];
                 return Thread().queue(links).use((link,next)=>{
                     this.request({
                         url:link[0]+'&wd=',
                         headers:{referer:link[0]+'&wd='},
                         success:data=>{
-                            var $ = this.Parser(data,link);
-                            var content = $('meta[http-equiv="refresh"]').attr('content');
-                            if (!content) return next();
-                            link[0] = content.replace(/0;URL='(.*)'/,"$1");
+                            var found = data.toString().match(new RegExp(`(${site.filter})`));
+                            if(!found) return next();
+                            link[0] = found[1];
+                            _links.push(link);
                             return next();
                         },
                         error:next
                     });
                 })
                 .setThread(10)
-                .end(()=>fn(links.filter(link=>~link[0].indexOf(site.name))))
+                .end(()=>fn(_links))
                 .start();
             }
-            return fn(links);
+            return fn(links.filter(filterFn));
         };
         var options = {
             url:url+'?'+query,
@@ -387,7 +389,7 @@ class Wedge extends EventEmitter{
         Thread()
         .use(search)
         .queue(Searcher)
-        .setThread(3)
+        .setThread(5)
         .end(endSearch)
         .log(this.debug.bind(this))
         .label('fuzzysearchBook')
@@ -411,7 +413,7 @@ class Wedge extends EventEmitter{
             var buf = fs.readFileSync(filename);
             ebook.unwbk(buf,book=>{
                 var record = this.database.query(`uuid=${book.meta.uuid}`)[0];
-                if(record && !this.config.get('book.changesource')) return this.end();
+                if(record && !this.config.get('book.changesource')) return fn();
                 this.bookdir = Path.resolve(book.meta.uuid);
                 fs.mkdirsSync(this.bookdir);
                 this.book.localizationSync(this.bookdir);
@@ -425,11 +427,10 @@ class Wedge extends EventEmitter{
                 .end(()=>{
                     this.book.localizationSync(this.bookdir);
                     this.sendToDataBase(fn);
-                    this.end();
                 }).start();
             });
         }catch(e){
-            return this.end();
+            return fn();
         }
     }
 

@@ -33,7 +33,7 @@
     "selector": ".result h3.t a",
     "engine": "baidu",
     "replace": [{".*《(.*)》.*":"$1"}],
-    "filter": "novelid=\\d+$",
+    "filter": "http://www.jjwxc.net/onebook.php\\?novelid=\\d+",
     "name": "www.jjwxc.net"
   },
   {
