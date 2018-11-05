@@ -1,0 +1,35 @@
+{
+  "infoPage": {
+    "match": "/book_detail/i.test($.location())",
+    "indexPage": "$.location($('.BtnList a').attr('href'))",
+    "footer": "$('#global_BottomBg').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('div.title span').text().trim()",
+      "author": "$('div.title em').text().replace(/\\s?著$/,'')",
+      "classes": "$('div.label li').eq(2).text()",
+      "isend": "$('div.label').text()",
+      "cover": "$.location($('div.pic > img').attr('src'))",
+      "brief": "$('div.jianjie').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/readdir/i.test($.location())",
+    "infoPage": "$.location($('a[title=\"返回书页\"]').attr('href'))",
+    "footer": "$('#global_BottomBg').length",
+    "bookIndexs": "$('.chapter_list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/readchapter/i.test($.location())",
+    "footer": "true",
+    "request": {
+      "url": "$.location().replace('readchapter','booklibrary/membersinglechapter/chapter_id')",
+      "method": "'POST'",
+      "headers": {
+        "X-Requested-With":"'XMLHttpRequest'",
+        "Referer": "$.location()"
+      },
+      "success": "res=>res.data.show_content.map(x=>Buffer.from(x.content,'base64').toString().trim()).join('\\n')"
+    }
+  }
+}

@@ -24,33 +24,33 @@ function decode(obj){
 
 module.exports = {
   "infoPage": {
-    "match": "/\\/book_detail\\//i.test($.location())",
-    "indexPage": "$.location($('a.read').attr('href'))",
+    "match": "$('.book-intro').length",
+    "indexPage": "$.location($('a:contains(立即阅读)').attr('href'))",
     "footer": "$('.footer').length > 0",
     "bookInfos": {
       "origin": "$.location()",
-      "title": "$('.book-title h3').text().trim()",
-      "author": "$('.book-title a').text().trim()",
-      "classes": "$('.breakcrumb a').eq(-1).text()",
-      "isend": "$('.book-property').text()",
-      "cover": "$.location($('.book-cover img').attr('src'))",
+      "title": "$('img.lazyload').eq(1).attr('alt')",
+      "author": "$('h3.title a').text().trim()",
+      "classes": "$('.breadcrumb a').eq(-1).text()",
+      "isend": "$('.update-state').text()",
+      "cover": "$.location($('img.lazyload').eq(1).attr('data-original'))",
       "brief": "$('.book-desc').html()"
     }
   },
   "indexPage": {
-    "match": "/get_chapter_list/i.test($.location())",
-    "infoPage": "$.location($('a:contains(返回书页)').attr('href'))",
+    "match": "/chapter-list/i.test($.location())",
+    "infoPage": "$.location($('a:contains(详情)').attr('href'))",
     "footer": "$('.footer').length > 0",
-    "filter": "$('.icon-vip').parent('a').remove()",
+    "filter": "$('.icon-lock').parent('a').remove()",
     "bookIndexs": "$('.book-chapter-list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
     "contentPage": {
-    "match": "/book_chapter_detail/i.test($.location())",
+    "match": "$('h3.chapter').length",
     "footer": "true",
     "request":$ => {
-        var qs = $.location().replace('http://www.hbooker.com/chapter/book_chapter_detail/','chapter_id=');
+        var qs = $.location().replace('http://www.ciweimao.com/chapter/','chapter_id=');
         return {
-            url:'http://www.hbooker.com/chapter/ajax_get_session_code',
+            url:'http://www.ciweimao.com/chapter/ajax_get_session_code',
             method:'POST',
             data:qs,
             success:data => {
@@ -58,7 +58,7 @@ module.exports = {
                 if(data.code !== 100000) return data.tip;
                 return {
                     request:{
-                        url:'http://www.hbooker.com/chapter/get_book_chapter_detail_info',
+                        url:'http://www.ciweimao.com/chapter/get_book_chapter_detail_info',
                         method:'POST',
                         data:qs+'&chapter_access_key='+chapter_access_key,
                         headers:{

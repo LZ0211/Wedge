@@ -1,7 +1,7 @@
 module.exports = {
-    "host":"www.hbooker.com",
+    "host":"www.youdubook.com",
     "match":[
-        "www.hbooker.com"
+        "www.youdubook.com"
     ],
     "charset":"utf8",
     "selector":require("./selector"),

@@ -24,16 +24,17 @@
   {
     "url": "http://search.17k.com/search.xhtml",
     "query": "c.st=1&c.q=%title%",
-    "selector": ".textmiddle a",
+    "selector": "div.textmiddle > dl > dt > a",
     "name": ".17k.com"
   },
   {
     "url": "https://www.baidu.com/s",
-    "query": "ie=utf-8&rn=50&wd=site%3Ajjwxc.net%20%title%",
+    "query": "ie=utf-8&rn=50&wd=%title%&si=www.jjwxc.net&ct=2097152",
     "selector": ".result h3.t a",
     "engine": "baidu",
+    "replace": [{".*《(.*)》.*":"$1"}],
     "filter": "novelid=\\d+$",
-    "name": ".jjwxc.net"
+    "name": "www.jjwxc.net"
   },
   {
     "url": "http://yc.ireader.com.cn/index.php",
@@ -61,8 +62,8 @@
     "name": ".hongshu.com"
   },
   {
-    "url": "http://search.faloo.com/cse/search",
-    "query": "s=8180149771949009960&entry=1&q=%title%",
+    "url": "https://b.faloo.com/l/0/1.html",
+    "query": "t=0&k=%title%",
     "charset": "gbk",
     "name": ".faloo.com"
   },
@@ -80,11 +81,12 @@
   {
     "url": "http://so.kanshu.com/searchList/searchListGO",
     "query": "searchtype=0&sort=2&keys=%title%",
+    "replace": "作者：.*",
     "name": ".kanshu.com"
   },
   {
-    "url": "http://zhannei.baidu.com/cse/search",
-    "query": "s=13602090313724893225&entry=1&q=%title%",
+    "url": "https://www.xs8.cn/search",
+    "query": "kw=%title%",
     "name": ".xs8.cn"
   },
   {
@@ -144,8 +146,10 @@
     "name": ".km.com"
   },
   {
-    "url": "http://zhannei.baidu.com/cse/search",
-    "data": "s=3022107875151699007&q=%title%&nsid=",
+    "url": "http://3gsc.com.cn/search/index/show/pic",
+    "method": "post",
+    "data": "search_key=%title%&ver=new&keytype=1",
+    "selector": "a.Article",
     "name": "3gsc.com.cn"
   },
   {
@@ -168,7 +172,7 @@
   {
     "url": "http://www.xiang5.com/search.php",
     "query": "keyword=%title%",
-    "selector": ".textmiddle a",
+    "selector": "div.textmiddle > dl > dt > a",
     "name": ".xiang5.com"
   },
   {
@@ -209,10 +213,10 @@
     "name": ".ycsd.cn"
   },
   {
-    "url": "http://www.longyuedu.com/modules/article/search.php",
+    "url": "http://www.longyuedu.com/index/search.html",
     "method": "post",
     "charset": "gbk",
-    "data": "ecmsfrom=9&searchtype=all&classid=1&searchkey=%title%&t_btnsearch=%CB%D1%CB%F7",
+    "data": "ecmsfrom=9&searchtype=all&classid=1&searchkey=%title%&t_btnsearch=%E6%90%9C%E7%B4%A2&__hash__=599b88f945f9fb401050100d36e4b9f7_91234931c5fed2a671cd9e38a171417b",
     "name": ".longyuedu.com",
     "selector": ".shuku_z_xq a"
   },
@@ -222,8 +226,8 @@
     "name": ".hengyan.com"
   },
   {
-    "url": "http://www.hbooker.com/index/get_search_book_list/%title%",
-    "name": ".hbooker.com",
+    "url": "http://www.ciweimao.com/get-search-book-list/%title%/1",
+    "name": ".ciweimao.com",
     "selector": "p.tit a"
   },
   {
@@ -244,11 +248,10 @@
     "name": ".sfacg.com"
   },
   {
-    "url": "http://www.54tushu.com/book_library/searchbook.html",
-    "method": "post",
-    "data": "BookName=%title%&send=",
-    "name": ".54tushu.com",
-    "selector": ".img a"
+    "url": "http://www.youdubook.com/booklibrary/index.html",
+    "query": "keywords=%title%",
+    "name": ".youdubook.com",
+    "selector": ".BooklibraryList > ul > li > span > a"
   },
   {
     "url": "http://www.ebtang.com/book/search",

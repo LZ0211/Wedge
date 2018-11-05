@@ -7,7 +7,7 @@ module.exports = {
     "bookInfos": {
       "origin": "$.location()",
       "source": "$.location()",
-      "title": "$('.f-fl h3').text().replace($('h3 a').text(),'').replace('&nbsp;著','')",
+      "title": "$('.f-fl h3').attr('title')",
       "author": "$('h3 a').text()",
       "classes": "$('td:contains(分类)').next().text()",
       "isend": "$('.status').text()",
@@ -34,7 +34,7 @@ module.exports = {
             method : 'GET',
             dataType : "json",
             success : data=>({
-                content: Buffer.from(data.content,"base64").toString()
+                content: new Buffer(data.content,"base64").toString()
             })
         }
     }

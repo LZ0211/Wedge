@@ -1,7 +1,7 @@
 module.exports = {
-    "host":"www.54tushu.com",
+    "host":"www.ciweimao.com",
     "match":[
-        "www.54tushu.com"
+        "www.ciweimao.com"
     ],
     "charset":"utf8",
     "selector":require("./selector"),
