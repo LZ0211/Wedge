@@ -81,7 +81,7 @@ function addRule(root,listen){
 }
 
 addRule('default');
-addRule('plugins',true);
+addRule('plugins');
 
 module.exports = {
     search:function (url){

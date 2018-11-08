@@ -101,9 +101,6 @@ class Wedge extends EventEmitter{
         //eBookCmd
         this.eBookCmd = this.CMD('loadBook > checkBookCover > saveBook > generateEbook > end');
 
-        //outportCmd
-        this.outportCmd = this.CMD('loadBook > checkBookCover > saveBook > outportWBK > end');
-
         //importBookRecordCmd
         this.importBookRecordCmd = this.CMD('loadBookIndex > sendToDataBase > end');
 
@@ -405,50 +402,41 @@ class Wedge extends EventEmitter{
         return this;
     }
 
+    importBook(book,fn){
+        fn = this.next(fn);
+        var app = this.spawn();
+        var uuid = book.meta.uuid;
+        app.loadBookIndex(uuid,()=>{
+            var old = app.book.metaValue();
+            if(old.uuid == uuid && !this.config.get('book.changesource')) return fn();
+            app.book = Book();
+            app.bookdir = Path.resolve(uuid);
+            fs.mkdirsSync(app.bookdir);
+            app.book.localizationSync(app.bookdir);
+            app.book.setMeta(book.meta);
+            fs.writeFileSync(Path.join(app.bookdir,'cover.jpg'),Buffer.from(book.meta.cover,'base64'));
+            Thread()
+            .use((chapter,next)=>{
+                app.book.pushList(chapter);
+                fs.writeFile(Path.join(app.bookdir,chapter.id + '.json'),JSON.stringify(chapter),next);
+            }).queue(book.list).threads(20).label('importBook')
+            .end(()=>{
+                app.book.localizationSync(app.bookdir);
+                app.sendToDataBase(fn);
+            }).start();
+        });
+        return this;
+    }
+
     importWBK(filename,fn){
         fn = this.next(fn);
         try{
             this.debug('importing WBK');
-            this.book = Book();
             var buf = fs.readFileSync(filename);
-            ebook.unwbk(buf,book=>{
-                var record = this.database.query(`uuid=${book.meta.uuid}`)[0];
-                if(record && !this.config.get('book.changesource')) return fn();
-                this.bookdir = Path.resolve(book.meta.uuid);
-                fs.mkdirsSync(this.bookdir);
-                this.book.localizationSync(this.bookdir);
-                this.book.setMeta(book.meta);
-                fs.writeFileSync(Path.join(this.bookdir,'cover.jpg'),Buffer.from(book.meta.cover,'base64'));
-                Thread()
-                .use((chapter,next)=>{
-                    this.book.pushList(chapter);
-                    fs.writeFile(Path.join(this.bookdir,chapter.id + '.json'),JSON.stringify(chapter),next);
-                }).queue(book.list).threads(20).label('importWBKChapter')
-                .end(()=>{
-                    this.book.localizationSync(this.bookdir);
-                    this.sendToDataBase(fn);
-                }).start();
-            });
+            ebook.unwbk(buf,book=>this.importBook(book,fn));
         }catch(e){
             return fn();
         }
-    }
-
-    outportWBK(fn){
-        fn = this.next(fn);
-        this.debug('outportWBK');
-        var work = child_process.fork(Path.join(__dirname,"lib/ebook/generator.js"),{cwd:process.cwd()});
-        var options = {formation:'wbk',bookdir:this.bookdir,directory:this.config.get("ebook.directory")};
-        fs.mkdirsSync(options.directory);
-        work.on('message',this.noop);
-        work.on("exit",()=>{
-            this.log("exit");
-            work = null;
-            return fn();
-        });
-        work.on("err",this.noop);
-        work.send(options);
-        return this;
     }
 
     aliasBookSource(fn){
@@ -482,14 +470,7 @@ class Wedge extends EventEmitter{
     }
 
     loadBook(dir,fn){
-        fn = this.next(fn);
-        if (!fs.existsSync(dir)){
-            if(this.config.get('database.check')){
-                this.database.remove(dir);
-            }
-            return this.end();
-        }
-        this.CMD('loadBookIndex > checkBookIndex > aliasBookSource > aliasChapterSource',[fn])(dir);
+        this.CMD('loadBookIndex > checkBookIndex > aliasBookSource > aliasChapterSource',[this.next(fn)])(dir);
         return this;
     }
 
@@ -725,15 +706,14 @@ class Wedge extends EventEmitter{
 
     createBook(fn){
         fn = this.next(fn);
-        var uuid = this.book.getMeta('uuid');
-        var record = this.database.query(`uuid=${uuid}`)[0];
-        if(record && record.title === this.book.getMeta('title') && !this.config.get('database.check')){
-            return this.end();
+        var thisMeta = this.book.metaValue();
+        if(this.config.get('database.check')){
+            var record = this.database.query(`uuid=${thisMeta.uuid}`)[0];
+            if(record && record.source === thisMeta.source) return this.end();
         }
         this.debug('createBook');
-        this.bookdir = Path.resolve(uuid);
+        this.bookdir = Path.resolve(thisMeta.uuid);
         fs.mkdirsSync(this.bookdir);
-        var thisMeta = this.book.metaValue();
         this.loadBook(this.bookdir,()=>{
             var newURL = this.book.getMeta('source');
             if (thisMeta.source == newURL){
@@ -1185,13 +1165,13 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    generateEbook(fn){
+    generateEbook(options,fn){
         fn = this.next(fn);
         if (0 === this.config.get("ebook.activated")) return fn();
         if (!this.book.changed && this.config.get("ebook.activated") <= 0) return fn();
         this.debug('generateEbook');
         var work = child_process.fork(Path.join(__dirname,"lib/ebook/generator.js"),{cwd:process.cwd()});
-        var options = {
+        options = options || {
             directory:this.config.get("ebook.directory"),
             formation:this.config.get("ebook.formation"),
             bookdir:this.bookdir,
@@ -1214,11 +1194,7 @@ class Wedge extends EventEmitter{
                 this.log("ebook generation failed...");
             }
         });
-        work.on("exit",()=>{
-            this.log("exit");
-            work = null;
-            return fn();
-        });
+        work.on("exit",fn);
         work.on("err",this.log);
         return this;
     }
@@ -1288,8 +1264,10 @@ class Wedge extends EventEmitter{
     }
 
     outportBook(dir){
-        process.nextTick(this.outportCmd.bind(this,dir));
-        return this;
+        var format = this.config.get('ebook.formation');
+        this.config.set('ebook.formation','wbk');
+        this.end(()=>this.config.set('ebook.formation',format));
+        return this.ebook(dir);
     }
 
     deleteBook(uuid){
