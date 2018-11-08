@@ -1193,9 +1193,8 @@ class Wedge extends EventEmitter{
             }else {
                 this.log("ebook generation failed...");
             }
+            return fn();
         });
-        work.on("exit",fn);
-        work.on("err",this.log);
         return this;
     }
 
