@@ -23,8 +23,7 @@ const Book = require("./lib/Book");
 const classes = require("./lib/classes");
 const ebook = require('./lib/ebook');
 const threadLimit = require('./config/threadLimit');
-const outclude = require("./config/outclude");
-const ExceptSites = new RegExp(outclude.map(x=>x.replace(/\./g,'\\.')).join('|'),'gi');
+const outClude = require("./config/outclude");
 
 class Wedge extends EventEmitter{
     constructor(dir){
@@ -624,7 +623,7 @@ class Wedge extends EventEmitter{
             app.debug('updateMeta');
             return fn();
         };
-        if(origin.match(ExceptSites)){
+        if(outClude.some(site=>~source.indexOf(site))){
             app.end(fn);
             app.getBookMeta(origin,update);
             return this;
