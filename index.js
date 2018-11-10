@@ -1178,12 +1178,10 @@ class Wedge extends EventEmitter{
             filter:this.config.get("ebook.filter")
         };
         fs.mkdirsSync(options.directory);
-        work.send(options);
-        var ebookfile = this.book.getMeta("author") + " - " + this.book.getMeta("title") + "." + this.config.get("ebook.formation");
-        this.log("generating ebook >>> " + ebookfile);
+        this.log("generating ebook...");
         work.on("message",msg=>{
             if (msg.msg === "success"){
-                this.log("ebook generated successful...");
+                this.log("ebook generated successful!");
                 if (this.config.get("ebook.opendirectory") && this.platform.match('win')){
                     this.openDir(options.directory);
                 }
@@ -1191,10 +1189,11 @@ class Wedge extends EventEmitter{
                     this.openDir(Path.join(options.directory,ebookfile));
                 }
             }else {
-                this.log("ebook generation failed...");
+                this.log("ebook generation failed!");
             }
-            return fn();
         });
+        work.on('exit',()=>fn());
+        work.send(options);
         return this;
     }
 
@@ -1206,16 +1205,16 @@ class Wedge extends EventEmitter{
             formation:this.config.get("ebook.formation"),
             filename:Path.resolve(file),
         };
-        work.send(options);
-        this.log("converting ebook >>> " + options.filename);
+        this.log("converting ebook...");
         work.on("message",msg=>{
             if (msg.msg === "success"){
-                this.log("ebook converted successful...");
+                this.log("ebook converted successful!");
             }else {
-                this.log("ebook convertion failed...");
+                this.log("ebook convertion failed!");
             }
-            return fn();
         });
+        work.on('exit',()=>fn());
+        work.send(options);
         return this;
     }
 
