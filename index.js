@@ -597,15 +597,11 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         if (!this.getConfig('book.searchmeta')) return fn();
         var title = this.book.getMeta('title');
-        //var source = this.book.getMeta('source');
         var origin = this.book.getMeta('origin');
         var author = this.book.getMeta('author');
-        //var uuid = this.book.getMeta('uuid');
-        //if(this.database.query('uuid='+uuid).length) return fn();
         if(!title) return this.end();
-        //if(source.match(ExceptSites)) return fn();
         this.debug('updateBookMeta');
-        function like(s1,s2){
+        function similar(s1,s2){
             var reFilter = /[:：？\?,；，,.。!！_—\-]/g;
             s1 = s1.replace(reFilter,'');
             s2 = s2.replace(reFilter,'');
@@ -619,14 +615,14 @@ class Wedge extends EventEmitter{
             for (var x in meta){
                 if (meta[x] === '') return app.end();
             }
-            if (!like(meta.title,title)) return app.end();
-            if (!like(meta.author,author)) return app.end();
+            if (!similar(meta.title,title)) return app.end();
+            if (!similar(meta.author,author)) return app.end();
             delete meta.source;
             this.book.setMeta(meta);
             app.debug('updateMeta');
             return fn();
         };
-        if(outClude.some(site=>~source.indexOf(site))){
+        if(outClude.some(site=>~origin.indexOf(site))){
             app.end(fn);
             app.getBookMeta(origin,update);
             return this;
