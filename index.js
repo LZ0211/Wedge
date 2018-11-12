@@ -487,10 +487,7 @@ class Wedge extends EventEmitter{
 
     checkBookIndex(fn){
         fn = this.next(fn);
-        if (!this.book.exist()){
-            if(this.getConfig('database.check')) this.database.remove(Path.basename(this.bookdir));
-            return this.end();
-        }
+        if (!this.book.exist() && this.getConfig('database.check')) return this.database.remove(Path.basename(this.bookdir));
         if (!this.getConfig('book.localization')) return fn();
         if (!this.getConfig('book.check')) return fn();
         if (this.getConfig('book.sync')){
@@ -809,10 +806,7 @@ class Wedge extends EventEmitter{
             links = util.validURL(source),
             indexs = [],
             push = item=>indexs.push(item);
-        if(links.length === 0){
-            this.log(this.bookdir);
-            return this.end();
-        }
+        if(links.length === 0) return this.end();
         if(links.length === 1) return this.getBookIndex(links[0],items=>fn(this.filterBookIndex(items)));
         var app = this.spawn();
         app.getBookMeta(links[0]);
