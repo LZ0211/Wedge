@@ -487,7 +487,7 @@ class Wedge extends EventEmitter{
 
     checkBookIndex(fn){
         fn = this.next(fn);
-        if (!this.book.location()){
+        if (!this.book.exist()){
             if(this.getConfig('database.check')) this.database.remove(Path.basename(this.bookdir));
             return this.end();
         }
