@@ -2,57 +2,59 @@
   "plugins": [
     {
       "name": "5sing",
-      "activated": false,
+      "activated": 0,
       "func": "./plugins/5sing"
     },
     {
       "name": "testSelector",
-      "activated": false,
+      "activated": 0,
       "func": "./plugins/testSelector"
     },
     {
       "name": "deepQuest",
-      "activated": true,
+      "activated": 1,
       "func": "./plugins/deepQuest"
     },
     {
       "name": "sendToiReader",
-      "activated": true,
+      "activated": 1,
       "func": "./plugins/sendToiReader"
     },
     {
       "name": "sendToQQ",
-      "activated": true,
+      "activated": 1,
       "func": "./plugins/sendToQQ"
     },
     {
       "name": "searchEngine",
-      "activated": true,
+      "activated": 1,
       "func": "./plugins/searchEngine"
     },
     {
       "name": "getPageImages",
-      "activated": true,
+      "activated": 1,
       "func": "./plugins/getPageImages"
     },
     {
       "name": "start",
-      "activated": true,
+      "activated": 1,
       "func": "./plugins/start"
     }
   ],
   "request": {
     "reconnect": 5,
-    "imagereconnect": 3,
+    "imageReconnect": 3,
     "timeout": 5000,
-    "proxy": false
+    "proxy": 0,
+    "proxyAuth": "",
+    "proxyAutoConfig": ""
   },
   "ebook": {
     "activated": -1,
     "formation": "epub",
     "directory": "../ebook",
-    "opendirectory": false,
-    "openebookfile": false
+    "openDirectory": 0,
+    "openEbookFile": 0
   },
   "thread": {
     "execute": 10,
@@ -61,30 +63,31 @@
     "image": 2
   },
   "book": {
-    "check": true,
-    "sync": false,
-    "changesource": false,
-    "override": true,
-    "imagelocalization": false,
-    "searchmeta": true,
-    "deepdownload": false,
-    "maxdepth": 0,
-    "localization": true,
+    "check": 1,
+    "sync": 0,
+    "changeSource": 0,
+    "override": 1,
+    "imageLocalization": 0,
+    "searchMeta": 1,
+    "deepDownload": 0,
+    "maxDepth": 0,
+    "localization": 1,
     "imageExts": [".jpg",".jpeg",".png",".gif",".tif",".webp",".bmp",".tga"],
     "unique":{
-      "source":true,
-      "title":false
+      "source":1,
+      "title":0
     }
   },
   "database": {
-    "sync": true,
-    "check": false,
-    "primary": "uuid"
+    "sync": 1,
+    "check": 0,
+    "primary": "uuid",
+    "showKeys": ["uuid","title","author","classes","isend","date","source"]
   },
   "app": {
-    "log": false,
-    "debug": false,
-    "retry": {
+    "log": 0,
+    "debug": 0,
+    "reTry": {
       "meta": 3,
       "index": 3,
       "cover": 3,
