@@ -469,6 +469,7 @@ class Wedge extends EventEmitter{
     }
 
     loadBook(dir,fn){
+        this.debug('loadBook');
         this.CMD('loadBookIndex > checkBookIndex > aliasBookSource > aliasChapterSource',[this.next(fn)])(dir);
         return this;
     }
@@ -476,6 +477,7 @@ class Wedge extends EventEmitter{
     loadBookIndex(dir,fn){
         fn = this.next(fn);
         if ('string' !== typeof dir) return this.end();
+        this.debug('loadBookIndex');
         this.bookdir = Path.resolve(dir);
         if (this.getConfig('book.sync')){
             this.book.loadIndexSync(this.bookdir);
@@ -487,7 +489,7 @@ class Wedge extends EventEmitter{
 
     checkBookIndex(fn){
         fn = this.next(fn);
-        if (!this.book.exist() && this.getConfig('database.check')) return this.database.remove(Path.basename(this.bookdir));
+        if (!this.book.exist() && this.getConfig('database.check')) this.database.remove(Path.basename(this.bookdir));
         if (!this.getConfig('book.localization')) return fn();
         if (!this.getConfig('book.check')) return fn();
         if (this.getConfig('book.sync')){
