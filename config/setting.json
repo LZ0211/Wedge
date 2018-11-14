@@ -63,8 +63,7 @@
     "image": 2
   },
   "book": {
-    "check": 1,
-    "sync": 0,
+    "sync": 1,
     "changeSource": 0,
     "override": 1,
     "imageLocalization": 0,

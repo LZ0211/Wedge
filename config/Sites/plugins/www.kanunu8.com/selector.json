@@ -1,31 +1,31 @@
 {
   "infoPage": {
-    "match": "/www\\.kanunu8\\.com\\/book/i.test($.location())",
+    "match": "$('.p10-24').length",
     "indexPage": "$.location()",
-    "footer": "true",
+    "footer": "1",
     "bookInfos": {
-      "origin": "$.location()",
-      "title": "$('td > h1 > strong > font').text().trim()",
+      "source": "$.location()",
+      "title": "$('td[height=\"60\"]').text().trim()",
       "author": "$('td[height=\"30\"]').text().trim()",
-      "classes": "$('div.book-info > p.tag > a').text()",
-      "isend": "false",
-      "cover": "$.location($('#bookImg > img').attr('src'))",
-      "brief": "$('.p10-24').eq(1).html()"
+      "classes": "$('.p10-24 strong').eq(0).text()",
+      "isend": "true",
+      "cover": "$.location($('.mr11 img').attr('src'))",
+      "brief": "$('tr[align=\"left\"]').find('.p10-24').html()"
     }
   },
   "indexPage": {
-    "match": "/^http:\\/\\/book.qidian.com\\/info\\/\\d+$/i.test($.location())",
+    "match": "$('.p10-24').length",
     "infoPage": "$.location()",
-    "footer": "$('.footer').length > 0",
-    "bookIndexs": "$('div.volume').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+    "footer": "1",
+    "bookIndexs": "$('table[cellspacing=\"1\"]').find('a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
-    "match": "/^http:\\/\\/read.qidian.com\\/chapter\\/\\w+\\/\\w+$/i.test($.location())",
-    "footer": "$('.chapter-control').length > 0",
+    "match": "1",
+    "footer": "1",
     "chapterInfos": {
-      "title": "$('h3.j_chapterName').text()",
+      "title": "$('table :header').text()",
       "source": "$.location()",
-      "content": "$('.read-content').html()"
+      "content": "$('table p').html()"
     }
   }
 }

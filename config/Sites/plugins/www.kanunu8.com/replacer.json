@@ -5,12 +5,12 @@
     "footer": null,
     "bookInfos": {
       "source": null,
-      "title": null,
+      "title": ["\\[完本、文字版\\]"],
       "author": [" 发布时间[\\s\\S]*","[\\s\\S]*?作者："],
-      "classes": {"&middot;":"·"},
+      "classes": "→",
       "isend": null,
       "cover": null,
-      "brief": "内容简介：",
+      "brief": "<a .*?/a>",
       "keywords": null
     }
   },

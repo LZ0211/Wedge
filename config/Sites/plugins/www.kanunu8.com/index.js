@@ -3,7 +3,6 @@ module.exports = {
     "match":[
         "www.kanunu8.com"
     ],
-    "charset":"gbk",
     "selector":require("./selector"),
     "replacer":require("./replacer")
 }

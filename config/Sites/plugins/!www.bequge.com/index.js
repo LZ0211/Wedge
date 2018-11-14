@@ -74,7 +74,8 @@ module.exports = {
         "www.shuangde.cc",
         "www.woquge.com",
         "www.shubaoan.com",
-        "www.biqudd.com"
+        "www.biqudd.com",
+        "www.zwdu.com"
     ],
     "selector":require("./selector"),
     "replacer":require("./replacer")

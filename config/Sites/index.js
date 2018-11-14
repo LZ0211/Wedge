@@ -1,4 +1,3 @@
-'use strict';
 const URL = require("url");
 const path = require("path");
 const fs = require("fs");
@@ -32,7 +31,7 @@ function compile(options){
             try{
                 parsed[x] = encode(v,x).bind(parsed);
             }catch (e){
-                console.log("warning: A error is found when compile of " + x);
+                console.log("warning: A error is found when compile of " + x)
             }
         }
     }
@@ -41,15 +40,15 @@ function compile(options){
 
 var Sites = [];
 
-function clearCache(modulePath) {
+function clearCache(path){
     for(var x in require.cache){
-        if(~x.indexOf(modulePath)){
+        if(~x.indexOf(path)){
             require.cache[x] = null;
         }
     }
 }
 
-function addRule(root,listen){
+function addRule(root){
     var dirname = path.join(__dirname,root);
     function add(file){
         try{
@@ -58,7 +57,7 @@ function addRule(root,listen){
             var site = require(modulePath);
             site.selector = compile(site.selector);
             Sites.push(site);
-            if(!listen) return;
+            if(process.env.NODE_ENV !== 'dev') return;
             var fullpath = path.join(dirname,file);
             fs.watch(fullpath,function(){
                 try{
@@ -71,17 +70,18 @@ function addRule(root,listen){
                 }
             });
         }catch(e){
-            console.log("warning:"+e);
+            console.log("warning:"+e)
         }
     }
-    fs.readdirSync(dirname).filter(file=>file!=='.DS_Store').forEach(add);
+    fs.readdirSync(dirname).filter(file=>file!=='.DS_Store').forEach(add)
+    if(process.env.NODE_ENV !== 'dev') return;
     fs.watch(dirname,function(event,file){
-        event === 'rename' && fs.existsSync(path.join(dirname,file)) && add(file);
+        event === 'rename' && fs.existsSync(path.join(dirname,file)) && add(file)
     });
 }
 
-addRule('default');
-addRule('plugins');
+addRule('default')
+addRule('plugins')
 
 module.exports = {
     search:function (url){
@@ -107,11 +107,11 @@ module.exports = {
         site.selector = compile(site.selector);
         Sites.push(site);
     },
-    alias:function (oldName,newName){
+    alias:function (newName,oldName){
         var site = this.search(oldName);
         if (site !== auto){
             site.match.push(URL.parse(newName).hostname);
         }
     },
     auto:auto
-};
+}
