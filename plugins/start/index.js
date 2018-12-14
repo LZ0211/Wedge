@@ -281,7 +281,7 @@ module.exports = function (){
                     }
                     next()
                 }
-                app.CMD('loadBookIndex',[
+                app.CMD('loadBook',[
                 SelectOptions,
                 next=>app.sendToDataBase(next),
                 next=>app.saveBook(next),

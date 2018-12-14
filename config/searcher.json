@@ -42,6 +42,11 @@
     "name": ".ireader.com"
   },
   {
+    "url": "http://ireader.com.cn/index.php",
+    "query": "ca=search.index&pca=channel.index&keyword=%title%",
+    "name": ".ireader.com"
+  },
+  {
     "url": "https://www.readnovel.com/search",
     "query": "kw=%title%",
     "name": ".readnovel.com"
