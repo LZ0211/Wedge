@@ -202,8 +202,11 @@ App.config.set('app.reTry.chapter',3);
 App.config.set('app.reTry.image',3);
 ```
 ###其他配置
+
 ####小说搜索引擎配置
+
 config/searcher.json
+
 以[若出中文网]为例
 ```Javascript
   {//%title%会被替换成书名
@@ -232,7 +235,9 @@ config/searcher.json
   }
 ```
 #### 全局替换器
+
 config/Filter.json
+
 ```Javascript
 {
     "chapterTitle":[
@@ -252,9 +257,13 @@ config/Filter.json
 }
 ```
 #### 线程控制器
+
 部分站点并发请求的时候为被识别为爬虫，导致IP锁定无法访问
+
 可在通过 App.config.set('thread.execute',1) 来限制全局的线程数
+
 亦可以通过如下的配置线程数来限制特定站点的请求频率
+
 config/threadLimit.json
 ```Javascript
 {
@@ -264,11 +273,17 @@ config/threadLimit.json
 }
 ```
 #### 元数据搜索排除规则
+
 当 book.searchmeta 配置为true的时候，每次新增小说的时候都会自动搜索元数据
+
 这一功能会获取正版来源的书籍数据，但是需要耗费一定的时间
+
 部分网站，如本身就是正版网站，不需要启用该功能的时候
+
 可以通过配置该规则来略过搜索来节约下载时间
+
 config/outclude.json
+
 ```Javascript
 [
   ".qidian.com",".qq.com", ".sogou.com",".zongheng.com",".17k.com",".jjwxc.net",".ireader.com",
