@@ -1,7 +1,7 @@
 {
   "name": "Wedge",
-  "version": "3.2.0",
-  "description": "An ebook downloader engine",
+  "version": "3.3.0",
+  "description": "An ebook downloader and generator engine",
   "main": "index.js",
   "bugs": {
     "url": "https://github.com/LZ0211/Wedge/issues"

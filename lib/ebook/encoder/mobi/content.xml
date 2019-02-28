@@ -1,0 +1,1 @@
+<div align="justify"><font face="Microsoft YaHei, SimSun, serif"><h3 align="center"><font size="5"><b>{{=book.title}}</b></font></h3><div align="justify">{{~book.content.split('\n'): line}}<p width="2em" align="justify">{{=line}}</p>{{~}}</div></font></div> <mbp:pagebreak/>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="zh" xml:lang="zh">
+<head>
+  <title>{{=book.meta.title}}</title>
+  <meta charset="UTF-8" />
+  <meta name="title" content="{{=book.meta.title}}"/>
+  <meta name="author" content="{{=book.meta.author}}"/>
+  <meta name="uuid" content="{{=book.meta.uuid}}"/>
+  <meta name="classes" content="{{=book.meta.classes}}"/>
+  <meta name="source" content="{{=book.meta.source}}"/>
+  <meta name="publisher" content="Wedge"/>
+  <style type="text/css">
+    nav#landmarks { display:none; }
+  </style>
+</head>
+<body>
+  <nav epub:type="landmarks" id="landmarks">
+    <h2>书签</h2>
+    <ol>
+      <li><a epub:type="bodymatter" href="coverpage.xhtml">封面</a></li>
+    </ol>
+  </nav>
+  <nav epub:type="toc" id="toc">
+    <h1>目录</h1>
+    <ol>
+      <li><a href="coverpage.xhtml">封面</a></li>{{~book.list: chapter:index}}
+      <li><a href="{{=chapter.id}}.xhtml">{{=chapter.title}}</a></li>{{~}}
+    </ol>
+  </nav>
+</body>
+</html>

@@ -264,7 +264,7 @@ class Wedge extends EventEmitter{
                 return options.success(data);
             }
             if (err){
-                this.debug(err.code,options.url);
+                this.debug(err.code,options.url,data);
                 if (connectTimes < maxConnectTimes) return req.end();
                 return options.error(err.code);
             }
@@ -482,7 +482,7 @@ class Wedge extends EventEmitter{
 
     getParsedData(data,url){
         var site = Sites.search(url);
-        //console.log(site)
+        this.debug(`use site rule of [${site.host}]`);
         var $ = Parser(data,url,site.charset);
         var cookies = querystring.parse(request.cookies.getCookie(url),'; ');
         $.getCookie = name=>(cookies[name]||'');
@@ -501,7 +501,7 @@ class Wedge extends EventEmitter{
             }
             return util.replace(v,rule[k]);
         });
-        return replace(map(rule,apply),site.replacer);
+        return replace(map(rule,apply),site.replacer || {});
     }
 
     getBookMeta(url,fn){
@@ -833,7 +833,7 @@ class Wedge extends EventEmitter{
         indexs.forEach(index=>{
             if (index.id in Ids) return;
             if (sourceUnique && index.url in Sources) return;
-            if (titleUnique && index.text in Titles) return;
+            if (index.text && titleUnique && index.text in Titles) return;
             Sources[index.url] = true;
             Ids[index.id] = true;
             Titles[index.text] = true;
@@ -1235,10 +1235,12 @@ class Wedge extends EventEmitter{
     }
 
     outportBook(dir){
-        var format = this.getConfig('ebook.formation');
-        this.config.set('ebook.formation','wbk');
-        this.end(()=>this.config.set('ebook.formation',format));
-        return this.ebook(dir);
+        var app = this.spawn();
+        app.config.set('ebook.activated',true);
+        app.config.set('ebook.formation','wbk');
+        app.end(this.end.bind(this));
+        process.nextTick(app.eBookCmd.bind(app,dir));
+        return this;
     }
 
     deleteBook(uuid){
@@ -1263,10 +1265,10 @@ class Wedge extends EventEmitter{
     }
 
     ebook(dir){
-        var activated = this.getConfig('ebook.activated');
-        this.config.set('ebook.activated',true);
-        this.end(()=>this.config.set('ebook.activated',activated));
-        process.nextTick(this.eBookCmd.bind(this,dir));
+        var app = this.spawn();
+        app.config.set('ebook.activated',true);
+        app.end(this.end.bind(this));
+        process.nextTick(app.eBookCmd.bind(app,dir));
         return this;
     }
 
@@ -1435,83 +1437,3 @@ Wedge.prototype.lib = {
 };
 
 module.exports = Wedge;
-
-util.encodeURI = function (str,charset){
-    if(charset === 'unicode') return str.split('').map(x=>'%u'+x.charCodeAt().toString(16).toUpperCase()).join('');
-    if(charset === 'base64') return Buffer.from(str).toString('base64');
-    if (!charset) return encodeURIComponent(str);
-    var buffer = decoder.encode(str,charset);
-    var code = '';
-    for (var i=0;i<buffer.length;i++){
-        code += '%';
-        code += buffer[i].toString(16).toUpperCase();
-    }
-    return code;
-};
-
-util.decodeURI = function (str,charset){
-    if (!charset) return decodeURIComponent(str);
-    if (charset === 'unicode') return str.split('%u').slice(1).map(x=>String.fromCharCode(parseInt(x,16))).join('');
-    if (charset === 'base64') return Buffer.from(str,'base64').toString();
-    var array = str.split('%').slice(1).map(x=>parseInt(x,16));
-    return decoder.decode(Buffer.from(array),charset);
-};
-
-util.encode = function(str,charset){
-    if(!charset) return Buffer.from(str);
-    if(charset === 'unicode') return str.split('').map(x=>'\\u'+x.charCodeAt().toString(16).toUpperCase()).join('');
-    if(charset === 'base64') return Buffer.from(str).toString('base64');
-    if(charset === 'html') return str.split('').map(x=>'&#'+x.charCodeAt().toString() + ';').join('');
-    return decoder.encode(str,charset);
-};
-
-util.decode = function(str,charset){
-    if(charset) return str.toString();
-    if(charset === 'unicode') return str.split('\\u').slice(1).map(x=>String.fromCharCode(parseInt(x,16))).join('');
-    if(charset === 'base64') return Buffer.from(str,'base64').toString();
-    if(charset === 'html') return str.replace(/&#(x)?([^&]{1,5});?/ig,function($, $1, $2){
-        return String.fromCharCode(parseInt($2, $1 ? 16 : 10));
-    });
-    return decoder.decode(str,charset);
-};
-
-util.formatLink = function (link){
-    if (typeof link === "string"){
-        return {url:link.trim()};
-    }
-    link.url = (link.href || link.url || link.src || link.source || "").trim();
-    link.method = (link.method || "GET").toUpperCase();
-    return link;
-};
-
-util.parseInteger = function (str,defaut){
-    if(str == Infinity || str == -Infinity) return Infinity;
-    var times = parseInt(str);
-    if(!isNaN(times)) return times;
-    return defaut;
-};
-
-util.validURL = function (url){
-    var links;
-    if(typeof url === 'string'){
-        if (!url || !url.match('http')) return [];
-        links = url.split('|')
-            .filter(x=>x)
-            .map(link=>{
-                try{
-                    return JSON.parse(link);
-                }catch (e){
-                    return link;
-                }
-            })
-            .map(util.formatLink)
-            .filter(link=>link.url && link.url.indexOf("#")!==0 && !~link.url.indexOf("javascript:"));
-        if (links.length) return links;
-    }else if(Array.isArray(url)){
-        links = url.map(util.formatLink).filter(link=>link.url && link.url.indexOf("#")!==0 && !~link.url.indexOf("javascript:"));
-        if (links.length) return links;
-    }else if (typeof url == 'object'){
-        return [util.formatLink(url)];
-    }
-    return [];
-};

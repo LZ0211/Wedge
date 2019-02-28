@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package version="3.0" xmlns="http://www.idpf.org/2007/opf" prefix="rendition: http://www.idpf.org/vocab/rendition/#" unique-identifier="uid">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <meta name="cover" content="cover-image"/>
+    <meta name="asin" content=">{{=book.meta.uuid}}"/>
+    <meta property="dcterms:modified">{{=(new Date()).formation('yyyy-MM-ddThh:mm:ssZ')}}</meta>
+    <dc:subject>{{=book.meta.classes}}</dc:subject>
+    <dc:identifier id="uid">{{=book.meta.uuid}}</dc:identifier>
+    <dc:language>zh</dc:language>
+    <dc:title>{{=book.meta.title}}</dc:title>
+    <dc:date>{{=(new Date(book.meta.date)).formation('yyyy-MM-ddThh:mm:ss')}}</dc:date>
+    <dc:creator>{{=book.meta.author}}</dc:creator>
+    <dc:source>{{=book.meta.source}}</dc:source>
+    <dc:publisher>Wedge</dc:publisher>
+    <dc:description>{{=book.meta.brief}}</dc:description>
+  </metadata>
+  <manifest>
+    <item href="coverpage.xhtml" id="coverpage" media-type="application/xhtml+xml"/>{{~book.list: chapter}}
+    <item href="{{=chapter.id}}.xhtml" id="Chapter_{{=chapter.id}}" media-type="application/xhtml+xml"/>{{~}}
+    <item href="css/style.css" id="main-css" media-type="text/css"/>
+    <item href="images/cover.jpg" id="cover-image" media-type="image/jpeg" properties="cover-image"/>
+    <item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>
+    <item href="nav.xhtml" id="nav" media-type="application/xhtml+xml" properties="nav"/>
+  </manifest>
+  <spine toc="ncx">
+    <itemref idref="coverpage" linear="yes"/>{{~book.list: chapter}}
+    <itemref idref="Chapter_{{=chapter.id}}" linear="yes"/>{{~}}
+  </spine>
+  <guide>
+    <reference href="coverpage.xhtml" title="封面" type="text"/>{{~book.list: chapter}}
+    <reference href="{{=chapter.id}}.xhtml" title="{{=chapter.title}}" type="text"/>{{~}}
+  </guide>
+</package>

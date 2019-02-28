@@ -81,12 +81,17 @@ module.exports = function (){
     function showDatabase(items){
         var keys = app.config.get('database.showkeys') || ['uuid','title','author','classes','isend','date'];
         items = items.map(item=>{
-            item.date = formatTime(item.date);
-            item.isend = ''+item.isend;
-            item.brief = item.brief.replace(/\s/g,' ');
             var newItem = {};
             keys.forEach(key=>{
-                newItem[key] = item[key];
+                if(key === 'date'){
+                    newItem.date = formatTime(item.date);
+                }else if(key === 'isend'){
+                    newItem.isend = ''+item.isend;
+                }else if(key === 'brief'){
+                    newItem.brief = item.brief.replace(/\s/g,' ');
+                }else{
+                    newItem[key] = item[key];
+                }
             });
             return newItem;
         });
@@ -104,7 +109,7 @@ module.exports = function (){
 
     function showDatabaseOptions(items){
         if(items.length === 0){
-            console.log('数据库中未检索到相关书籍');
+            console.log('未检索到相关书籍');
             return refresh();
         }
         function output(key){
@@ -436,7 +441,10 @@ module.exports = function (){
         },{
             text:'测试规则',
             func:[['请输入网址：'],url=>app.testRuleCmd(url)]
-        },exit
+        },exit,{
+            text:'一键更新',
+            func:[[],()=>app.updateBooks(app.database.query('isend=0').map(item=>item.uuid)).end(process.exit.bind(process))]
+        }
     ]
     
     function Select(options){
