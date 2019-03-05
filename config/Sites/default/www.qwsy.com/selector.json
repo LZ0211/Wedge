@@ -1,0 +1,35 @@
+{
+  "infoPage": {
+    "match": "/zuopin/i.test($.location())",
+    "indexPage": "$.location().replace('zuopin','mulu')",
+    "footer": "$('.toolbar').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.title_h1').text()",
+      "author": "$('.title_h2').text()",
+      "classes": "$('span:contains(分类)').find('a').text()",
+      "isend": "$('li:contains(连载进度)').text()",
+      "cover": "$.location($('.borgrey > img').attr('src'))",
+      "brief": "$('#div_jj2').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/mulu/i.test($.location())",
+    "infoPage": "$.location().replace('mulu','zuopin')",
+    "footer": "$('.mulu_tab').length",
+    "filter": "$('.td_con:contains(VIP)').remove()",
+    "bookIndexs": "$('.td_con a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/read.aspx\\?cid=/i.test($.location())",
+    "footer": "true",
+    "request": {
+      "url": "$('#readContentJS').attr('src')",
+      "headers":{
+        "Accept-Encoding": "",
+        "Accept": "'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'"
+      },
+      "success": "data=>data.toString().replace(/<font[^<]*?<\\/font>/gi,'').replace('document.write(\"','').replace('\");','')"
+    }
+  }
+}

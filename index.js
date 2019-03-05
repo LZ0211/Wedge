@@ -60,7 +60,7 @@ class Wedge extends EventEmitter{
     }
 
     initLog(){
-        var appLog = this.getConfig('app.log');
+        let appLog = this.getConfig('app.log');
         if(typeof appLog === 'string'){
             this.log = new Log(appLog);
         }else{
@@ -73,9 +73,7 @@ class Wedge extends EventEmitter{
         }
 
         if(this.getConfig('app.debug')){
-            this.debug = function(...msg){
-                this.log(`[${this.label}]:${msg.join(' ')}`);
-            };
+            this.debug = (...msg)=>this.log(`[${this.label}]:${msg.join(' ')}`);
         }else{
             this.debug = this.noop;
         }
@@ -103,11 +101,8 @@ class Wedge extends EventEmitter{
         //importBookRecordCmd
         this.importBookRecordCmd = this.CMD('loadBook > sendToDataBase > end');
 
-        //getIndexs
-        this.getIndexOnlyCmd = this.CMD('getBookMeta > getBookCover > updateBookMeta > createBook > checkBookCover > getBookIndexs > saveIndexsOnly > saveBook > sendToDataBase > end');
-
         //testRuleCmd
-        this.testRuleCmd = this.CMD('getBookMeta > getBookIndexs > intercept > getChapterContent > mergeChapterContent > log > end');
+        this.testRuleCmd = this.CMD('getBookMeta > logBookInfo > updateBookMeta > logBookInfo > getBookIndexs > intercept > getChapterContent > mergeChapterContent > log > end');
 
         return this;
     }
@@ -135,7 +130,7 @@ class Wedge extends EventEmitter{
     }
 
     spawn(){
-        var setting = this.config.valueOf();
+        let setting = this.config.valueOf();
         function Fork(){
             EventEmitter.call(this);
             this.config = new Hash();
@@ -150,35 +145,35 @@ class Wedge extends EventEmitter{
     }
 
     prompt(docs,fn){
-        var rl = readline.createInterface({
+        let rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout
         });
-        var args = [];
-        var len = Math.max(docs.length,fn.length);
-        var ref = 0;
-        if (len === 0){
-            rl.close();
-            return fn.apply(null,args);
-        }
-        function listen(){
-            rl.question(docs[ref],function(input){
+        let args = [];
+        let len = Math.max(docs.length,fn.length);
+        let ref = 0;
+        let listen = ()=>{
+            rl.question(docs[ref],input=>{
                 args.push(input.trim());
                 ref += 1;
                 if(ref === len){
                     rl.close();
-                    return fn.apply(null,args);
+                    return fn(...args);
                 }else{
                     return listen();
                 }
             });
+        }
+        if (len === 0){
+            rl.close();
+            return fn(...args);
         }
         listen();
         return this;
     }
 
     end(){
-        var fn = arguments[0];
+        let fn = arguments[0];
         if (undefined == fn){
             this.debug('end...');
             this.emit('end');
@@ -204,9 +199,15 @@ class Wedge extends EventEmitter{
     }
 
     intercept(infos,fn){
-        this.log(this.book.meta);
-        this.log(infos);
+        console.log(infos);
         fn(Random.select(infos));
+    }
+
+    logBookInfo(fn){
+        fn = this.next(fn);
+        console.log(this.book.meta);
+        console.log(this.book.list);
+        return fn();
     }
 
     request(url,options){
@@ -217,8 +218,8 @@ class Wedge extends EventEmitter{
         options = options || {};
         options.url = url || options.url || options.href || options.src;
         options.method = options.method || options.type || 'GET';
-        options.timeout = this.getConfig('request.timeout') || 15000;
-        options.reconnect = this.getConfig('request.reconnect') || 3;
+        options.timeout = util.parseInteger(this.getConfig('request.timeout'), 15000);
+        options.reconnect = util.parseInteger(this.getConfig('request.reconnect'), 3);
         options.proxy = this.getConfig('request.proxy');
         options.proxyAuth = this.getConfig('request.proxyAuth');
         options.cookie = options.cookie || this.getConfig('request.cookie');
@@ -226,8 +227,8 @@ class Wedge extends EventEmitter{
         options.success = options.success || this.noop;
         options.error = options.error || this.noop;
 
-        var pac = this.getConfig('request.proxyAutoConfig');
-        var proxyMatched = false;
+        let pac = this.getConfig('request.proxyAutoConfig');
+        let proxyMatched = false;
         if('string' === typeof pac){
             proxyMatched = (new RegExp(pac,'gi')).test(options.url);
         }else if('function' === typeof pac){
@@ -237,13 +238,12 @@ class Wedge extends EventEmitter{
         }
 
         if (options.method === 'GET'){
-            var data = this.cache.get(options.url);
+            let data = this.cache.get(options.url);
             if (data) return options.success(data);
         }
 
-        var req = new request.Request(options.url, options.method);
+        let req = new request.Request(options.url, options.method);
         options.timeout && req.timeout(options.timeout);
-        options.reconnect && req.reconnect(options.reconnect);
         options.proxy && proxyMatched && req.proxy(options.proxy);
         options.proxyAuth && req.proxyAuth(options.proxyAuth);
         options.dataType && req.accept(options.dataType);
@@ -252,21 +252,32 @@ class Wedge extends EventEmitter{
         options.headers && req.setHeader(options.headers);
         options.cookie && req.cookie(options.cookie);
 
-        var connectTimes = 0;
-        var maxConnectTimes = options.reconnect;
+        let connectTimes = 0;
+        let maxConnectTimes = options.reconnect;
 
         req.end((err,res,data)=>{
             connectTimes += 1;
-            if (res && /^20.$/.test(res.statusCode) && data){
+            if (!err && res && /^20.$/.test(res.statusCode) && data){
                 if (options.method === 'GET'){
                     this.cache.set(options.url,data);
                 }
                 return options.success(data);
             }
             if (err){
-                this.debug(err.code,options.url,data);
+                if(err.code === 'Z_DATA_ERROR'){
+                    req.setHeader('Accept-Encoding','');
+                    return req.end();
+                }
+                this.debug(err.code,options.url);
                 if (connectTimes < maxConnectTimes) return req.end();
-                return options.error(err.code);
+                let autoProxy = this.getConfig('app.autoProxy');
+                if(autoProxy && options.proxy && !proxyMatched){
+                    proxyMatched = true;
+                    req.proxy(autoProxy);
+                    return req.end();
+                }else{
+                    return options.error(err.code);
+                }
             }
             this.debug(res.statusCode,options.url);
             return options.error(res.statusCode);
@@ -274,24 +285,24 @@ class Wedge extends EventEmitter{
     }
 
     pipeLine(line){
-        var compile = name=>{
+        let compile = name=>{
             name = name.trim();
-            var protoFun = this[name];
+            let protoFun = this[name];
             if (!protoFun) return this.error(`no Function named ${name}`);
-            var argsLength = protoFun.length;
+            let argsLength = protoFun.length;
             if(argsLength == 0) return protoFun.bind(this);
-            var define = [];
+            let define = [];
             if (argsLength){
-                define = Random.sample('abcdefghijklmnopqrstuvwxyz',argsLength);
+                define = Random.sample('_abcdefghijklmnopqrstuvwxyz',argsLength);
             }
             define.push(`this.${name}(${define.join(',')})`);
-            return Function.apply(null,define).bind(this);
+            return Function(...define).bind(this);
         };
         return line.split(' > ').map(compile);
     }
 
     CMD(line,funArr,args){
-        var func = Thread.series(this.pipeLine(line).concat(funArr||[]));
+        let func = Thread.series(this.pipeLine(line).concat(funArr||[]));
         if (!args) return func;
         return func.call(this,args);
     }
@@ -299,39 +310,39 @@ class Wedge extends EventEmitter{
     searchInSite(title,site,fn){
         fn = this.next(fn);
         if(!site || !site.url) return fn();
-        var links = [];
-        var push = link=>links.push(link);
-        var url = site.url
+        let links = [];
+        let push = link=>links.push(link);
+        let url = site.url
             .replace('%title%',util.encodeURI(title,site.charset))
             .replace('%time%',+new Date())
             .replace('%random%',Math.random());
-        var query = (site.query || '')
+        let query = (site.query || '')
             .replace('%title%',util.encodeURI(title,site.charset))
             .replace('%time%',+new Date())
             .replace('%random%',Math.random());
-        var method = (site.method || 'GET').toUpperCase();
-        var data = site.data && site.data.replace('%title%',title);
-        var filterFn = link=>~link[0].indexOf(site.name);
-        var success = data=>{
+        let method = (site.method || 'GET').toUpperCase();
+        let data = site.data && site.data.replace('%title%',title);
+        let filterFn = link=>~link[0].indexOf(site.name);
+        let success = data=>{
             if(site.parse){
-                var parser = new Function('json','try{return (' + site.parse + ')}catch(e){return []}');
+                let parser = new Function('json','try{return (' + site.parse + ')}catch(e){return []}');
                 parser(data).forEach(push);
             }else {
-                var $ = Parser(data,url);
-                var selector = site.selector || ':header a,img a';
+                let $ = Parser(data,url);
+                let selector = site.selector || ':header a,img a';
                 $(selector).filter((i,v)=>~$(v).text().indexOf(title)).each((i,v)=>links.push([
                     $.location($(v).attr('href')),
                     util.replace($(v).text(),site.replace).trim()
                 ]));
             }
             if(site.engine){
-                var _links = [];
+                let _links = [];
                 return Thread().queue(links).use((link,next)=>{
                     this.request({
                         url:link[0]+'&wd=',
                         headers:{referer:link[0]+'&wd='},
                         success:data=>{
-                            var found = data.toString().match(new RegExp(`(${site.filter})`));
+                            let found = data.toString().match(new RegExp(`(${site.filter})`));
                             if(!found) return next();
                             link[0] = found[1];
                             _links.push(link);
@@ -346,7 +357,7 @@ class Wedge extends EventEmitter{
             }
             return fn(links.filter(filterFn));
         };
-        var options = {
+        let options = {
             url:url+'?'+query,
             method:method,
             data:data && util.encode(data,site.charset),
@@ -361,7 +372,7 @@ class Wedge extends EventEmitter{
             };
         }
         if(site.headers){
-            for(var name in site.headers){
+            for(let name in site.headers){
                 if('string' == typeof site.headers[name]){
                     site.headers[name] = site.headers[name].replace('%title%',util.encodeURI(title,site.charset)).replace('%time%',+new Date()).replace('%random%',Math.random());
                 }
@@ -373,10 +384,10 @@ class Wedge extends EventEmitter{
 
     fuzzysearchBook(title,fn){
         fn = this.next(fn);
-        var links = [];
-        var push = link=>links.push(link);
-        var endSearch = ()=>fn(links);
-        var search = (site,next)=>{
+        let links = [];
+        let push = link=>links.push(link);
+        let endSearch = ()=>fn(links);
+        let search = (site,next)=>{
             this.searchInSite(title,site,list=>{
                 list.forEach(push);
                 return next();
@@ -396,19 +407,19 @@ class Wedge extends EventEmitter{
     searchBook(title,fn){
         fn = this.next(fn);
         title = title.replace(/[:：？\?,；，,.。!！_—\-]/g,'');
-        var filterFun = links=>fn(links.filter(link=>link[1] == title));
+        let filterFun = links=>fn(links.filter(link=>link[1] == title));
         this.fuzzysearchBook(title,filterFun);
         return this;
     }
 
     importBook(book,fn){
         fn = this.next(fn);
-        var app = this.spawn();
-        var uuid = book.meta.uuid;
+        let app = this.spawn();
+        let uuid = book.meta.uuid;
         app.bookdir = Path.resolve(uuid);
         fs.mkdirsSync(app.bookdir);
         app.loadBook(app.bookdir,()=>{
-            var old = app.book.meta;
+            let old = app.book.meta;
             if(old.uuid == uuid && !this.getConfig('book.changesource')) return fn();
             this.debug('importBook');
             app.book.emptyList();
@@ -431,7 +442,7 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         try{
             this.debug('importing WBK');
-            var buf = fs.readFileSync(filename);
+            let buf = fs.readFileSync(filename);
             ebook.unwbk(buf,book=>this.importBook(book,fn));
         }catch(e){
             return fn();
@@ -440,11 +451,11 @@ class Wedge extends EventEmitter{
 
     aliasBook(fn){
         fn = this.next(fn);
-        var aliasList = this.getConfig('book.alias');
+        let aliasList = this.getConfig('book.alias');
         if(!aliasList) return fn();
-        var source = this.book.getMeta('source');
-        for(var site in aliasList){
-            var newsite = aliasList[site];
+        let source = this.book.getMeta('source');
+        for(let site in aliasList){
+            let newsite = aliasList[site];
             if(source.indexOf(site) >= 0){
                 source = source.replace(site,newsite);
                 this.book.setMeta('source',source);
@@ -481,19 +492,19 @@ class Wedge extends EventEmitter{
     }
 
     getParsedData(data,url){
-        var site = Sites.search(url);
-        this.debug(`use site rule of [${site.host}]`);
-        var $ = Parser(data,url,site.charset);
-        var cookies = querystring.parse(request.cookies.getCookie(url),'; ');
+        let site = Sites.search(url);
+        //this.debug(`use site rule of [${site.host}]`);
+        let $ = Parser(data,url,site.charset);
+        let cookies = querystring.parse(request.cookies.getCookie(url),'; ');
         $.getCookie = name=>(cookies[name]||'');
         $.encode = util.encode;
         $.decode = util.decode;
         $.replace = util.replace;
-        var filter = util.object.filter;
-        var map = util.object.map;
-        var rule = filter(site.selector,(k,v)=>v.match($) && (v.footer($) || /<\/html>/i.test($.raw)));
-        var apply = (k,v)=>(util.is.isFunction(v) ? v($) : map(v,apply));
-        var replace = (data,rule)=>map(data,(k,v)=>{
+        let filter = util.object.filter;
+        let map = util.object.map;
+        let rule = filter(site.selector,(k,v)=>v.match($) && (v.footer($) || /<\/html>/i.test($.raw)));
+        let apply = (k,v)=>(util.is.isFunction(v) ? v($) : map(v,apply));
+        let replace = (data,rule)=>map(data,(k,v)=>{
             if(!rule[k]) return v;
             if(util.is.isObject(v)){
                 if(util.is.isObject(rule[k])) return replace(v,rule[k]);
@@ -506,22 +517,22 @@ class Wedge extends EventEmitter{
 
     getBookMeta(url,fn){
         fn = this.next(fn);
-        var links = util.validURL(url);
+        let links = util.validURL(url);
         if (!links) return this.error('Invalid url...'+links);
         this.debug('getBookMeta');
-        var link = links[0];
-        var times = util.parseInteger(this.getConfig('app.retry.meta'),3);
-        var indexUrl = null;
-        var setMeta = infos=>{
+        let link = links[0];
+        let times = util.parseInteger(this.getConfig('app.retry.meta'),3);
+        let indexUrl = null;
+        let setMeta = infos=>{
             this.book.setMeta(infos);
             this.book.setMeta('source',links.length > 1 ? links : indexUrl);
             this.book.setMeta('origin',link);
             return fn();
         };
-        var requestInfo = options=>{
-            var success = (options.success || (data=>data)).bind(options);
+        let requestInfo = options=>{
+            let success = (options.success || (data=>data)).bind(options);
             options.success = data=>{
-                var result = success(data);
+                let result = success(data);
                 if (!result) return;
                 if(result.url && result.success){
                     result.request = result;
@@ -544,10 +555,10 @@ class Wedge extends EventEmitter{
             return this.request(options);
         };
         link.success = data=>{
-            var parsedData = this.getParsedData(data,link.url);
+            let parsedData = this.getParsedData(data,link.url);
             //console.log(parsedData)
-            var infoPage = parsedData.infoPage;
-            var indexPage = parsedData.indexPage;
+            let infoPage = parsedData.infoPage;
+            let indexPage = parsedData.indexPage;
             if (infoPage){
                 indexUrl = infoPage.indexPage;
                 return infoPage;  
@@ -568,23 +579,23 @@ class Wedge extends EventEmitter{
     updateBookMeta(fn){
         fn = this.next(fn);
         if (!this.getConfig('book.searchmeta')) return fn();
-        var title = this.book.getMeta('title');
-        var origin = this.book.getMeta('origin');
-        var author = this.book.getMeta('author');
+        let title = this.book.getMeta('title');
+        let origin = this.book.getMeta('origin');
+        let author = this.book.getMeta('author');
         if(!title) return this.end();
         this.debug('updateBookMeta');
-        function similar(s1,s2){
-            var reFilter = /[:：？\?,；，,.。!！_—\-]/g;
+        let similar = (s1,s2)=>{
+            let reFilter = /[:：？\?,；，,.。!！_—\-]/g;
             s1 = s1.replace(reFilter,'');
             s2 = s2.replace(reFilter,'');
             if (~s1.indexOf(s2)) return true;
             if (~s2.indexOf(s1)) return true;
             return false;
         }
-        var app = this.spawn();
-        var update = ()=>{
-            var meta = app.book.meta;
-            for (var x in meta){
+        let app = this.spawn();
+        let update = ()=>{
+            let meta = app.book.meta;
+            for (let x in meta){
                 if (meta[x] === '') return app.end();
             }
             if (!similar(meta.title,title)) return app.end();
@@ -599,7 +610,7 @@ class Wedge extends EventEmitter{
             app.getBookMeta(origin,update);
             return this;
         }
-        var search = (site,next)=>{
+        let search = (site,next)=>{
             this.searchInSite(title,site,list=>{
                 Thread()
                 .use((link,nextFn)=>{
@@ -626,13 +637,12 @@ class Wedge extends EventEmitter{
 
     getBookCover(fn){
         fn = this.next(fn);
-        var coverSrc = this.book.getMeta('cover');
-        var coverDir = Path.join(Path.resolve(this.book.getMeta('uuid')),'cover.jpg');
+        let coverSrc = this.book.getMeta('cover');
+        let coverDir = Path.join(Path.resolve(this.book.getMeta('uuid')),'cover.jpg');
         if (!/^http/i.test(coverSrc)) return fn();
         this.debug('getBookCover');
-        var times = parseInt(this.getConfig('app.retry.cover'));
-        times = isNaN(times) ? 3 : times;
-        var link = util.formatLink(coverSrc);
+        let times = util.parseInteger(this.getConfig('app.retry.cover'),3);
+        let link = util.formatLink(coverSrc);
         link.contentType = 'image';
         link.success = data=>{
             this.book.setMeta('cover',data);
@@ -641,7 +651,7 @@ class Wedge extends EventEmitter{
         };
         link.error = ()=>{
             if (--times <= 0){
-                var data = this.cache.get(coverDir);
+                let data = this.cache.get(coverDir);
                 if(!data) return fn();
                 this.book.setMeta('cover',data);
                 fs.writeFile(coverDir,data,fn);
@@ -657,15 +667,15 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         if (!this.bookdir) return this.end();
         this.debug('checkBookCover');
-        var coverSrc = this.book.getMeta('cover');
-        var coverDir = Path.join(this.bookdir,'cover.jpg');
+        let coverSrc = this.book.getMeta('cover');
+        let coverDir = Path.join(this.bookdir,'cover.jpg');
         fs.readFile(coverDir,(err,data)=>{
             if(err){
                 if(!coverSrc) return fn();
                 if (/^http/i.test(coverSrc)) return this.getBookCover(fn);
                 fs.writeFile(coverDir,Buffer.from(coverSrc,'base64'),fn);
             }else{
-                var imgBuf = data.toString('base64');
+                let imgBuf = data.toString('base64');
                 if (coverSrc.substr(0,100) !== imgBuf.substr(0,100)){
                   this.book.setMeta('cover',data);
                 }
@@ -676,16 +686,16 @@ class Wedge extends EventEmitter{
 
     createBook(fn){
         fn = this.next(fn);
-        var thisMeta = this.book.meta;
+        let thisMeta = this.book.meta;
         if(this.getConfig('database.check')){
-            var record = this.database.query(`uuid=${thisMeta.uuid}`)[0];
+            let record = this.database.query(`uuid=${thisMeta.uuid}`)[0];
             if(record && record.source === thisMeta.source) return this.end();
         }
         this.debug('createBook');
         this.bookdir = Path.resolve(thisMeta.uuid);
         fs.mkdirsSync(this.bookdir);
         this.loadBook(this.bookdir,()=>{
-            var newURL = this.book.getMeta('source');
+            let newURL = this.book.getMeta('source');
             if (thisMeta.source == newURL){
                 this.book.setMeta(thisMeta);
                 return fn();
@@ -718,18 +728,18 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         link = util.formatLink(link);
         //console.log(link)
-        var times = util.parseInteger(this.getConfig('app.retry.index'),3);
-        var setIndex = bookIndex=>{
+        let times = util.parseInteger(this.getConfig('app.retry.index'),3);
+        let setIndex = bookIndex=>{
             if(Array.isArray(bookIndex)){
                 fn(bookIndex);
             }else {
                 fn([]);
             }
         };
-        var requestIndex = options=>{
-            var success = (options.success || (data=>data)).bind(options);
+        let requestIndex = options=>{
+            let success = (options.success || (data=>data)).bind(options);
             options.success = data=>{
-                var result = success(data);
+                let result = success(data);
                 if(!result) return setIndex();
                 if(result.url && result.success){
                     result.request = result;
@@ -743,18 +753,18 @@ class Wedge extends EventEmitter{
                 }
                 if(!result.request && !result.bookIndexs) return setIndex(result);
                 if(result.nextPage){
-                    var nextPage = result.nextPage;
+                    let nextPage = result.nextPage;
                     if(nextPage && typeof nextPage === 'string' && nextPage !== link.url){
                         nextPage = URL.resolve(link.url,nextPage);
                         return this.getBookIndex(nextPage,indexs=>{
-                            var bookIndexs = Array.isArray(result.bookIndexs) ? result.bookIndexs : [];
+                            let bookIndexs = Array.isArray(result.bookIndexs) ? result.bookIndexs : [];
                             setIndex(bookIndexs.concat(indexs));
                         });
                     }
                     if(nextPage && typeof nextPage === 'object' && nextPage.url && nextPage.url !== link.url){
                         nextPage.url = URL.resolve(link.url,nextPage.url);
                         return this.getBookIndex(nextPage,indexs=>{
-                            var bookIndexs = Array.isArray(result.bookIndexs) ? result.bookIndexs : [];
+                            let bookIndexs = Array.isArray(result.bookIndexs) ? result.bookIndexs : [];
                             setIndex(bookIndexs.concat(indexs));
                         });
                     }
@@ -777,15 +787,15 @@ class Wedge extends EventEmitter{
     getBookIndexs(fn){
         fn = this.next(fn);
         this.debug('getBookIndexs');
-        var source = this.book.getMeta('source'),
+        let source = this.book.getMeta('source'),
             links = util.validURL(source),
             indexs = [],
             push = item=>indexs.push(item);
         if(links.length === 0) return this.end();
         if(links.length === 1) return this.getBookIndex(links[0],items=>fn(this.filterBookIndex(items)));
-        var app = this.spawn();
+        let app = this.spawn();
         app.end(()=>{
-            var _links = util.validURL(app.book.getMeta('source'));
+            let _links = util.validURL(app.book.getMeta('source'));
             if(_links.length > links.length){
                 links = _links;
             }
@@ -807,7 +817,7 @@ class Wedge extends EventEmitter{
 
     filterBookIndex(indexs){
         if (!Array.isArray(indexs)) return [];
-        var uuid = this.book.getMeta('uuid'),
+        let uuid = this.book.getMeta('uuid'),
             Ids = this.cache.get(uuid+'_Ids') || this.book.hashBy('id') || {},
             Sources = this.cache.get(uuid+'_Sources') || this.book.hashBy('source') || {},
             Titles = this.cache.get(uuid+'_Titles') || this.book.hashBy('title') || {},
@@ -819,7 +829,7 @@ class Wedge extends EventEmitter{
         indexs = indexs.map(util.formatLink);
         //过滤无效链接
         indexs = indexs.filter(index=>{
-            var url = index.url;
+            let url = index.url;
             if (!url) return false;//过滤空链接
             if (url.indexOf('javascript:') == 0) return false;//过滤脚本
             if (url.indexOf('#') == 0) return false;//过滤锚点
@@ -856,11 +866,12 @@ class Wedge extends EventEmitter{
 
     getChapterContent(link,fn){
         fn = this.next(fn);
+        if(!link) return fn();
         this.debug('getChapterContent');
-        var times = util.parseInteger(this.getConfig('app.retry.chapter'),3);
+        let times = util.parseInteger(this.getConfig('app.retry.chapter'),3);
         link = util.formatLink(link);
         if (!link) return fn(null);
-        var setContent = chapter=>{
+        let setContent = chapter=>{
             if(!chapter) return fn(null);
             if(Buffer.isBuffer(chapter)){
                 chapter = decoder.decode(chapter,'gbk');
@@ -875,11 +886,15 @@ class Wedge extends EventEmitter{
             chapter.content = chapter.content || '';
             return fn(chapter);
         };
-        var requestContent = options=>{
+        if(!this.getConfig('book.localization') && !this.getConfig('book.imagelocalization')){
+            setContent({title:link.text,source:link.url,id:link.id,content:''});
+            return this;
+        }
+        let requestContent = options=>{
             //console.log(options)
-            var success = (options.success || (data=>data)).bind(options);
+            let success = (options.success || (data=>data)).bind(options);
             options.success = data=>{
-                var result = success(data);
+                let result = success(data);
                 if (!result) return setContent();
                 if(result.url && result.success){
                     result.request = result;
@@ -909,8 +924,8 @@ class Wedge extends EventEmitter{
     mergeChapterContent(chapter,fn){
         fn = this.next(fn);
         if (!chapter) return fn(null);
-        var links;
-        var mergeContentCMD = [
+        let links;
+        let mergeContentCMD = [
             this.getChapterContent.bind(this),
             this.mergeChapterContent.bind(this),
             (nextChapter,next)=>{
@@ -967,13 +982,14 @@ class Wedge extends EventEmitter{
             hash = {},
             imageExts = this.getConfig('book.imageExts') || ['.jpg','.png','.gif','.png','.tif','.webp','.bmp','.tga','.jpeg','.ppm','.pgm','.pbm','.pcx','.jpm','.jng','.ico'],
             imgExts = new RegExp(`^(${imageExts.join('|')})$`,'i'),
+            minImgSize = util.parseInteger(this.getConfig('book.imageMinSize'),0),
             isImgFile = ext=>imgExts.test(ext),
             hasImgFile = img=>hash[img.name],
             repImg = img=>$imgs.eq(img.index).replaceWith('<img src="'+img.src+'" />'),
             getImgFile = (img,then)=>{
-                let times = parseInt(this.getConfig('app.retry.image'));
-                times = isNaN(times) ? 3 : times;
+                let times = util.parseInteger(this.getConfig('app.retry.image'),3);
                 img.success = data=>{
+                    if(minImgSize > data.length || !util.is.isImage(data)) return then();
                     fs.writeFile(img.file,data,then);
                     repImg(img);
                     isEmpty = false;
@@ -988,7 +1004,7 @@ class Wedge extends EventEmitter{
             },
             final = ()=>{
                 isEmpty && fs.rmdirsSync(imgFolder);
-                if (!successAll) return fn(null);
+                if (!successAll && !this.getConfig('app.retry.image')) return fn(null);
                 chapter.content = $.html();
                 return fn(chapter);
             };
@@ -1030,12 +1046,12 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         if (!chapter)return fn(null);
         if (!this.getConfig('book.deepdownload')) return fn(chapter);
-        var maxDepth = this.getConfig('book.maxDepth') || Infinity;
-        var deepnow = chapter.deep;
+        let maxDepth = this.getConfig('book.maxDepth') || Infinity;
+        let deepnow = chapter.deep;
         if (deepnow >= maxDepth) return fn(chapter);
         deepnow += 1;
-        var $ = Parser(chapter.content,chapter.source);
-        var links = $('a').map((i,v)=>({
+        let $ = Parser(chapter.content,chapter.source);
+        let links = $('a').map((i,v)=>({
             url:$.location($(v).attr('href')),
             text:$(v).text().trim(),
             deep:deepnow,
@@ -1054,10 +1070,10 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         if (!chapter)return fn(null);
         if (!this.getConfig('book.nextChapter')) return fn(chapter);
-        var nextChapter = chapter.nextChapter;
+        let nextChapter = chapter.nextChapter;
         if (!nextChapter) return fn(chapter);
         nextChapter.id = classes.Id(nextChapter.id || nextChapter.href || nextChapter.url);
-        var nextChapters = this.filterBookIndex([nextChapter]);
+        let nextChapters = this.filterBookIndex([nextChapter]);
         if(nextChapters.length){
             this.chapterThread.queue(nextChapters);
         }
@@ -1066,12 +1082,13 @@ class Wedge extends EventEmitter{
 
     saveChapter(chapter,fn){
         fn = this.next(fn);
+        let localization = this.getConfig('book.localization');
         if (!chapter) return fn(null);
-        if (!chapter.content) return fn(chapter);
+        if (!chapter.content && localization) return fn(chapter);
         this.debug('saveChapter');
         chapter.date = +new Date;
         this.book.pushList(chapter);
-        if (!this.getConfig("book.localization")) return fn(chapter);
+        if (!localization) return fn(chapter);
         this.book.pushChapter(chapter,fn);
         return this;
     }
@@ -1094,8 +1111,8 @@ class Wedge extends EventEmitter{
     getChapters(links,fn){
         fn = this.next(fn);
         if(links.length === 0) return fn();
-        var source = this.book.getMeta('source');
-        var threads = threadLimit[URL.parse(source).hostname];
+        let source = this.book.getMeta('source');
+        let threads = threadLimit[URL.parse(source).hostname];
         this.debug('getChapters');
         this.chapterThread = Thread()
         .use(this.getChapter.bind(this))
@@ -1109,41 +1126,12 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    saveIndexOnly(link,fn){
-        fn = this.next(fn);
-        if (!link) return fn(null);
-        this.debug('saveIndexOnly');
-        this.book.pushList({
-            id: link.id,
-            source: link.url,
-            title: link.text,
-            date: +new Date
-        });
-        fn(link);
-        return this;
-    }
-
-    saveIndexsOnly(links,fn){
-        fn = this.next(fn);
-        this.debug('saveIndexsOnly');
-        Thread()
-        .use(this.saveIndexOnly.bind(this))
-        .end(fn)
-        .queue(links)
-        .log(this.debug.bind(this))
-        .interval(this.getConfig('thread.interval'))
-        .setThread(this.getConfig('thread.execute'))
-        .label('saveIndexsOnly')
-        .start();
-        return this;
-    }
-
     generateEbook(options,fn){
         fn = this.next(fn);
         if (0 === this.getConfig("ebook.activated")) return fn();
         if (!this.book.changed && this.getConfig("ebook.activated") <= 0) return fn();
         this.debug('generateEbook');
-        var work = child_process.fork(Path.join(__dirname,"lib/ebook/generator.js"),{cwd:process.cwd()});
+        let work = child_process.fork(Path.join(__dirname,"lib/ebook/generator.js"),{cwd:process.cwd()});
         options = options || {
             directory:this.getConfig("ebook.directory"),
             formation:this.getConfig("ebook.formation"),
@@ -1173,8 +1161,8 @@ class Wedge extends EventEmitter{
     convertEbook(file,fn){
         fn = this.next(fn);
         this.debug('convertEbook');
-        var work = child_process.fork(Path.join(__dirname,"lib/ebook/convertor.js"),{cwd:process.cwd()});
-        var options = {
+        let work = child_process.fork(Path.join(__dirname,"lib/ebook/convertor.js"),{cwd:process.cwd()});
+        let options = {
             formation:this.getConfig("ebook.formation"),
             filename:Path.resolve(file),
         };
@@ -1193,7 +1181,7 @@ class Wedge extends EventEmitter{
 
     sendToDataBase(fn){
         fn = this.next(fn);
-        var meta = this.book.meta;
+        let meta = this.book.meta;
         if (!meta.title || !meta.author) return fn();
         if (!this.book.changed && this.database.query('uuid='+meta.uuid).length) return fn();
         this.debug('sendToDataBase');
@@ -1235,7 +1223,7 @@ class Wedge extends EventEmitter{
     }
 
     outportBook(dir){
-        var app = this.spawn();
+        let app = this.spawn();
         app.config.set('ebook.activated',true);
         app.config.set('ebook.formation','wbk');
         app.end(this.end.bind(this));
@@ -1265,7 +1253,7 @@ class Wedge extends EventEmitter{
     }
 
     ebook(dir){
-        var app = this.spawn();
+        let app = this.spawn();
         app.config.set('ebook.activated',true);
         app.end(this.end.bind(this));
         process.nextTick(app.eBookCmd.bind(app,dir));

@@ -1,3 +1,5 @@
+const URL = require('url');
+
 function toReStr(str) {
     return str.replace(/[()\[\]{}|+.,^$?\\*]/g, "\\$&");
 }
@@ -59,14 +61,16 @@ function filterTitle(str){
 
 function filterAuthor(str){
     return replace(str,[
-        "\\t","\\r"," +$","[\\s\\S]*作.*?者(:|：)?","类.*?型(:|：)?.*","\\s+.*"
+        "\\t","\\r"," +$","[\\s\\S]*作.*?者(:|：)?","类.*?型(:|：)?.*","\\s+.*","分类.*","更新.*"
     ]).trim();
 }
 
 function unique(array){
     var hash = {};
     array.forEach(function (str){
-        hash[str] = true;
+        if(str){
+            hash[str] = true;
+        }
     });
     return Object.keys(hash);
 }
@@ -77,31 +81,52 @@ function sortByLength(array){
     });
 }
 function getTitle($){
+    //检索元数据
+    var metas = $('meta').filter((i,v)=>{
+        var name = ''+$(v).attr('property') + $(v).attr('name');
+        return name.match(/book_name|title/i);
+    }).map((i,v)=>filterTitle($(v).attr('content'))).toArray();
+    if(metas.length) return sortByLength(metas)[0];
+    //网页标题
     var title = $('title').text().trim();
-    var titles = $(':header').map(function (i,v){
-        return $(v).text().trim();
-    }).toArray().map(filterTitle).filter(text=>~title.indexOf(text));
-    if (titles.length == 0){
-        titles = $('a').map(function (i,v){
-            return $(v).text().trim();
-        }).toArray().map(filterTitle).filter(text=>~title.indexOf(text));
-    }
-    titles = unique(titles);
+    //所有的:header和link
+    var headers = $(':header').map((i,v)=>$(v).text().trim()).toArray().map(filterTitle);
+    if(headers.length === 0) return;
+    //删除重复项
+    headers = unique(headers);
+    //网页标题中是否出现相应关键词
+    var titles = headers.filter(text=>~title.indexOf(text));
+    //如果没有出现
+    if(titles.length == 0){
+        var logs = {};
+        headers.forEach(x=>logs[x]=$.raw.split(x).length - 1);
+        headers.sort((x,y)=>logs[y]-logs[x]);
+        return headers[0];
+    };
+    //只有一项则直接返回
     titles = sortByLength(titles);
     if (titles.length == 1) return titles[0];
+    //查找是否有对应的链接
     for (var i=0;i<titles.length;i++){
         var selector = 'a:contains('+ titles[i] +')';
         if ($(selector).length) return titles[i];
     }
-    return;
+    return titles[0];
 }
 
 function getAuthor($){
+     //检索元数据
+     var metas = $('meta').filter((i,v)=>{
+        var name = ''+$(v).attr('property') + $(v).attr('name');
+        return name.match(/author/i);
+    }).map((i,v)=>filterAuthor($(v).attr('content'))).toArray();
+    if(metas.length) return sortByLength(metas)[0];
+    //检索关键词
     var authors = $("*").filter(function (i,v){
-        return $(v).text().match(/作[\u3000,\u00A0,\u0020,\w&#;]*?者/);
+        return $(v).text().match(/作.{0,30}者/);
     }).filter(function (i,v){
         return !$(v).children().filter(function (k,v){
-            return $(v).text().match(/作[\u3000,\u00A0,\u0020,\w&#;]*?者/);
+            return $(v).text().match(/作.{0,30}者/);
         }).length;
     }).map(function (i,v){
         return $(v).parent().text();
@@ -125,6 +150,129 @@ function getAuthor($){
         }
     }
     return authors[0];
+}
+
+function getCover($){
+    //检索元数据
+    var metas = $('meta').filter((i,v)=>{
+        var name = ''+$(v).attr('property') + $(v).attr('name');
+        return name.match(/image|cover/i);
+    }).map((i,v)=>$(v).attr('content')).toArray();
+    if(metas.length) return metas[0];
+    //检索img元素
+    var covers = $('img');
+    if(covers.length === 0) return;
+    if(covers.length === 1){
+        cover = covers.eq(0);
+        return $.location(cover.attr('src') || cover.attr('data-original'));
+    }
+    //过滤非本站的图片
+    var location = $.location();
+    var host = URL.parse(location).hostname;
+    var filtred = covers.filter((i,v)=>{
+        var src = $(v).attr('src') || $(v).attr('data-original');
+        if(!src) return false;
+        src = $.location(src);
+        if(URL.parse(src).hostname !== host) return false;
+        $(v).attr('src',src);
+        return true;
+    });
+    if(filtred.length === 0) return;
+    if(filtred.length === 1) return filtred.eq(0).attr('src');
+    //查找关键词
+    var title = getTitle($);
+    var keywords = /cover|fimg|fmimg|book|info|summary|xiaoshuo|/i;
+    filtred = filtred.filter((i,v)=>{
+        var self = $(v);
+        var deep = 0
+        while(deep > 2){
+            if(self.innerHTML.match(title) || self.innerHTML.match(keywords)) return true;
+            deep += 1;
+            self = self.parent();
+        }
+    });
+    if(filtred.length === 0) return;
+    if(filtred.length === 1) return filtred.eq(0).attr('src');
+    return filtred.last().attr('src');
+}
+var groups = {
+    '上古先秦':/东周|西周|春秋战国|战国七雄|春秋五霸/g,
+    '秦汉三国':/三国|西汉|东汉|汉朝|秦朝|蜀国|魏国|东吴|吴国|汉末|大秦|匈奴|曹魏|秦始皇|刘邦|吕后|项羽|韩信|/g,
+    '两晋隋唐':/晚唐|盛唐|大唐|唐朝|前秦|南北朝|南朝|北朝/g,
+    '五代十国':/后唐|后汉|北汉|南唐|五代十国/g,
+    '两宋元明':/北宋|南宋|大明|宋朝|明朝|元朝|/g,
+    '清史民国':/大清|清朝|晚清|/g,
+    '架空历史':/架空/g,
+    '外国历史':/欧洲/g,
+    '东方玄幻':'',
+    '异世大陆':'',
+    '王朝争霸':'',
+    '高武世界':'',
+    '现代魔法':'',
+    '剑与魔法':'',
+    '史诗奇幻':'',
+    '黑暗幻想':'',
+    '历史神话':'',
+    '另类幻想':'',
+    '传统武侠':'',
+    '武侠幻想':'',
+    '国术无双':'',
+    '古武未来':'',
+    '武侠同人':'',
+    '修真文明':'',
+    '幻想修仙':'',
+    '现代修真':'',
+    '神话修真':'',
+    '古典仙侠':'',
+    '都市生活':'',
+    '恩怨情仇':'',
+    '异术超能':'',
+    '青春校园':'',
+    '娱乐明星':'',
+    '商战职场':'',
+    '电子竞技':'',
+    '虚拟网游':'',
+    '游戏异界':'',
+    '游戏系统':'',
+    '游戏主播':''
+}
+function getClasses($){
+    //检索元数据
+    var metas = $('meta').filter((i,v)=>{
+        var name = ''+$(v).attr('property') + $(v).attr('name');
+        return name.match(/category|classes/i);
+    }).map((i,v)=>$(v).attr('content')).toArray();
+    if(metas.length) return sortByLength(metas)[0];
+    return;
+    var matched = {}
+    for(var key in groups){
+        var found = $.raw.match(groups[key]);
+        if(found){
+            matched[key] = found.length;
+        }
+    }
+    var keys = Object.keys(matched);
+    if(!keys.length) return;
+    keys.sort((x,y)=>matched[y]-matched[x]);
+    return keys[0]
+}
+
+function getBrief($){
+    //检索元数据
+    var metas = $('meta').filter((i,v)=>{
+        var name = ''+$(v).attr('property') + $(v).attr('name');
+        return name.match(/og:description|intro/i);
+    }).map((i,v)=>$(v).attr('content')).toArray();
+    if(metas.length) return metas[0];
+}
+
+function getStatus($){
+    //检索元数据
+    var metas = $('meta').filter((i,v)=>{
+        var name = ''+$(v).attr('property') + $(v).attr('name');
+        return name.match(/status|latest_chapter_name/i);
+    }).map((i,v)=>$(v).attr('content')).toArray();
+    if(metas.length) return metas.join('');
 }
 
 function getList($){
@@ -240,7 +388,11 @@ module.exports = {
             footer: footer,
             bookInfos: {
                 title: getTitle,
-                author: getAuthor
+                author: getAuthor,
+                cover: getCover,
+                classes: getClasses,
+                isend: getStatus,
+                brief: getBrief,
             }
         },
         indexPage: {

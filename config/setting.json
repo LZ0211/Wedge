@@ -2,42 +2,42 @@
   "plugins": [
     {
       "name": "5sing",
-      "activated": 0,
+      "activated": false,
       "func": "./plugins/5sing"
     },
     {
       "name": "testSelector",
-      "activated": 0,
+      "activated": false,
       "func": "./plugins/testSelector"
     },
     {
       "name": "deepQuest",
-      "activated": 1,
+      "activated": true,
       "func": "./plugins/deepQuest"
     },
     {
       "name": "sendToiReader",
-      "activated": 1,
+      "activated": true,
       "func": "./plugins/sendToiReader"
     },
     {
       "name": "sendToQQ",
-      "activated": 1,
+      "activated": true,
       "func": "./plugins/sendToQQ"
     },
     {
       "name": "searchEngine",
-      "activated": 1,
+      "activated": true,
       "func": "./plugins/searchEngine"
     },
     {
       "name": "getPageImages",
-      "activated": 1,
+      "activated": true,
       "func": "./plugins/getPageImages"
     },
     {
       "name": "start",
-      "activated": 1,
+      "activated": true,
       "func": "./plugins/start"
     }
   ],
@@ -45,7 +45,7 @@
     "reconnect": 5,
     "imageReconnect": 3,
     "timeout": 5000,
-    "proxy": 0,
+    "proxy": false,
     "proxyAuth": "",
     "proxyAutoConfig": ""
   },
@@ -53,8 +53,8 @@
     "activated": -1,
     "formation": "epub",
     "directory": "../ebook",
-    "openDirectory": 0,
-    "openEbookFile": 0
+    "openDirectory": false,
+    "openEbookFile": false
   },
   "thread": {
     "execute": 10,
@@ -63,30 +63,32 @@
     "image": 2
   },
   "book": {
-    "sync": 1,
-    "changeSource": 0,
-    "override": 1,
-    "imageLocalization": 0,
-    "searchMeta": 1,
-    "deepDownload": 0,
+    "sync": true,
+    "changeSource": false,
+    "override": true,
+    "imageLocalization": false,
+    "searchMeta": true,
+    "deepDownload": false,
     "maxDepth": 0,
-    "localization": 1,
+    "localization": true,
     "imageExts": [".jpg",".jpeg",".png",".gif",".tif",".webp",".bmp",".tga"],
+    "imageMinSize": 5000,
     "unique":{
-      "source":1,
-      "title":0
+      "source":true,
+      "id":true,
+      "title":false
     }
   },
   "database": {
-    "sync": 1,
-    "check": 0,
+    "sync": true,
+    "check": false,
     "primary": "uuid",
     "showKeys": ["uuid","title","author","classes","isend","date","source"]
   },
   "app": {
-    "log": 0,
-    "debug": 0,
-    "reTry": {
+    "log": false,
+    "debug": false,
+    "retry": {
       "meta": 3,
       "index": 3,
       "cover": 3,

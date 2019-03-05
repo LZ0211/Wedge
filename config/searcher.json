@@ -269,5 +269,35 @@
     "url": "http://www.itangyuan.com/search/book/%title%.html",
     "selector":".bname a",
     "name": ".itangyuan.com"
+  },
+  {
+    "url": "http://www.yueloo.com/search",
+    "query": "searchkey=%title%",
+    "selector":"td.odd a",
+    "name": ".yueloo.com"
+  },
+  {
+    "url": "http://www.bayueju.com/Search/Index/lists.html",
+    "query": "g=Search&m=Index&a=lists&type=title&keyword=%title%",
+    "name": ".bayueju.com"
+  },
+  {
+    "url": "http://www.qwsy.com/shuku.aspx",
+    "query": "Action=QuickSearch&RadioGroup=searchwriting&QueryType=1&keyword=%title%",
+    "headers": {
+      "Accept-Encoding": ""
+    },
+    "selector": ".results_text > div.title > a:nth-child(1)",
+    "name": ".qwsy.com"
+  },
+  {
+    "url": "https://www.9kus.com/Search/searchList/key/%title%.html",
+    "selector": "a.NameColor",
+    "name": ".9kus.com"
+  },
+  {
+    "url": "http://www.tiandizw.com/search.php",
+    "query": "keyword=%title%&type=2",
+    "name": ".tiandizw.com"
   }
 ]

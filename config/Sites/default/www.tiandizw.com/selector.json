@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/bookinfo/i.test($.location())",
+    "indexPage": "$.location($('a:contains(作品目录)').attr('href'))",
+    "footer": "true",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.header > strong.h1 > a').text()",
+      "author": "$('span:contains(作者)').find('a').text()",
+      "classes": "$('.Crumbs a').eq(-2).text()",
+      "isend": "$('span:contains(状态)').text()",
+      "cover": "$.location($('.img > a > img').attr('src'))",
+      "brief": "$('li.active').eq(2).html()"
+    }
+  },
+  "indexPage": {
+    "match": "/booklist/i.test($.location())",
+    "infoPage": "$.location($('a:contains(返回书页)').attr('href'))",
+    "footer": "true",
+    "filter": "$('.dingyue').parent().remove()",
+    "bookIndexs": "$('.ov > p > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/content/i.test($.location())",
+    "footer": "$('.article').length",
+    "filter": "$('.article font').remove()",
+    "chapterInfos": {
+      "content": "$('.article').html()"
+    }
+  }
+}

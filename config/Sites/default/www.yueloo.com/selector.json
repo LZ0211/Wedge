@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "$('.jianjie').length",
+    "indexPage": "$.location($('.nav1 a').last().attr('href'))",
+    "footer": "$('#footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.jianjie h2').eq(0).text()",
+      "author": "$('.zuozhe').text()",
+      "classes": "$('.jianjie a').eq(1).text()",
+      "isend": "$('img.zt').attr('src').match('wanjie')",
+      "cover": "$.location($('.zhengwen img').eq(0).attr('src'))",
+      "brief": "$('.jieshao').html()"
+    }
+  },
+  "indexPage": {
+    "match": "$('#container1').length",
+    "infoPage": "$.location($('#container1 a').first().attr('href'))",
+    "filter": "$('td:contains(VIP)').remove()",
+    "footer": "$('#footer').length",
+    "bookIndexs": "$('#container1 > table a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "true",
+    "footer": "true",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": ""
+    }
+  }
+}
