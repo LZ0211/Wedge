@@ -52,6 +52,7 @@
   "ebook": {
     "activated": -1,
     "formation": "epub",
+    "filename": "{author}-《{title}》.{format}",
     "directory": "../ebook",
     "openDirectory": false,
     "openEbookFile": false

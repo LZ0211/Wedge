@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/Book_BookDetail/i.test($.location())",
+    "indexPage": "$.location($('a:contains(目录)').attr('href'))",
+    "footer": "$('#footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('div.book-name > h1').text()",
+      "author": "$('div.book-author > a').text()",
+      "classes": "$('#status_bar > a').eq(-2).text()",
+      "isend": "$('.content > a.title').text()",
+      "cover": "$.location($('img.cover').attr('src'))",
+      "brief": "$('div.book-summary').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/Book_Chapters/i.test($.location())",
+    "infoPage": "$.location($('#status_bar > a').eq(-1).attr('href'))",
+    "footer": "$('#footer').length",
+    "bookIndexs": "$('div.box a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).find('.title').text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/Book_Read/i.test($.location())",
+    "footer": "$('.content').length",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.body').text()"
+    }
+  }
+}

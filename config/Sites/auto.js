@@ -55,13 +55,16 @@ function replace(str,selector){
 
 function filterTitle(str){
     return replace(str,[
-        "最新章节.*","《","》","全文阅读.*","TXT下载","作者.*","无弹窗","正文","章节目录","【","】","\\[","\\]"
+        "最新章节.*","《","》","全文阅读.*","TXT下载","作者.*","无弹窗","正文","章节目录",
+        "【","】","\\[","\\]","全文在线阅读.*","全文在线.*","免费阅读.*","无弹窗广告.*",
+        "无广告.*","无弹窗.*","全文","(\\s|-|_).{0,6}(小说|阅读|读书)网?","TXT下载.*"
     ]).trim();
 }
 
 function filterAuthor(str){
     return replace(str,[
-        "\\t","\\r"," +$","[\\s\\S]*作.*?者(:|：)?","类.*?型(:|：)?.*","\\s+.*","分类.*","更新.*"
+        "\\t","\\r"," +$","[\\s\\S]*作.*?者(:|：)?","类.*?型(:|：)?.*","类.*?别(:|：)?.*",
+        "分.*?类(:|：)?.*","更.*?新(:|：)?.*","全文阅读.*","字.*?数(:|：)?.*",
     ]).trim();
 }
 
@@ -80,6 +83,7 @@ function sortByLength(array){
         return a.length - b.length;
     });
 }
+
 function getTitle($){
     //检索元数据
     var metas = $('meta').filter((i,v)=>{
@@ -91,7 +95,7 @@ function getTitle($){
     var title = $('title').text().trim();
     //所有的:header和link
     var headers = $(':header').map((i,v)=>$(v).text().trim()).toArray().map(filterTitle);
-    if(headers.length === 0) return;
+    if(headers.length === 0) return filterTitle(title);
     //删除重复项
     headers = unique(headers);
     //网页标题中是否出现相应关键词
@@ -123,15 +127,16 @@ function getAuthor($){
     if(metas.length) return sortByLength(metas)[0];
     //检索关键词
     var authors = $("*").filter(function (i,v){
-        return $(v).text().match(/作.{0,30}者/);
+        return $(v).text().match(/作.*?者(:|：)?/);
     }).filter(function (i,v){
         return !$(v).children().filter(function (k,v){
-            return $(v).text().match(/作.{0,30}者/);
+            return $(v).text().match(/作.*?者(:|：)?/);
         }).length;
-    }).map(function (i,v){
-        return $(v).parent().text();
+    }).map((i,v)=>{
+        var text = $(v).text().trim();
+        if(text.length > 4) return text;
+        return $(v).parent().text().trim();
     }).toArray().map(filterAuthor).filter(x=>x);
-
     authors = unique(authors);
     var title = $('title').text().trim();
     for (var i=0;i<authors.length;i++){
@@ -158,7 +163,7 @@ function getCover($){
         var name = ''+$(v).attr('property') + $(v).attr('name');
         return name.match(/image|cover/i);
     }).map((i,v)=>$(v).attr('content')).toArray();
-    if(metas.length) return metas[0];
+    if(metas.length) return $.location(metas[0]);
     //检索img元素
     var covers = $('img');
     if(covers.length === 0) return;
@@ -277,9 +282,9 @@ function getStatus($){
 
 function getList($){
     var allLinks = $('a');
-    var marks = allLinks.map(function (i,v){
+    var marks = allLinks.map((i,v)=>{
         var $this = $(v);
-        var sign = $this.parents().map(function (i,v){
+        var sign = $this.parents().map((i,v)=>{
             var mark = $(v)[0].name || '';
             var classes = $(v).attr('class');
             var id =  $(v).attr('id');
@@ -291,7 +296,7 @@ function getList($){
         return sign;
     }).toArray();
     var hash = {};
-    marks.forEach(function (mark){
+    marks.forEach(mark=>{
         if (mark in hash){
             hash[mark] += 1;
         }else {
@@ -305,9 +310,7 @@ function getList($){
             maxMark = x;
         }
     }
-    var list = allLinks.filter(function (i,v){
-        return $(v).attr('sign') == maxMark;
-    }).map(function (i,v){
+    var list = allLinks.filter((i,v)=>$(v).attr('sign') == maxMark).map((i,v)=>{
         var href = $(v).attr('href') || '';
         var array = href.split('/');
         var id = array.pop() || array.pop();
@@ -316,21 +319,37 @@ function getList($){
             text:$(v).text().trim(),
             index:id && id.replace(/\..*/,'')
         }
-    }).toArray().sort(function (a,b){
+    }).toArray().sort((a,b)=>{
         if (/^\d+$/.test(a.index) && /^\d+$/.test(a.index)) return a.index - b.index;
         return a.index > b.index ? 1 : -1;
     });
     var logs = {};
     var links = [];
-    list.reverse().forEach(function (link){
+    list.reverse().forEach(link=>{
         if (link.href in logs) return;
         links.unshift(link);
         logs[link.href] = true;
     });
-    links.forEach(function (link,index){
+    logs = {};
+    links.forEach((link,index)=>{
         link.index = index;
         link.href = $.location(link.href);
+        var arr = link.href.split('/');
+        arr.pop() || arr.pop()
+        name = arr.join('/');
+        logs[name] = (logs[name] || 0) + 1;
     });
+    if(Object.keys(logs).length === 1) return links;
+    var pathname = '',count=0;
+    for(var k in logs){
+        if(logs[k] > count){
+            pathname = k;
+            count = logs[k];
+        }
+    }
+    if(count / links.length > 0.8){
+        links = links.filter(link=>link.href.match(pathname));
+    }
     return links;
 }
 

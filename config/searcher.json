@@ -299,5 +299,16 @@
     "url": "http://www.tiandizw.com/search.php",
     "query": "keyword=%title%&type=2",
     "name": ".tiandizw.com"
+  },
+  {
+    "url": "https://www.sxyj.net/Book_Search.html",
+    "query": "keyword=%title%",
+    "name": ".sxyj.net"
+  },
+  {
+    "url": "http://admin.datangzww.com/web/bookroom/index",
+    "query": "c_id=0&char_num=&update_status=&is_vip=&char_order=&collect_num=&last_update_chapter_time=&sales=1&page=1&search=%title%",
+    "parse": "json.data.map(o=>['http://new.datangzww.com/#/book/bookinside/'+o.id,o.title])",
+    "name": ".datangzww.com"
   }
 ]

@@ -1136,6 +1136,7 @@ class Wedge extends EventEmitter{
             directory:this.getConfig("ebook.directory"),
             formation:this.getConfig("ebook.formation"),
             bookdir:this.bookdir,
+            filename: this.getConfig("ebook.filename"),
             filter:this.getConfig("ebook.filter")
         };
         fs.mkdirsSync(options.directory);

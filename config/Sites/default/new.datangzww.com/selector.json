@@ -1,0 +1,27 @@
+{
+  "infoPage": {
+    "match": "/homeinside/i.test($.location())",
+    "indexPage": "$.location().replace('homeinside','catalogue')",
+    "footer": "true",
+    "request": {
+      "url": "'http://admin.datangzww.com/web/book/index?&id=' + $.location().replace(/\\/$/,'').split('/').pop()",
+      "success": "json=>({title:json.data.title,author:json.data.u_name,classes:json.data.c_title,isend:json.data.update_status,cover:json.data.front_cover,brief:json.data.introduction})"
+    }
+  },
+  "indexPage": {
+    "match": "/catalogue/i.test($.location())",
+    "infoPage": "$.location().replace('catalogue','homeinside')",
+    "footer": "true",
+    "request": {
+      "url": "'http://admin.datangzww.com/web/book/directory?order=0&id=' + $.location().replace(/\\/$/,'').split('/').pop()",
+      "success": "json=>json.data.volume[0].chapter.filter(it=>!it.is_vip).map(it=>({href:'http://admin.datangzww.com/web/content/index?b_id='+it.b_id + '&c_id=' + it.id,text:it.title}))"
+    }
+  },
+  "contentPage": {
+    "match": "/content/i.test($.location())",
+    "footer": "true",
+    "chapterInfos": {
+      "content": "$.data.content"
+    }
+  }
+}
