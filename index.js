@@ -1126,9 +1126,9 @@ class Wedge extends EventEmitter{
         Thread.series([
             this.getChapterContent.bind(this),
             this.mergeChapterContent.bind(this),
-            this.getDeepChapter.bind(this),
             this.getNextChapter.bind(this),
             this.getChapterImages.bind(this),
+            this.getDeepChapter.bind(this),
             this.saveChapter.bind(this),
             fn,
         ])(link);
