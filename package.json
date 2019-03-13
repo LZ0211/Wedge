@@ -1,6 +1,6 @@
 {
   "name": "Wedge",
-  "version": "3.3.3",
+  "version": "3.4.0",
   "description": "An ebook downloader and generator engine",
   "main": "index.js",
   "bugs": {

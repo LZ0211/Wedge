@@ -15,13 +15,13 @@ const request = require("./lib/request");
 const util = require("./lib/util");
 const Thread = require("./lib/Thread");
 const Cache = require("./lib/Cache");
-const setting = require("./config/setting");
-const Searcher = require("./config/searcher");
-const Sites = require("./config/Sites");
 const Parser = require("./lib/Parser");
 const Book = require("./lib/Book");
 const classes = require("./lib/classes");
-const ebook = require('./lib/ebook');
+const ebook = require('./lib/ebook/encoder');
+const setting = require("./config/setting");
+const Searcher = require("./config/searcher");
+const Sites = require("./config/Sites");
 const threadLimit = require('./config/threadLimit');
 const outClude = require("./config/outclude");
 
@@ -518,7 +518,7 @@ class Wedge extends EventEmitter{
     getBookMeta(url,fn){
         fn = this.next(fn);
         let links = util.validURL(url);
-        if (!links) return this.error('Invalid url...'+links);
+        if (!links.length) return this.error('Invalid url...'+url);
         this.debug('getBookMeta');
         let link = links[0];
         let times = util.parseInteger(this.getConfig('app.retry.meta'),3);
@@ -968,12 +968,23 @@ class Wedge extends EventEmitter{
     getChapterImages(chapter,fn){
         fn = this.next(fn);
         if (!chapter)return fn(null);
-        if (!this.getConfig('book.imageLocalization')) return fn(chapter);
         let content = chapter.content,
             $ = Parser(content,chapter.source),
             $imgs = $('img'),
             imgs = $imgs.map((i,v)=>({url:$.location($(v).attr('src')),index:i,headers:{referer:$.location()}})).toArray();
         if (!imgs.length) return fn(chapter);
+        if (!this.getConfig('book.imageLocalization')){
+            $imgs.each((i,v)=>{
+                let src = $(v).attr('src');
+                if(!src){
+                    $(v).replaceWith('');
+                }else{
+                    $(v).replaceWith('[img]'+encodeURI($.location(src))+'[/img]')
+                }
+            });
+            chapter.content = $('body').html();
+            return fn(chapter);
+        }
         this.debug('getChapterImages');
         let ChapterId = classes.Id(chapter.id).val(),
             imgFolder = Path.join(this.bookdir,ChapterId),
@@ -985,17 +996,17 @@ class Wedge extends EventEmitter{
             minImgSize = util.parseInteger(this.getConfig('book.imageMinSize'),0),
             isImgFile = ext=>imgExts.test(ext),
             hasImgFile = img=>hash[img.name],
-            repImg = img=>$imgs.eq(img.index).replaceWith('<img src="'+img.src+'" />'),
             getImgFile = (img,then)=>{
                 let times = util.parseInteger(this.getConfig('app.retry.image'),3);
                 img.success = data=>{
                     if(minImgSize > data.length || !util.is.isImage(data)) return then();
                     fs.writeFile(img.file,data,then);
-                    repImg(img);
+                    $imgs.eq(img.index).replaceWith('[img]'+img.src+'[/img]');
                     isEmpty = false;
                 };
                 img.error = ()=>{
                     if (--times > 0) this.request(img);
+                    $imgs.eq(img.index).replaceWith('[img]'+encodeURI(img.url)+'[/img]');
                     successAll = false;
                     return then();
                     
@@ -1005,7 +1016,7 @@ class Wedge extends EventEmitter{
             final = ()=>{
                 isEmpty && fs.rmdirsSync(imgFolder);
                 if (!successAll && !this.getConfig('app.retry.image')) return fn(null);
-                chapter.content = $.html();
+                chapter.content = $('body').html();
                 return fn(chapter);
             };
 
@@ -1045,12 +1056,23 @@ class Wedge extends EventEmitter{
     getDeepChapter(chapter,fn){
         fn = this.next(fn);
         if (!chapter)return fn(null);
-        if (!this.getConfig('book.deepdownload')) return fn(chapter);
+        let $ = Parser(chapter.content,chapter.source);
+        if (!this.getConfig('book.deepdownload')){
+            $('a').each((i,v)=>{
+                let href = $(v).attr('href');
+                if (!href || href.indexOf('javascript:') == 0 || href.indexOf('#') == 0){
+                    $(v).replaceWith($(v).text())
+                }else{
+                    $(v).replaceWith('[url='+encodeURI($.location(href))+']'+encodeURI($(v).text())+'[/url]');
+                }
+            });
+            chapter.content = $('body').html();
+            return fn(chapter);
+        }
         let maxDepth = this.getConfig('book.maxDepth') || Infinity;
         let deepnow = chapter.deep;
         if (deepnow >= maxDepth) return fn(chapter);
         deepnow += 1;
-        let $ = Parser(chapter.content,chapter.source);
         let links = $('a').map((i,v)=>({
             url:$.location($(v).attr('href')),
             text:$(v).text().trim(),
@@ -1131,7 +1153,7 @@ class Wedge extends EventEmitter{
         if (0 === this.getConfig("ebook.activated")) return fn();
         if (!this.book.changed && this.getConfig("ebook.activated") <= 0) return fn();
         this.debug('generateEbook');
-        let work = child_process.fork(Path.join(__dirname,"lib/ebook/generator.js"),{cwd:process.cwd()});
+        let work = child_process.fork(Path.join(__dirname,"lib/ebook/generator_process.js"),{cwd:process.cwd()});
         options = options || {
             directory:this.getConfig("ebook.directory"),
             formation:this.getConfig("ebook.formation"),
@@ -1142,7 +1164,7 @@ class Wedge extends EventEmitter{
         fs.mkdirsSync(options.directory);
         this.log("generating ebook...");
         work.on("message",msg=>{
-            if (msg.msg === "success"){
+            if (!msg.code){
                 this.log("ebook generated successful!");
                 if (this.getConfig("ebook.opendirectory") && this.platform.match('win')){
                     this.openDir(options.directory);
@@ -1162,14 +1184,14 @@ class Wedge extends EventEmitter{
     convertEbook(file,fn){
         fn = this.next(fn);
         this.debug('convertEbook');
-        let work = child_process.fork(Path.join(__dirname,"lib/ebook/convertor.js"),{cwd:process.cwd()});
+        let work = child_process.fork(Path.join(__dirname,"lib/ebook/convertor_process.js"),{cwd:process.cwd()});
         let options = {
             formation:this.getConfig("ebook.formation"),
             filename:Path.resolve(file),
         };
         this.log("converting ebook...");
         work.on("message",msg=>{
-            if (msg.msg === "success"){
+            if (!msg.code){
                 this.log("ebook converted successful!");
             }else {
                 this.log("ebook convertion failed!");
