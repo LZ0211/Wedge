@@ -968,12 +968,15 @@ class Wedge extends EventEmitter{
     getChapterImages(chapter,fn){
         fn = this.next(fn);
         if (!chapter)return fn(null);
+        let localization = this.getConfig('book.localization');
+        let imageLocalization = this.getConfig('book.imageLocalization');
+        if(!localization && !imageLocalization) return fn(chapter);
         let content = chapter.content,
             $ = Parser(content,chapter.source),
             $imgs = $('img'),
             imgs = $imgs.map((i,v)=>({url:$.location($(v).attr('src')),index:i,headers:{referer:$.location()}})).toArray();
         if (!imgs.length) return fn(chapter);
-        if (!this.getConfig('book.imageLocalization')){
+        if (!imageLocalization){
             $imgs.each((i,v)=>{
                 let src = $(v).attr('src');
                 if(!src){
@@ -986,6 +989,7 @@ class Wedge extends EventEmitter{
             return fn(chapter);
         }
         this.debug('getChapterImages');
+        
         let ChapterId = classes.Id(chapter.id).val(),
             imgFolder = Path.join(this.bookdir,ChapterId),
             isEmpty = true,
@@ -1001,12 +1005,12 @@ class Wedge extends EventEmitter{
                 img.success = data=>{
                     if(minImgSize > data.length || !util.is.isImage(data)) return then();
                     fs.writeFile(img.file,data,then);
-                    $imgs.eq(img.index).replaceWith('[img]'+img.src+'[/img]');
+                    localization && $imgs.eq(img.index).replaceWith('[img]'+img.src+'[/img]');
                     isEmpty = false;
                 };
                 img.error = ()=>{
                     if (--times > 0) this.request(img);
-                    $imgs.eq(img.index).replaceWith('[img]'+encodeURI(img.url)+'[/img]');
+                    localization && $imgs.eq(img.index).replaceWith('[img]'+encodeURI(img.url)+'[/img]');
                     successAll = false;
                     return then();
                     
@@ -1016,6 +1020,7 @@ class Wedge extends EventEmitter{
             final = ()=>{
                 isEmpty && fs.rmdirsSync(imgFolder);
                 if (!successAll && !this.getConfig('app.retry.image')) return fn(null);
+                if (!localization) return fn(chapter);
                 chapter.content = $('body').html();
                 return fn(chapter);
             };
@@ -1036,7 +1041,7 @@ class Wedge extends EventEmitter{
             img.src = ChapterId + '/' + img.name;
             img.file = Path.join(imgFolder,img.name);
             if(hasImgFile(img)){
-                repImg(img);
+                localization && $imgs.eq(img.index).replaceWith('[img]'+img.src+'[/img]');
                 isEmpty = false;
                 return false;
             }
