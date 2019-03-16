@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>{{=book.title}}</title>
+	<link href="style.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript">
+		var preview_page = "{{=book.prev}}.html";
+		var next_page = "{{=book.next}}.html";
+		var index_page = "index.html";
+		function jumpPage() {
+			if (event.keyCode == 37) location = preview_page;
+			if (event.keyCode == 39) location = next_page;
+			if (event.keyCode == 13) location = index_page;
+		}
+		document.onkeydown = jumpPage; 
+	</script>
+</head>
+
+<body id="wrapper">
+	<div id="book">
+		<div class="content">
+			<h1>{{=book.title}}</h1>
+			<div id="content" class="showtxt">{{~book.content.split('\n'): line}}
+				<p>{{=line}}</p><br>{{~}}
+			</div>
+			<div class="page_chapter">
+				<ul>
+					<li><a href="{{=book.prev}}.html">上一章</a></li>
+					<li><a href="index.html">返回目录</a></li>
+					<li><a href="{{=book.next}}.html">下一章</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

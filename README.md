@@ -63,19 +63,18 @@ App.config.set('ebook.formation','epub');
 App.config.set('ebook.activated',-1);
 //章节过滤器，程序会自动编译成函数
 /*语法
-关键词：title,content,id,index,date,length
-逻辑运算：~(非),and(且),or(或)
-正则匹配:[[]]
-字符匹配:[]
-数值范围:<x,y>(大于x且小于y),{x,y}(大于等于x且小于等于y),<x,y},{x,y>
+关键词：title,content,id,index,date,title.length,content.length
+逻辑运算：~(非),&(且),|(或)
+字符匹配：/pattem/
+数值范围：<x,y>(大于等于x且小于等于y),<x>(等于x)
 示例：
-筛选标题为（第【数字】章）开头的章节 —— title:[[^第\d+章]]
-筛选标题为（第200章）开头的章节 —— title:[第200章]
-筛选内容字符长度大于等于500的章节 —— length:{500,}
-筛选序列大于100且小于200的章节 —— index:<100,200>
-筛选内容不含有【杀人】字符的章节 —— ~content:[[杀人]]
+筛选标题为（第【数字】章）开头的章节 —— title:/^第\d+章/
+筛选标题为（第200章）开头的章节 —— title:/第200章/
+筛选内容字符长度大于等于500的章节 —— content.length:<500,>
+筛选序列在100到200之间的章节 —— index:<100,200>
+筛选内容【不】含有【膜法】字符的章节 —— ~content:/膜法/
 筛选下载日期大于2017-01-01的章节 —— date:<1483228800000,>
-组合筛选 —— (title:[[^第\d+章]]) and (length:{500,})
+组合筛选 —— (title:/^第\d+章/ & content.length:<500,>) | content.length:<2000,>
 */
 App.config.set('ebook.filter','length:{500,}');
 //电子书生成后自动打开文件目录
@@ -202,11 +201,8 @@ App.config.set('app.reTry.chapter',3);
 App.config.set('app.reTry.image',3);
 ```
 ###其他配置
-
 ####小说搜索引擎配置
-
 config/searcher.json
-
 以[若出中文网]为例
 ```Javascript
   {//%title%会被替换成书名
@@ -235,9 +231,7 @@ config/searcher.json
   }
 ```
 #### 全局替换器
-
 config/Filter.json
-
 ```Javascript
 {
     "chapterTitle":[
@@ -257,13 +251,9 @@ config/Filter.json
 }
 ```
 #### 线程控制器
-
 部分站点并发请求的时候为被识别为爬虫，导致IP锁定无法访问
-
 可在通过 App.config.set('thread.execute',1) 来限制全局的线程数
-
 亦可以通过如下的配置线程数来限制特定站点的请求频率
-
 config/threadLimit.json
 ```Javascript
 {
@@ -273,17 +263,11 @@ config/threadLimit.json
 }
 ```
 #### 元数据搜索排除规则
-
 当 book.searchmeta 配置为true的时候，每次新增小说的时候都会自动搜索元数据
-
 这一功能会获取正版来源的书籍数据，但是需要耗费一定的时间
-
 部分网站，如本身就是正版网站，不需要启用该功能的时候
-
 可以通过配置该规则来略过搜索来节约下载时间
-
 config/outclude.json
-
 ```Javascript
 [
   ".qidian.com",".qq.com", ".sogou.com",".zongheng.com",".17k.com",".jjwxc.net",".ireader.com",

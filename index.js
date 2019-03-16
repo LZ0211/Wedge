@@ -87,7 +87,7 @@ class Wedge extends EventEmitter{
         this.updateBookCmd = this.CMD('loadBook > checkBookCover > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end');
 
         //redownload
-        this.reDownloadCmd = this.CMD('loadBook > updateBookMeta > getBookCover > checkBookCover > emptyBookIndex > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end');
+        this.reDownloadCmd = this.CMD('loadBook > updateBookMeta > createBook > checkBookCover > emptyBookList > getBookIndexs > getChapters > saveBook > sendToDataBase > generateEbook > end');
 
         //refreshBookCmd
         this.refreshBookCmd = this.CMD('loadBook > updateBookMeta > getBookCover > checkBookCover > saveBook > sendToDataBase > generateEbook > end');
@@ -207,6 +207,12 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         console.log(this.book.meta);
         console.log(this.book.list);
+        return fn();
+    }
+
+    emptyBookList(fn){
+        fn = this.next(fn);
+        this.book.emptyList();
         return fn();
     }
 
@@ -485,12 +491,6 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    emptyBookIndex(fn){
-        fn = this.next(fn);
-        this.book.emptyList();
-        return fn();
-    }
-
     getParsedData(data,url){
         let site = Sites.search(url);
         //this.debug(`use site rule of [${site.host}]`);
@@ -645,6 +645,7 @@ class Wedge extends EventEmitter{
         let link = util.formatLink(coverSrc);
         link.contentType = 'image';
         link.success = data=>{
+            this.debug('getCover success...');
             this.book.setMeta('cover',data);
             this.cache.set(coverDir,data);
             fs.writeFile(coverDir,data,fn);
@@ -704,8 +705,7 @@ class Wedge extends EventEmitter{
             this.debug('changesource');
             if (this.getConfig('book.override')){
                 this.debug('override');
-                this.config.set('book.unique.id',false);
-                this.end(()=>this.config.set('book.unique.id',true));
+                this.book.emptyList();
             }
             this.book.setMeta(thisMeta);
             return fn();
