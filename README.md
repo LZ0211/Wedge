@@ -76,7 +76,7 @@ App.config.set('ebook.activated',-1);
 筛选下载日期大于2017-01-01的章节 —— date:<1483228800000,>
 组合筛选 —— (title:/^第\d+章/ & content.length:<500,>) | content.length:<2000,>
 */
-App.config.set('ebook.filter','length:{500,}');
+App.config.set('ebook.filter','length:<500,>');
 //电子书生成后自动打开文件目录
 App.config.set('ebook.opendirectory',false);
 //电子书生成后自动打开文件
@@ -115,15 +115,15 @@ html.zip——分章节的html压缩文件
 
 wbk——作者自定义的电子书格式，无损高压缩率，主要用于导出备份书籍，可直接通过作者提供的脚本工具转换成其他格式
 
-~~pdf~~——Portable Document Format格式，自己实现PDF排版难度太大，推荐生成html后用浏览器打开并保存为pdf
+pdf——Portable Document Format格式，自己实现PDF排版难度太大，推荐生成html后用浏览器打开并保存为pdf
 
-~~chm~~——微软help文件，LZX压缩算法，非window系统下要自己实现，所以不兼容*nix系统，已删除
+chm——微软help文件，LZX压缩算法，非window系统下要自己实现，所以不兼容*nix系统
 
-~~mobi~~——HUff和LZ77压缩，JS版本的压缩算法已完成，但文件格式定义尚有一些不清楚的地方，现在暂时不支持，推荐用kindlegen或者calibre转换
+mobi——HUff和LZ77压缩，JS版本的压缩算法已完成，但文件格式定义尚有一些不清楚的地方，现在暂时不支持，推荐用kindlegen或者calibre转换
 
-~~azw3~~——同上
+azw3——同上
 
-~~snb~~——盛大bambook格式，bzip2压缩，由于Bambook基本已经退出市场，故删除该格式
+snb——盛大bambook格式，bzip2压缩，由于Bambook基本已经退出市场，故删除该格式
 
 #### 线程参数
 ```Javascript
@@ -153,10 +153,8 @@ App.config.set('database.showKeys', ["uuid","title","author","classes","isend","
 
 #### 书籍参数
 ```Javascript
-//同步加载
+//根据本地章节文件同步目录
 App.config.set('book.sync',true);
-//异步加载
-App.config.set('book.sync',false);
 //自动检查目录，添加已有的章节信息或移除已被删除的章节
 App.config.set('book.check',true);
 //如果存在相同小说时，是否切换新的的源
@@ -212,7 +210,7 @@ config/searcher.json
     "dataType": "json",//返回数据为json格式
     "charset": "gbk",//charset默认为utf-8,请求参数非合法的url字符会编码成对应字符
     "name": ".ruochu.com",
-    "headers":{//某些网站需要配置header请求头，否则请求失败
+    "headers":{//某些网站需要配置header请求头，否则请求失败，不设置headers的时候，程序会自动以XHR的请求头发送
       "referer": "http://www.ruochu.com/search/?queryString=%title%"
     },
     "parse": "json.voRF.items.map(o=>['http://www.ruochu.com'+o.object.url,o.object.name])"//json的解析函数
