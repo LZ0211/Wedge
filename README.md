@@ -89,7 +89,7 @@ fb2——FictionBook格式，实际上就是一个xml文件
 
 epub——Electronic Publication格式，文件实际上是一个zip压缩文件，内部是网页文件、元数据文件和索引文件，为了兼容旧设备，默认为Version2 格式
 
-epub3——Electronic Publication Version 3，直接启用该格式的时候，文件后缀为epub3。在lib/ebook/index.js中将exports.epub = exports.epub2 修改为 exports.epub = exports.epub3 可以将默认的epub改为版本Version 3
+epub3——Electronic Publication Version 3
 
 umd——Universal Mobile Document格式，有专门的数据结构，压缩算法还是DEFLATE
 
