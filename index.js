@@ -578,11 +578,11 @@ class Wedge extends EventEmitter{
 
     updateBookMeta(fn){
         fn = this.next(fn);
-        if (!this.getConfig('book.searchmeta')) return fn();
         let title = this.book.getMeta('title');
         let origin = this.book.getMeta('origin');
         let author = this.book.getMeta('author');
-        if(!title) return this.end();
+        if (!title) return this.end();
+        if (!this.getConfig('book.searchmeta')) return fn();
         this.debug('updateBookMeta');
         let similar = (s1,s2)=>{
             let reFilter = /[:：？\?,；，,.。!！_—\-]/g;
@@ -716,7 +716,7 @@ class Wedge extends EventEmitter{
     saveBook(fn){
         fn = this.next(fn);
         if (!this.bookdir) return this.end();
-        if(!this.book.changed) return fn();
+        if (!this.book.changed) return fn();
         this.debug('saveBook');
         this.book.setMeta('date',+new Date);
         this.book.localizationSync(this.bookdir);

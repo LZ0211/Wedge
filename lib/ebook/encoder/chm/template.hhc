@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="NodeJS">
+<!-- Sitemap 1.0 -->
+</HEAD>
+<BODY>
+ <OBJECT type="text/site properties"> 
+  <param name="FrameName" value="right">
+  <param name="Font" value=",8,134">
+  <param name="ImageType" value="Book">
+  <param name="Window Styles" value="0x27">
+  <param name="ExWindow Styles" value="0x0">
+ </OBJECT>
+<UL>
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="目录">
+<param name="Local" value="index.html">
+<param name="ImageNumber" value="11">
+</OBJECT>
+{{? book.list && book.list.length > 0}}
+{{~ book.list :chapter}}
+<LI><OBJECT type="text/sitemap">
+<param name="Name" value="{{=chapter.title}}">
+<param name="Local" value="{{=chapter.id}}.html">
+<param name="ImageNumber" value="11">
+</OBJECT>
+{{~}}
+{{?}}
+</UL>
+</BODY>
+</HTML>

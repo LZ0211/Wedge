@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>{{=book.meta.title}}</title>
+	<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>		
+<div id="book">
+	<div id="maininfo">
+    	<div id="fmimg"><img alt="{{=book.meta.title}}" src="cover.jpg" width="120" height="150"></div>
+		<div id="info">
+			<h1>{{=book.meta.title}}</h1>
+			<p>作&nbsp;&nbsp;&nbsp;&nbsp;者：{{=book.meta.author}}</p>
+			<p>类&nbsp;&nbsp;&nbsp;&nbsp;别：{{=book.meta.classes}}</p>
+			<p>状&nbsp;&nbsp;&nbsp;&nbsp;态：{{=book.meta.isned ? '完结':'连载'}}</p>                       
+			<p>更新时间：{{=(new Date(book.meta.date)).formation('yyyy-MM-dd hh:mm:ss')}}</p>
+		</div>
+    	<div id="intro">{{~book.meta.brief.split('\n'): line}}
+			<p>{{=line}}</p>{{~}}
+		</div>
+	</div>
+</div>
+<div class="listmain">
+	<dl>
+	<dt>目录</dt>{{~book.list:chapter}}
+	<dd><a href="{{=chapter.id}}.html">{{=chapter.title}}</a></dd>{{~}}
+</dl>
+</div>
+</body>
+</html>

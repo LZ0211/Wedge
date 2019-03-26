@@ -1,0 +1,26 @@
+li{LIST-STYLE-TYPE: none;}
+a{text-decoration: none;}
+BODY {margin:50px auto;font-family:"Segoe UI","Lucida Grande",Helvetica,Arial,"Microsoft YaHei",FreeSans,Arimo,"Droid Sans","wenquanyi micro hei","Hiragino Sans GB","Hiragino Sans GB W3",FontAwesome,sans-serif;font-weight:400;color:#333;font-size:14px;-webkit-font-smoothing: subpixel-antialiased;-moz-osx-font-smoothing: auto;background-color:#E9FAFF;}
+div,ul,dl,dd,p,h1,h2,h3,h4,.text{zoom:1; margin:0;padding:0;}
+#book,.listmain{border:2px solid #88C6E5;margin:0 auto 10px;width:980px;overflow:hidden;}
+#fmimg{float:left;width:140px;margin:10px;text-align:center;}
+#fmimg img{height:150px;width:120px;padding:2px;border:1px solid #EAE4D1;}
+#info{float:left;width:760px;padding:10px;font-size:16px;}
+#info h1{font-family:黑体;font-size:28px;font-weight:700;overflow:hidden;margin:auto;padding:1px;}
+#info p{height:25px;line-height:25px;padding-top:2px;width:485px;margin:auto;float:left;}
+#intro{float:right;width:98%;margin:0 10px;border-top:1px dashed #88C6E5;_height:80px; min-height:80px;}
+#intro p{text-indent:2em;line-height:150%;padding:5px;font-size:16px;}
+.listmain dl{margin:2px;overflow:hidden;}
+.listmain dl dt{width:100%;text-align:center;line-height:36px;font-size:16px;border-bottom:1px dotted #459DF5;background:#C3DFEA;overflow:hidden;}
+.listmain dl dd{float:left;padding: 0 10px;width:300px;line-height:36px;border-bottom:1px dashed #CCC;font-size:14px;display:block;white-space:nowrap; text-overflow:ellipsis; /* for internet explorer */ overflow:hidden;}
+.listmain dd a:link{color:#444;}
+
+.content h1{text-align:center;color:#CC3300;line-height:30px;margin:20px 0;font-size:28px;}
+.content p{text-indent:2em;}
+.showtxt{width:920px;padding:10px 30px;line-height:200%;font-size:20px;border-top:1px dashed #CCC;border-bottom:1px dashed #CCC;overflow:hidden;}
+.textinfo{margin:6px 0;font-size:12px;text-align:center;color:#999;}.textinfo a{color:#999;}.textinfo span{padding:0 10px;}
+
+.page_chapter{width:420px;margin:20px auto;font-size:16px;overflow:hidden;}
+.page_chapter li{float:left;width:120px;line-height:36px;margin:0 2%;text-align:center;background:#fff;border:1px solid #ccc;border-radius: 6px;cursor:pointer;}
+.page_chapter li a{display:block;color:#3487DD;text-decoration: none;}
+.page_chapter li a:hover{color:#CC2931;text-decoration:none;}

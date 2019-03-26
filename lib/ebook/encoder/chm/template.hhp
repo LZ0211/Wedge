@@ -1,0 +1,29 @@
+[OPTIONS]
+CITATION=裂章
+Auto Index=No
+Binary Index=Yes
+Compatibility=1.1 or later
+Title="{{=book.meta.title}} - {{=book.meta.author}}"
+Compiled file={{=book.filename}}
+Contents file="book.hhc"
+COPYRIGHT={{=book.meta.source}}
+Default topic="index.html"
+Index file="book.hhk"
+Default Font=
+Default Window=main
+Display compile progress=Yes
+Enhanced decompilation=Yes
+Language=0x0804
+Full-text search=yes
+error log file=a.log
+[WINDOWS]
+Main="{{=book.meta.title}}","book.hhc","book.hhk","index.html","index.html","index.html","",,,0x23520,270,0x387E,[50,50,950,700],0xB0000,0x0,,0,0,,0,
+[Files]
+index.html
+{{? book.list && book.list.length > 0}}
+{{~book.list:chapter}}
+{{=chapter.id}}.html
+{{~}}
+{{?}}
+style.css
+cover.jpg

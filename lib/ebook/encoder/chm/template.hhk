@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+</HEAD>
+<BODY>
+<OBJECT type="text/site properties">
+<param name="Font" value=",8,134">
+</OBJECT>
+<UL>
+{{? book.list && book.list.length > 0}}
+{{~book.list:chapter}}
+ <LI>
+  <OBJECT type="text/sitemap">
+  <param name="Name" value="{{=chapter.title}}">
+  <param name="Local" value="{{=chapter.id}}.html">
+ </OBJECT>
+{{~}}
+{{?}}
+</UL>
+</BODY>
+</HTML>
