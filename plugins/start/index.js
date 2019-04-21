@@ -169,6 +169,23 @@ module.exports = function (){
         Stack.push(thisOpt);
         Select(subOptions);
     }
+
+    function importWBK(file,next){
+        const fs = app.lib.fs;
+        const path = app.lib.Path;
+        if(Array.isArray(file)) return app.Thread().use(importWBK).queue(file).end(next).start();
+        file = file.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1');
+        let state = fs.statSync(file);
+        if(state.isFile()){
+            if(path.extname(file).toLowerCase()==='.wbk') return app.importWBK(file,next);
+            return next();
+        }
+        if(state.isDirectory()){
+            let files = fs.readdirSync(file).map(x=>path.join(file,x));
+            return app.Thread().use(importWBK).queue(files).end(next).start()
+        }
+        return next();
+    }
     
     const returnOption = {
         text: '返回上一级菜单',
@@ -208,7 +225,7 @@ module.exports = function (){
             func:[['请输入书籍ID：'],uuid=>app.ebook(uuid)]
         },{
             text:'导入书籍',
-            func:[['拖拽wbk文件到窗口：'],file=>app.importWBK(file.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))]
+            func:[['拖拽文件到窗口：'],file=>importWBK(file,()=>app.end())]
         },{
             text:'导出书籍',
             func:[['请输入书籍ID：'],uuid=>app.outportBook(uuid)]
@@ -309,7 +326,7 @@ module.exports = function (){
                 func:[[],multInput(uuids=>app.refreshBooks(uuids))]
             },{
                 text:'导入书籍',
-                func:[[],multInput(files=>app.Thread().use((file,next)=>app.spawn().end(next).importWBK(file.trim().replace(/(^"|"$)/gi,'').replace(/\\( |\[|\])/gi,'$1'))).queue(files).start())]
+                func:[[],multInput(files=>importWBK(files,()=>app.end()))]
             },{
                 text:'导出书籍',
                 func:[[],multInput(uuids=>app.outportBooks(uuids))]

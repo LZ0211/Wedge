@@ -436,7 +436,7 @@ class Wedge extends EventEmitter{
             Thread()
             .use((chapter,next)=>{
                 app.book.pushList(chapter);
-                fs.writeFile(Path.join(app.bookdir,chapter.id),JSON.stringify(chapter),next);
+                fs.writeFile(Path.join(app.bookdir,chapter.id+'.json'),JSON.stringify(chapter),next);
             }).queue(book.list).threads(20).label('importBook')
             .end(()=>{
                 app.book.localizationSync(app.bookdir);
