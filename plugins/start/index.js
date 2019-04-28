@@ -241,75 +241,75 @@ module.exports = function (){
         },{
             text:'修改书籍信息',
             func:[['请输入书籍ID：'],uuid=>{
-                let fs = app.lib.fs;
-                if (!fs.existsSync(uuid)){
+                if (!app.lib.fs.existsSync(uuid)){
                     console.log('书籍不存在...')
                     return refresh();
                 }
-                let sub = app.spawn();
-                sub.loadBook(uuid,()=>{
-                    let next = ()=>{
-                        sub.sendToDataBase();
-                        sub.saveBook();
-                        if(uuid !== sub.book.getMeta('uuid')){
-                            app.database.remove(uuid);
-                            fs.rmdirsSync(sub.book.getMeta('uuid'));
-                            fs.renameSync(uuid, sub.book.getMeta('uuid'));
-                        }
-                        goBack();
-                    }
-                    let options = [
+                function SelectOptions(next){
+                    Select([
                         returnOption,
                         {text:'保存并退出',func:[[],next]},
                         {
-                            text:`书名:${sub.book.getMeta('title')}`,
+                            text:`书名:${app.book.getMeta('title')}`,
                             func:[['>'],val=>{
-                                sub.book.setMeta('title',val);
-                                SelectOptions()
+                                app.book.setMeta('title',val);
+                                SelectOptions(next)
                             }]
                         },{
-                            text:`作者:${sub.book.getMeta('author')}`,
+                            text:`作者:${app.book.getMeta('author')}`,
                             func:[['>'],val=>{
-                                sub.book.setMeta('author',val);
-                                SelectOptions()
+                                app.book.setMeta('author',val);
+                                SelectOptions(next)
                             }]
                         },{
-                            text:`类别:${sub.book.getMeta('classes')}`,
+                            text:`类别:${app.book.getMeta('classes')}`,
                             func:[['>'],val=>{
-                                sub.book.setMeta('classes',val);
-                                SelectOptions()
+                                app.book.setMeta('classes',val);
+                                SelectOptions(next)
                             }]
                         },{
-                            text:`书源:${sub.book.getMeta('source')}`,
+                            text:`书源:${app.book.getMeta('source')}`,
                             func:[['>'],val=>{
-                                sub.book.setMeta('source',val);
-                                SelectOptions()
+                                app.book.setMeta('source',val);
+                                SelectOptions(next)
                             }]
                         },{
-                            text:`官网:${sub.book.getMeta('origin')}`,
+                            text:`官网:${app.book.getMeta('origin')}`,
                             func:[['>'],val=>{
-                                sub.book.setMeta('origin',val);
-                                SelectOptions()
+                                app.book.setMeta('origin',val);
+                                SelectOptions(next)
                             }]
                         },{
-                            text:`完结:${sub.book.getMeta('isend')}`,
+                            text:`完结:${app.book.getMeta('isend')}`,
                             func:[['>'],val=>{
-                                sub.book.setMeta('isend',val);
-                                SelectOptions()
+                                app.book.setMeta('isend',val);
+                                SelectOptions(next)
                             }]
                         },{
-                            text:`简介:${sub.book.getMeta('brief')}`,
+                            text:`简介:${app.book.getMeta('brief')}`,
                             func:[[],multInput(lines=>{
                                 var val = lines.join('\n')
-                                sub.book.setMeta('brief',val);
-                                SelectOptions()
+                                app.book.setMeta('brief',val);
+                                SelectOptions(next)
                             })]
                         }
-                    ];
-                    let SelectOptions = ()=>Select(options);
-                    SelectOptions();
-                });
-            }]
+                    ])
+                }
+                function rename(next){
+                    if(uuid !== app.book.getMeta('uuid')){
+                        app.database.remove(uuid);
+                        app.lib.fs.rmdirsSync(app.book.getMeta('uuid'));
+                        app.lib.fs.renameSync(uuid, app.book.getMeta('uuid'));
+                    }
+                    next()
+                }
+                app.CMD('loadBook',[
+                SelectOptions,
+                next=>app.sendToDataBase(next),
+                next=>app.saveBook(next),
+                rename,
+                goBack])(uuid)}
+            ]
         },{
             text:'批量操作',
             options:[returnOption,{
