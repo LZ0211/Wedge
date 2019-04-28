@@ -245,68 +245,70 @@ module.exports = function (){
                     console.log('书籍不存在...')
                     return refresh();
                 }
+                let _app = app.spawn();
                 function SelectOptions(next){
                     Select([
                         returnOption,
                         {text:'保存并退出',func:[[],next]},
                         {
-                            text:`书名:${app.book.getMeta('title')}`,
+                            text:`书名:${_app.book.getMeta('title')}`,
                             func:[['>'],val=>{
-                                app.book.setMeta('title',val);
+                                _app.book.setMeta('title',val);
                                 SelectOptions(next)
                             }]
                         },{
-                            text:`作者:${app.book.getMeta('author')}`,
+                            text:`作者:${_app.book.getMeta('author')}`,
                             func:[['>'],val=>{
-                                app.book.setMeta('author',val);
+                                _app.book.setMeta('author',val);
                                 SelectOptions(next)
                             }]
                         },{
-                            text:`类别:${app.book.getMeta('classes')}`,
+                            text:`类别:${_app.book.getMeta('classes')}`,
                             func:[['>'],val=>{
-                                app.book.setMeta('classes',val);
+                                _app.book.setMeta('classes',val);
                                 SelectOptions(next)
                             }]
                         },{
-                            text:`书源:${app.book.getMeta('source')}`,
+                            text:`书源:${_app.book.getMeta('source')}`,
                             func:[['>'],val=>{
-                                app.book.setMeta('source',val);
+                                _app.book.setMeta('source',val);
                                 SelectOptions(next)
                             }]
                         },{
-                            text:`官网:${app.book.getMeta('origin')}`,
+                            text:`官网:${_app.book.getMeta('origin')}`,
                             func:[['>'],val=>{
-                                app.book.setMeta('origin',val);
+                                _app.book.setMeta('origin',val);
                                 SelectOptions(next)
                             }]
                         },{
-                            text:`完结:${app.book.getMeta('isend')}`,
+                            text:`完结:${_app.book.getMeta('isend')}`,
                             func:[['>'],val=>{
-                                app.book.setMeta('isend',val);
+                                _app.book.setMeta('isend',val);
                                 SelectOptions(next)
                             }]
                         },{
-                            text:`简介:${app.book.getMeta('brief')}`,
+                            text:`简介:${_app.book.getMeta('brief')}`,
                             func:[[],multInput(lines=>{
                                 var val = lines.join('\n')
-                                app.book.setMeta('brief',val);
+                                _app.book.setMeta('brief',val);
                                 SelectOptions(next)
                             })]
                         }
                     ])
                 }
                 function rename(next){
-                    if(uuid !== app.book.getMeta('uuid')){
-                        app.database.remove(uuid);
-                        app.lib.fs.rmdirsSync(app.book.getMeta('uuid'));
-                        app.lib.fs.renameSync(uuid, app.book.getMeta('uuid'));
+                    if(uuid !== _app.book.getMeta('uuid')){
+                        _app.database.remove(uuid);
+                        _app.lib.fs.rmdirsSync(_app.book.getMeta('uuid'));
+                        _app.lib.fs.renameSync(uuid, _app.book.getMeta('uuid'));
+
                     }
                     next()
                 }
-                app.CMD('loadBook',[
+                _app.CMD('loadBook',[
                 SelectOptions,
-                next=>app.sendToDataBase(next),
-                next=>app.saveBook(next),
+                next=>_app.sendToDataBase(next),
+                next=>_app.saveBook(next),
                 rename,
                 goBack])(uuid)}
             ]
