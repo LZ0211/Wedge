@@ -372,7 +372,7 @@ plugins为盗链网站
 
 规则文件由三部分组成：index.js, selector.js(json), replacer.js(json)
 
-####主文件（index.js）
+#### 主文件（index.js）
 ```Javascript
 module.exports = {
     "host":"www.23zw.com",//站点host
@@ -386,8 +386,9 @@ module.exports = {
 }
 ```
 
-####选择器
+#### 选择器
 按照jquery函数填写规则，启动时自动编译成函数，为了安全后期会改成沙盒中运行
+
 注入函数：
 1. $.location(url)  参数为空时返回当前页面的url，参数不为空是返回相对路径的完整url地址，等效于path.resolve()函数
 2. $.getCookie(name)  返回当前页面对应name的cookie值
