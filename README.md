@@ -202,8 +202,8 @@ App.config.set('app.reTry.chapter',3);
 //获取章节内图片失败时的重试次数
 App.config.set('app.reTry.image',3);
 ```
-###其他配置
-####小说搜索引擎配置
+### 其他配置
+#### 小说搜索引擎配置
 config/searcher.json
 以[若出中文网]为例
 ```Javascript
