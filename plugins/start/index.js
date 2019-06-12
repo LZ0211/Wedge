@@ -157,6 +157,7 @@ module.exports = function (){
                     main,
                     {text:'更新书籍',func:[[],()=>app.updateBooks(items.map(item=>item.uuid))]},
                     {text:'刷新书籍信息',func:[[],()=>app.refreshBooks(items.map(item=>item.uuid))]},
+                    {text:'过滤书籍内容',func:[[],()=>app.filterBooks(items.map(item=>item.uuid))]},
                     {text:'重新下载书籍',func:[[],()=>app.reDownloadBooks(items.map(item=>item.uuid))]},
                     {text:'导出书籍',func:[[],()=>app.outportBooks(items.map(item=>item.uuid))]},
                     {text:'生成电子书',func:[[],()=>app.ebooks(items.map(item=>item.uuid))]},
@@ -220,6 +221,9 @@ module.exports = function (){
         },{
             text:'刷新书籍信息',
             func:[['请输入书籍ID：'],uuid=>app.refreshBook(uuid)]
+        },{
+            text:'过滤书籍内容',
+            func:[['请输入书籍ID：'],uuid=>app.filterBook(uuid)]
         },{
             text:'生成电子书',
             func:[['请输入书籍ID：'],uuid=>app.ebook(uuid)]
@@ -326,6 +330,9 @@ module.exports = function (){
             },{
                 text:'刷新书籍信息',
                 func:[[],multInput(uuids=>app.refreshBooks(uuids))]
+            },{
+                text:'过滤书籍内容',
+                func:[[],multInput(uuids=>app.filterBooks(uuids))]
             },{
                 text:'导入书籍',
                 func:[[],multInput(files=>importWBK(files,()=>app.end()))]

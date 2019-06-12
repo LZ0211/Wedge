@@ -2,6 +2,7 @@
 const fs = require("fs");
 const Path = require("path");
 const URL = require("url");
+const os = require("os");
 const querystring = require("querystring");
 const EventEmitter = require("events");
 const child_process = require("child_process");
@@ -32,6 +33,7 @@ class Wedge extends EventEmitter{
         this.label = Random.uuid(8,16);
         this.book = Book();
         this.bookdir = null;
+        this.maxThreads = os.cpus().length * 2;
         this.chdir(dir);
         this.init();
         this.plugins();
@@ -109,6 +111,9 @@ class Wedge extends EventEmitter{
 
         //testRuleCmd
         this.testRuleCmd = this.CMD('getBookMeta > logBookInfo > updateBookMeta > logBookInfo > getBookIndexs > intercept > getChapterContent > mergeChapterContent > log > end');
+
+        //filterChapter
+        this.filterBookContentCmd = this.CMD('loadBook > filterBookChapter > end');
 
         return this;
     }
@@ -470,6 +475,12 @@ class Wedge extends EventEmitter{
             }
         }
         return fn();
+    }
+
+    filterBookChapter(fn){
+        fn = this.next(fn);
+        this.book.filterChapterContent(fn);
+        return this;
     }
 
     loadBook(dir,fn){
@@ -1292,6 +1303,11 @@ class Wedge extends EventEmitter{
         return this;
     }
 
+    filterBook(dir){
+        process.nextTick(this.filterBookContentCmd.bind(this,dir));
+        return this;
+    }
+
     ebooks(dirs,thread){
         Thread()
         .use((dir,next)=>this.spawn().ebook(dir).end(next))
@@ -1299,7 +1315,7 @@ class Wedge extends EventEmitter{
         .queue(dirs)
         .log(this.info.bind(this))
         .label('convertEbooks')
-        .setThread(thread || this.getConfig('thread.update'))
+        .setThread(Math.min(thread || this.getConfig('thread.update') || 1, this.maxThreads))
         .start();
         return this;
     }
@@ -1312,7 +1328,7 @@ class Wedge extends EventEmitter{
         .log(this.info.bind(this))
         .label('newBooks')
         .interval(5000)
-        .setThread(thread || this.getConfig('thread.new'))
+        .setThread(Math.min(thread || this.getConfig('thread.new') || 1, this.maxThreads))
         .start();
         return this;
     }
@@ -1325,7 +1341,7 @@ class Wedge extends EventEmitter{
         .log(this.info.bind(this))
         .label('updateBooks')
         .interval(5000)
-        .setThread(thread || this.getConfig('thread.update'))
+        .setThread(Math.min(thread || this.getConfig('thread.update') || 1, this.maxThreads))
         .start();
         return this;
     }
@@ -1338,7 +1354,7 @@ class Wedge extends EventEmitter{
         .log(this.info.bind(this))
         .label('refreshBooks')
         .interval(5000)
-        .setThread(thread || this.getConfig('thread.refresh'))
+        .setThread(Math.min(thread || this.getConfig('thread.refresh') || 1, this.maxThreads))
         .start();
         return this;
     }
@@ -1351,7 +1367,7 @@ class Wedge extends EventEmitter{
         .log(this.info.bind(this))
         .label('reDownloadBooks')
         .interval(5000)
-        .setThread(thread || this.getConfig('thread.new'))
+        .setThread(Math.min(thread || this.getConfig('thread.new') || 1, this.maxThreads))
         .start();
         return this;
     }
@@ -1363,7 +1379,7 @@ class Wedge extends EventEmitter{
         .queue(uuids)
         .log(this.info.bind(this))
         .label('outportBooks')
-        .setThread(thread || this.getConfig('thread.update'))
+        .setThread(Math.min(thread || this.getConfig('thread.update') || 1, this.maxThreads))
         .start();
         return this;
     }
@@ -1397,7 +1413,7 @@ class Wedge extends EventEmitter{
         .queue(uuids)
         .log(this.info.bind(this))
         .label('importBookRecords')
-        .setThread(thread || this.getConfig('thread.update'))
+        .setThread(Math.min(thread || this.getConfig('thread.update') || 1, this.maxThreads))
         .start();
         return this;
     }
@@ -1409,7 +1425,7 @@ class Wedge extends EventEmitter{
         .queue(uuids)
         .log(this.info.bind(this))
         .label('convertEbooks')
-        .setThread(thread || this.getConfig('thread.update'))
+        .setThread(Math.min(thread || this.getConfig('thread.update') || 1, this.maxThreads))
         .start();
         return this;
     }
@@ -1422,7 +1438,20 @@ class Wedge extends EventEmitter{
         .log(this.info.bind(this))
         .label('refreshBooks')
         .interval(5000)
-        .setThread(thread || this.getConfig('thread.update'))
+        .setThread(Math.min(thread || this.getConfig('thread.update') || 1, this.maxThreads))
+        .start();
+        return this;
+    }
+
+    filterBooks(uuids,thread){
+        Thread()
+        .use((dir,next)=>this.spawn().filterBook(dir).end(next))
+        .end(this.next())
+        .queue(uuids)
+        .log(this.info.bind(this))
+        .label('filterBooks')
+        .interval(5000)
+        .setThread(Math.min(thread || this.getConfig('thread.update') || 1, this.maxThreads))
         .start();
         return this;
     }
