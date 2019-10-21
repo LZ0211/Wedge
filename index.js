@@ -882,7 +882,7 @@ class Wedge extends EventEmitter{
 
     getChapterContent(link,fn){
         fn = this.next(fn);
-        if(!link) return fn();
+        if(!link) return fn(null);
         this.info('getChapterContent');
         let times = util.parseInteger(this.getConfig('app.retry.chapter'),3);
         link = util.formatLink(link);
@@ -927,7 +927,7 @@ class Wedge extends EventEmitter{
             };
             options.error = error=>{
                 this.debug(error);
-                if (--times <= 0) return fn();
+                if (--times <= 0) return fn(null);
                 setTimeout(()=>this.request(options),1000*5);
             };
             return this.request(options);
@@ -941,19 +941,19 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         if (!chapter) return fn(null);
         let links;
-        let mergeContentCMD = [
-            this.getChapterContent.bind(this),
-            this.mergeChapterContent.bind(this),
-            (nextChapter,next)=>{
-                if(!nextChapter) return fn(null);
-                if (chapter.content && chapter.content == nextChapter.content) return fn(chapter);
-                if (chapter && chapter.content && nextChapter.content){
-                    chapter.content += '\n';
-                }
-                chapter.content += nextChapter.content;
-                return next(chapter);
-            }
-        ];
+        function mergeContent(link,next){
+            this.getChapterContent(link,
+                chapter=>this.mergeChapterContent(chapter,nextChapter=>{
+                    if(!nextChapter) return fn(null);
+                    if (chapter.content && chapter.content == nextChapter.content) return fn(chapter);
+                    if (chapter && chapter.content && nextChapter.content){
+                        chapter.content += '\n';
+                    }
+                    chapter.content += nextChapter.content;
+                    return next(chapter);
+                })
+            )
+        }
         if (chapter.nextPages){
             links = chapter.nextPages.map(util.formatLink).filter(link=>link.url !== chapter.source);
             links.forEach((link,idx)=>link.id=chapter.id+'_'+idx);
@@ -961,7 +961,7 @@ class Wedge extends EventEmitter{
             if (!links.length) return fn(chapter);
             this.info('mergeChapters');
             Thread()
-            .use((link,next)=>Thread.series(mergeContentCMD.concat([next]))(link))
+            .use(mergeContent)
             .end(()=>fn(chapter))
             .queue(links)
             .log(this.info.bind(this))
@@ -975,7 +975,7 @@ class Wedge extends EventEmitter{
             links = this.filterBookIndex(links);
             if (!links.length) return fn(chapter);
             this.info('mergeChapter');
-            Thread.series(mergeContentCMD.concat([fn]))(links[0]);
+            mergeContent(links[0],fn);
             return this;
         }
         return fn(chapter);
@@ -1128,7 +1128,7 @@ class Wedge extends EventEmitter{
         if (!chapter) return fn(null);
         if (!chapter.content && localization) return fn(chapter);
         this.info('saveChapter');
-        chapter.date = +new Date;
+        chapter.date = Date.now();
         this.book.pushList(chapter);
         if (!localization) return fn(chapter);
         this.book.pushChapter(chapter,fn);
@@ -1138,15 +1138,17 @@ class Wedge extends EventEmitter{
     getChapter(link,fn){
         fn = this.next(fn);
         this.info('getChapter');
-        Thread.series([
-            this.getChapterContent.bind(this),
-            this.mergeChapterContent.bind(this),
-            this.getNextChapter.bind(this),
-            this.getChapterImages.bind(this),
-            this.getDeepChapter.bind(this),
-            this.saveChapter.bind(this),
-            fn,
-        ])(link);
+        this.getChapterContent(link,
+            chapter=>this.mergeChapterContent(chapter,
+                chapter=>this.getNextChapter(chapter,
+                    chapter=>this.getChapterImages(chapter,
+                        chapter=>this.getDeepChapter(chapter,
+                            chapter=>this.saveChapter(chapter,fn)
+                        )
+                    )
+                )
+            )
+        );
         return this;
     }
 
@@ -1185,15 +1187,12 @@ class Wedge extends EventEmitter{
         this.log("generating ebook...");
         work.on("message",msg=>{
             if (!msg.code){
-                this.log("ebook generated successful!");
-                if (this.getConfig("ebook.opendirectory") && this.platform.match('win')){
-                    this.openDir(options.directory);
-                }
-                if (this.getConfig("ebook.openebookfile") && this.platform.match('win')){
-                    this.openDir(Path.join(options.directory,ebookfile));
-                }
+                this.log(`ebook ${msg.filename} generated successful!`);
+                if(!this.platform.match('win')) return;
+                if (this.getConfig("ebook.opendirectory")) this.openDir(options.directory);
+                if (this.getConfig("ebook.openebookfile")) this.openDir(Path.join(options.directory,ebookfile));
             }else {
-                this.log("ebook generation failed!");
+                this.log(`generate ebook of ${this.book.getMeta('uuid')} failed because of error ${msg.code}!`);
             }
         });
         work.on('exit',()=>fn());

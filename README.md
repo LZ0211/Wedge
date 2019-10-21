@@ -12,36 +12,17 @@ app.start()
 //引入wedge模块
 const Wedge = require("./wedge");
 //创建App，参数为工作路径
-let app = new Wedge(workdir);
-//终端提示输入界面
-app.start();
+var App = new Wedge(workdir);
 //新建书籍
-app.newBook(url);
+App.newBook(url);
 //更新书籍
-app.updateBook(uuid);
+App.updateBook(uuid);
 //批量新建书籍
-app.newBooks([url1,url2,url3,...]);
+App.newBooks([url1,url2,url3,...]);
 //批量更新书籍
-app.updateBooks([uuid1,uuid2,uuid3,...]);
-//合并链接新建书籍
-app.newBook([url1,url2,...]);
-//修改工作路径
-app.chdir(dir);
-//创建子对象，返回app对象的拷贝，等效于刚初始化的app对象
-let child = app.spawn();
-//更新元数据
-app.refreshBook(uuid);
-//重新下载书籍内容
-app.reDownloadBook(uuid);
-//删除书籍
-app.deleteBook(uuid);
-//从数据库删除书籍记录
-app.removeBookRecord(uuid);
-//向数据库添加书籍记录
-app.importBookRecord(uuid);
-//生成电子书
-//推荐直接使用lib/ebook/cli文件夹下的脚本生成，拖拽书籍文件夹至cmd脚本上即可
-app.ebook(dir);
+App.updateBooks([uuid1,uuid2,uuid3,...]);
+//终端提示输入界面
+App.start()
 ```
 
 ### 配置参数[可选]
@@ -51,36 +32,35 @@ app.ebook(dir);
 #### 网络请求参数
 ```Javascript
 //请求失败重连次数
-app.config.set('request.reconnect',5);
+App.config.set('request.reconnect',5);
 //请求超时时间
-app.config.set('request.timeout',5000);
+App.config.set('request.timeout',5000);
 //设置代理
-app.config.set('request.proxy','127.0.0.1:8087');
-//等效于
-app.config.set('request.proxy',{host:'localhost',port:'8087'});
+App.config.set('request.proxy','127.0.0.1:8087');
+App.config.set('request.proxy',{host:'localhost',port:'8087'});
 //关闭代理请求
-app.config.set('request.proxy','');
+App.config.set('request.proxy','');
 //设置代理认证
-app.config.set('request.proxyAuth',{username:'###',password:'###'});
+App.config.set('request.proxyAuth',{username:'###',password:'###'});
 //根据正则匹配自动切换代理
-app.config.set('request.proxyAutoConfig','google.com|youtube.com');
+App.config.set('request.proxyAutoConfig','google.com|youtube.com');
 //根据pac函数自动切换代理
-app.config.set('request.proxyAutoConfig',url=>url.match(/google.com|youtube.com/));
+App.config.set('request.proxyAutoConfig',url=>url.match(/google.com|youtube.com/));
 ```
 
 #### 电子书参数
 ```Javascript
 //生成电子书保存路径
-app.config.set('ebook.directory','../ebook');
+App.config.set('ebook.directory','../ebook');
 //电子书格式，默认epub
-app.config.set('ebook.formation','epub');
+App.config.set('ebook.formation','epub');
 /*
 是否创建电子书，子进程命令
 -1——发生修改后自动创建新的电子书(包括书籍metadata变动或有下载新章节)
 1——每次调用生成命令都会创建新的电子书
 0——关闭该功能
 */
-app.config.set('ebook.activated',-1);
+App.config.set('ebook.activated',-1);
 //章节过滤器，程序会自动编译成函数
 /*语法
 关键词：title,content,id,index,date,title.length,content.length
@@ -96,11 +76,11 @@ app.config.set('ebook.activated',-1);
 筛选下载日期大于2017-01-01的章节 —— date:<1483228800000,>
 组合筛选 —— (title:/^第\d+章/ & content.length:<500,>) | content.length:<2000,>
 */
-app.config.set('ebook.filter','length:<500,>');
+App.config.set('ebook.filter','content.length:<500,>');
 //电子书生成后自动打开文件目录
-app.config.set('ebook.opendirectory',false);
+App.config.set('ebook.opendirectory',false);
 //电子书生成后自动打开文件
-app.config.set('ebook.openebookfile',false);
+App.config.set('ebook.openebookfile',false);
 ```
 #### 电子书格式
 txt——这个不用介绍了，纯文本格式的，编码用的utf-8
@@ -152,78 +132,78 @@ snb——盛大bambook格式，bzip2压缩，由于Bambook基本已经退出市�
 #### 线程参数
 ```Javascript
 //执行章节下载时的并行数目
-app.config.set('thread.execute',5);
+App.config.set('thread.execute',5);
 //批量新建小说时的并行数目
 //总线程=thread.execute*thread.new
-app.config.set('thread.new',5);
+App.config.set('thread.new',5);
 //批量更新小说时的并行数目
-app.config.set('thread.update',5);
+App.config.set('thread.update',5);
 //合并目录时的并行数目
-app.config.set('thread.merge',5);
+App.config.set('thread.merge',5);
 //下载图片时的并行数目
-app.config.set('thread.image',5);
+App.config.set('thread.image',5);
 ```
 
 #### 数据库参数
 ```Javascript
 //实时同步本地
-app.config.set('database.sync',true);
+App.config.set('database.sync',true);
 //添加新书时在数据库中检索书籍是否已经存在
 //关闭时将在本地检索书籍是否已经存在
-app.config.set('database.check',false);
+App.config.set('database.check',false);
 //通过App.start()启动终端模式的时候，打印数据表格时允许显示的关键词
-app.config.set('database.showKeys', ["uuid","title","author","classes","isend","date","source"]);
+App.config.set('database.showKeys', ["uuid","title","author","classes","isend","date","source"]);
 ```
 
 #### 书籍参数
 ```Javascript
 //根据本地章节文件同步目录
-app.config.set('book.sync',true);
+App.config.set('book.sync',true);
 //自动检查目录，添加已有的章节信息或移除已被删除的章节
-app.config.set('book.check',true);
+App.config.set('book.check',true);
 //如果存在相同小说时，是否切换新的的源
-app.config.set('book.changesource',false);
+App.config.set('book.changesource',false);
 //切换新的的源后是否覆盖旧章节
-app.config.set('book.override',false);
+App.config.set('book.override',false);
 //章节中发现图片链接是是否下载图片到本地，可用于图片采集或者漫画下载
-app.config.set('book.imagelocalization',false);
+App.config.set('book.imagelocalization',false);
 //图片链接的文件后缀过滤规则
-app.config.set('book.imageExts',[".jpg",".jpeg",".png",".gif",".webp",".bmp"]);
+App.config.set('book.imageExts',[".jpg",".jpeg",".png",".gif",".webp",".bmp"]);
 //是否从起点腾讯等原创网站搜索书籍信息
 //建议开启，当下载网站不在规则库中能够辅助搜集书籍信息
-app.config.set('book.searchmeta',true);
+App.config.set('book.searchmeta',true);
 //过滤书籍数目中链接相同的章节
-app.config.set('book.unique.source',true);
+App.config.set('book.unique.source',true);
 //过滤书籍数目中标题相同的章节
-app.config.set('book.unique.title',false);
+App.config.set('book.unique.title',false);
 //深度下载，如果章节内容中存在超链接，将下载该链接内容
-app.config.set("book.deepdownload",true);
+App.config.set("book.deepdownload",true);
 //设置最大下载深度
-app.config.set("book.maxdepth",2);
+App.config.set("book.maxdepth",2);
 ```
 
 #### App参数
 ```Javascript
 //输出运行日志
-app.config.set('app.log',true);
+App.config.set('app.log',true);
 //输出运行日志到本地文件
-app.config.set('app.log','LOG.txt');
+App.config.set('app.log','LOG.txt');
 //输出debug信息
-app.config.set('app.debug',true);
+App.config.set('app.debug',true);
 //总的网络重连次数=retry * request.reconnect
 //获取书籍元数据失败时的重试次数
-app.config.set('app.reTry.meta',3);
+App.config.set('app.reTry.meta',3);
 //获取书籍目录失败时的重试次数
-app.config.set('app.reTry.index',3);
+App.config.set('app.reTry.index',3);
 //获取书籍封面图片失败时的重试次数
-app.config.set('app.reTry.cover',3);
+App.config.set('app.reTry.cover',3);
 //获取书籍章节内容失败时的重试次数
-app.config.set('app.reTry.chapter',3);
+App.config.set('app.reTry.chapter',3);
 //获取章节内图片失败时的重试次数
-app.config.set('app.reTry.image',3);
+App.config.set('app.reTry.image',3);
 ```
-### 其他配置
-#### 小说搜索引擎配置
+###其他配置
+####小说搜索引擎配置
 config/searcher.json
 以[若出中文网]为例
 ```Javascript
@@ -392,7 +372,7 @@ plugins为盗链网站
 
 规则文件由三部分组成：index.js, selector.js(json), replacer.js(json)
 
-#### 主文件（index.js）
+####主文件（index.js）
 ```Javascript
 module.exports = {
     "host":"www.23zw.com",//站点host
@@ -406,9 +386,8 @@ module.exports = {
 }
 ```
 
-#### 选择器
+####选择器
 按照jquery函数填写规则，启动时自动编译成函数，为了安全后期会改成沙盒中运行
-
 注入函数：
 1. $.location(url)  参数为空时返回当前页面的url，参数不为空是返回相对路径的完整url地址，等效于path.resolve()函数
 2. $.getCookie(name)  返回当前页面对应name的cookie值

@@ -42,14 +42,14 @@
     "name": ".ireader.com"
   },
   {
-    "url": "http://ireader.com.cn/index.php",
-    "query": "ca=search.index&pca=channel.index&keyword=%title%",
-    "name": ".ireader.com"
-  },
-  {
     "url": "https://www.readnovel.com/search",
     "query": "kw=%title%",
     "name": ".readnovel.com"
+  },
+  {
+    "url": "http://ireader.com.cn/index.php",
+    "query": "ca=search.index&pca=channel.index&keyword=%title%",
+    "name": ".ireader.com"
   },
   {
     "url": "http://www.motie.com/ajax/search",
@@ -129,19 +129,22 @@
     "name": ".tiexue.net"
   },
   {
-    "url": "http://a.heiyan.com/jsonp/search/",
-    "query": "queryString=%title%&objectType=2&page=1&pageSize=25",
-    "name": ".heiyan.com",
-    "parse": "json.voRF.items.map(o=>['http://www.heiyan.com'+o.object.url,o.object.name])"
+    "url": "https://search.heiyan.com/web/search",
+    "query": "queryString=%title%&highlight=false&page=1",
+    "headers":{
+      "referer": "https://www.heiyan.com/search/?queryString=%title%"
+    },
+    "parse": "json.data.content.map(x=>['https://www.heiyan.com/book/'+x.id,x.name])",
+    "name": ".heiyan.com"
   },
   {
-    "url": "http://a.ruochu.com/jsonp/search/",
-    "query": "queryString=%title%&objectType=2&page=1&pageSize=25",
-    "name": ".ruochu.com",
+    "url": "http://search.ruochu.com/web/search",
+    "query": "queryString=%title%&highlight=false&page=1",
     "headers":{
       "referer": "http://www.ruochu.com/search/?queryString=%title%"
     },
-    "parse": "json.voRF.items.map(o=>['http://www.ruochu.com'+o.object.url,o.object.name])"
+    "parse": "json.data.content.map(x=>['http://www.ruochu.com/book/'+x.id,x.name])",
+    "name": ".ruochu.com"
   },
   {
     "url": "http://book.km.com/search.html",
@@ -231,7 +234,7 @@
     "name": ".hengyan.com"
   },
   {
-    "url": "http://www.ciweimao.com/get-search-book-list/%title%/1",
+    "url": "http://www.ciweimao.com/get-search-book-list/0-0-0-0-0-0/全部/%title%/1",
     "name": ".ciweimao.com",
     "selector": "p.tit a"
   },
