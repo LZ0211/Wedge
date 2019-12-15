@@ -54,13 +54,11 @@
     "formation": "epub",
     "filename": "{author}-《{title}》.{format}",
     "directory": "../ebook",
-    "filter": "content.length:<500,>",
     "openDirectory": false,
     "openEbookFile": false
   },
   "thread": {
     "execute": 10,
-    "refresh": 8,
     "new": 3,
     "update": 3,
     "image": 2
@@ -89,9 +87,8 @@
     "showKeys": ["uuid","title","author","classes","isend","date","source"]
   },
   "app": {
-    "log": true,
+    "log": false,
     "debug": false,
-    "info": true,
     "retry": {
       "meta": 3,
       "index": 3,
