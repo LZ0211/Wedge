@@ -28,10 +28,9 @@
     "name": ".17k.com"
   },
   {
-    "url": "https://www.baidu.com/s",
-    "query": "ie=utf-8&rn=50&wd=%title%&si=www.jjwxc.net&ct=2097152",
-    "selector": ".result h3.t a",
-    "engine": "baidu",
+    "url": "http://www.sogou.com/web",
+    "query": "query=%title%+site:www.jjwxc.net&ie=utf8&sitequery=www.jjwxc.net",
+    "selector": "h3.vrTitle a",
     "replace": [{".*《(.*)》.*":"$1"}],
     "filter": "http://www.jjwxc.net/onebook.php\\?novelid=\\d+",
     "name": "www.jjwxc.net"
@@ -55,7 +54,7 @@
     "url": "http://www.motie.com/ajax/search",
     "dataType": "json",
     "query": "type=2&queryString=%title%&pageSize=100",
-    "parse": "json.items.map(x=>['http://www.motie.com'+x.url,x.title])",
+    "parse": "data.items.map(x=>['http://www.motie.com'+x.url,x.title])",
     "name": ".motie.com"
   },
   {
@@ -63,7 +62,7 @@
     "method": "POST",
     "dataType": "json",
     "data": "method=search&Pclassids=&classids=&free=0&finish=0&charnum=0&updatetime=0&keyword=%title%&keywordtype=2&order=0&page=1&pagesize=25",
-    "parse": "json.bookinfo.map(x=>['http://www.hongshu.com/book/'+x.bid+'/',x.catename])",
+    "parse": "data.bookinfo.map(x=>['http://www.hongshu.com/book/'+x.bid+'/',x.catename])",
     "name": ".hongshu.com"
   },
   {
@@ -134,7 +133,7 @@
     "headers":{
       "referer": "https://www.heiyan.com/search/?queryString=%title%"
     },
-    "parse": "json.data.content.map(x=>['https://www.heiyan.com/book/'+x.id,x.name])",
+    "parse": "data.data.content.map(x=>['https://www.heiyan.com/book/'+x.id,x.name])",
     "name": ".heiyan.com"
   },
   {
@@ -143,7 +142,7 @@
     "headers":{
       "referer": "http://www.ruochu.com/search/?queryString=%title%"
     },
-    "parse": "json.data.content.map(x=>['http://www.ruochu.com/book/'+x.id,x.name])",
+    "parse": "data.data.content.map(x=>['http://www.ruochu.com/book/'+x.id,x.name])",
     "name": ".ruochu.com"
   },
   {
@@ -174,7 +173,7 @@
   {
     "url": "http://yuedu.163.com/search.do",
     "query": "key=%title%&type=4&docType=json",
-    "parse": "json.data.map(x=>[x.sumUrl,x.title])",
+    "parse": "data.data.map(x=>[x.sumUrl,x.title])",
     "name": ".163.com"
   },
   {
@@ -239,8 +238,12 @@
     "selector": "p.tit a"
   },
   {
-    "url": "http://www.8kana.com/www/search",
-    "query": "keyword=%title%&type=1",
+    "url": "https://www.8kana.com/www/search/",
+    "data": "keyword=%title%",
+    "method":"POST",
+    "headers":{
+      "Cookie":"keyword="
+    },
     "selector": ".results_del_R_book a",
     "name": ".8kana.com"
   },
@@ -311,7 +314,7 @@
   {
     "url": "http://admin.datangzww.com/web/bookroom/index",
     "query": "c_id=0&char_num=&update_status=&is_vip=&char_order=&collect_num=&last_update_chapter_time=&sales=1&page=1&search=%title%",
-    "parse": "json.data.map(o=>['http://new.datangzww.com/#/book/bookinside/'+o.id,o.title])",
+    "parse": "data.data.map(o=>['http://new.datangzww.com/#/book/bookinside/'+o.id,o.title])",
     "name": ".datangzww.com"
   }
 ]

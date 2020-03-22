@@ -323,6 +323,7 @@ class Wedge extends EventEmitter{
     searchInSite(title,site,fn){
         fn = this.next(fn);
         if(!site || !site.url) return fn();
+        this.debug(site.url)
         let links = [];
         let push = link=>links.push(link);
         let url = site.url
@@ -338,8 +339,8 @@ class Wedge extends EventEmitter{
         let filterFn = link=>~link[0].indexOf(site.name);
         let success = data=>{
             if(site.parse){
-                let parser = new Function('json','try{return (' + site.parse + ')}catch(e){return []}');
-                parser(data).forEach(push);
+                let parser = new Function('data','url','Parser','try{return (' + site.parse + ')}catch(e){return []}');
+                parser(data,url,Parser).forEach(push);
             }else {
                 let $ = Parser(data,url);
                 let selector = site.selector || ':header a,img a';
@@ -371,7 +372,7 @@ class Wedge extends EventEmitter{
             return fn(links.filter(filterFn));
         };
         let options = {
-            url:url+'?'+query,
+            url:url+(query ? '?':'')+query,
             method:method,
             data:data && util.encode(data,site.charset),
             dataType:site.dataType,
@@ -742,6 +743,7 @@ class Wedge extends EventEmitter{
     getBookIndex(link,fn){
         fn = this.next(fn);
         link = util.formatLink(link);
+        this.debug(link.url)
         //console.log(link)
         let times = util.parseInteger(this.getConfig('app.retry.index'),3);
         let setIndex = bookIndex=>{
@@ -941,9 +943,9 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         if (!chapter) return fn(null);
         let links;
-        function mergeContent(link,next){
+        let mergeContent = (link,next)=>{
             this.getChapterContent(link,
-                chapter=>this.mergeChapterContent(chapter,nextChapter=>{
+                _chapter=>this.mergeChapterContent(_chapter,nextChapter=>{
                     if(!nextChapter) return fn(null);
                     if (chapter.content && chapter.content == nextChapter.content) return fn(chapter);
                     if (chapter && chapter.content && nextChapter.content){

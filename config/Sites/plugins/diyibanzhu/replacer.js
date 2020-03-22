@@ -51,7 +51,10 @@ module.exports = {
                 "zu":"足","fu":"妇","ling":"凌","qing":"情","wen":"温","zuo":"做","fu2":"腐",
                 "liu":"流","ri":"日","xi":"锡","gan":"干","lou":"漏","rou":"肉","xi2":"席","gang":"肛",
                 "lu":"露","ru":"乳","xi3":"吸","gao":"高","lu2":"撸","ru2":"辱","xian":"酰","jv":"具","jv2":"菊","nue":"虐"};
-                return str.replace(/<img src="[^<>]*\/toimg\/data\/(\w{2,8}).png"\s?\/?>/gi,($,$1)=>dict[$1] || $1)
+                return str.replace(/<img src="[^<>]*\/toimg\/data\/(\w{2,16}).png"\s*\/?>/gi,($,$1)=>{
+                  var str = $1.substr(0,$1.length/2)
+                  return dict[str] || str
+                })
             },
             function (str){
               var arr = str.split(/<.*?>/);
