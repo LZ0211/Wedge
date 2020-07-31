@@ -1,5 +1,6 @@
 # Wedge
-可配置的小说下载工具
+可配置的小说下载及阅读工具
+
 ## 快速开始
 ```Javascript
 #!/usr/bin/env node
@@ -7,6 +8,14 @@ const Wedge = require("./wedge");
 const app = new Wedge("./library");
 app.start()
 ```
+
+## 单页应用服务器
+```Javascript
+const Wedge = require("./wedge");
+const app = new Wedge("./library");
+app.server()
+```
+
 ## 使用教程
 ```Javascript
 //引入wedge模块
@@ -28,6 +37,12 @@ App.start()
 ### 配置参数[可选]
 参数配置，初次运行时会在工作路径新建json格式的配置文件，可手动修改，键名对大小写不敏感
 通过App.start()进入终端界面后，亦可通过 [修改配置] 进行热更新
+
+### 服务器端口
+```Javascript
+//启动Web服务时监听的端口
+App.config.set('server.port',80);
+```
 
 #### 网络请求参数
 ```Javascript
