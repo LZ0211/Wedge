@@ -107,6 +107,20 @@ module.exports = function (){
         refresh();
     }
 
+    function cleanDatabase(items){
+        items = items.filter(item=>!app.lib.fs.existsSync(item.uuid))
+        app.removeBookRecords(items.map(item=>item.uuid))
+    }
+
+    function sortDatabase(items,key){
+        items.sort(function(itemA,itemB){
+            if(itemA[key] > itemB[key]) return 1
+            if(itemA[key] == itemB[key]) return 0
+            return -1
+        })
+        showDatabase(items);
+    }
+
     function showDatabaseOptions(items){
         if(items.length === 0){
             console.log('未检索到相关书籍');
@@ -165,7 +179,25 @@ module.exports = function (){
                     {text:'删除书籍记录',func:[[],()=>app.removeBookRecords(items.map(item=>item.uuid))]},
                     exit
                 ]
-            },exit
+            },
+            {
+                text:'排序',
+                options:[
+                    returnOption,
+                    main,
+                    {text:'书名',func:[[],()=>sortDatabase(items,'title')]},
+                    {text:'作者',func:[[],()=>sortDatabase(items,'author')]},
+                    {text:'类别',func:[[],()=>sortDatabase(items,'classes')]},
+                    {text:'唯一码',func:[[],()=>sortDatabase(items,'uuid')]},
+                    {text:'更新时间',func:[[],()=>sortDatabase(items,'date')]},
+                    {text:'状态',func:[[],()=>sortDatabase(items,'isend')]},
+                    {text:'官网',func:[[],()=>sortDatabase(items,'origin')]},
+                    {text:'书源',func:[[],()=>sortDatabase(items,'source')]},
+                    exit
+                ]
+            },
+            {text:'清理',func:[[],()=>cleanDatabase(items)]},
+            exit
         ];
         Stack.push(thisOpt);
         Select(subOptions);
@@ -189,26 +221,26 @@ module.exports = function (){
     }
     
     const returnOption = {
-        text: '返回上一级菜单',
+        text: '【返回上一级菜单】',
         func: [[],goBack]
     };
 
     const main = {
-        text: '返回主菜单',
+        text: '【返回主菜单】',
         func: [[],showmainOptions]
     }
 
     const exit = {
-        text:'退出',
+        text:'【退出】',
         options:[
             main,
             returnOption,
-            {text:'确定退出',func:[[],()=>process.exit()]}
+            {text:'【确定退出】',func:[[],()=>process.exit()]}
         ]
     }
     
     const mainOptions = [
-        {   text:'返回',func: [[],goBack]},
+        {   text:'【返回】',func: [[],goBack]},
         {
             text:'新建书籍',
             func:[['请输入下载链接：'],url=>app.newBook(url)]
@@ -467,9 +499,15 @@ module.exports = function (){
         },{
             text:'测试规则',
             func:[['请输入网址：'],url=>app.testRuleCmd(url)]
+        },{
+            text:'启动网站',
+            func:[[],()=>{
+                app.server();
+                refresh()
+            }]
         },exit,{
             text:'一键更新',
-            func:[[],()=>app.updateBooks(app.database.query('isend=0').map(item=>item.uuid)).end(process.exit.bind(process))]
+            func:[[],()=>app.updateBooks(app.database.query('isend=0').map(item=>item.uuid))]
         }
     ]
     

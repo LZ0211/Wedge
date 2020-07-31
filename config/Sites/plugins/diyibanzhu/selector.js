@@ -27,7 +27,8 @@ module.exports = {
       "title": "$('.box_con h2').text()",
       "source": "$.location()",
       "content": "$('.page-content').html()",
-      "nextPage": "$.location($('a.curr').next().attr('href'))"
+      "nextPage": "$.location($('a.curr').next().attr('href'))",
+      "identify": "true"
     }
   }
 }

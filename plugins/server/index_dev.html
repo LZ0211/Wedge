@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<head>
+    <meta charSet="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" /> -->
+    <meta name=”apple-mobile-web-app-title” content=”Wedge阅读器”>
+    <!-- 设置苹果工具栏颜色 -->
+    <meta name="format-detection" content="telphone=no, email=no" />
+    <!-- 忽略页面中的数字识别为电话，忽略email识别 -->
+    <!-- 启用360浏览器的极速模式(webkit) -->
+    <meta name="renderer" content="webkit">
+    <!-- 避免IE使用兼容模式 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 针对手持设备优化，主要是针对一些老的不识别viewport的浏览器，比如黑莓 -->
+    <meta name="HandheldFriendly" content="true">
+    <!-- 微软的老式浏览器 -->
+    <meta name="MobileOptimized" content="320">
+    <!-- uc强制竖屏 -->
+    <meta name="screen-orientation" content="portrait">
+    <!-- QQ强制竖屏 -->
+    <meta name="x5-orientation" content="portrait">
+    <!-- UC强制全屏 -->
+    <meta name="full-screen" content="yes">
+    <!-- QQ强制全屏 -->
+    <meta name="x5-fullscreen" content="true">
+    <!-- UC应用模式 -->
+    <meta name="browsermode" content="application">
+    <!-- QQ应用模式 -->
+    <meta name="x5-page-mode" content="app">
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <title>小说阅读器</title>
+    <link href="src/style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<div id="home">
+    <div class="classify" style="display:none">
+        <div class="classify-item">
+            <div class="classify-item-title">搜索：</div>
+            <div class="search">
+                <input type="text" placeholder="请输入关键词" id="search-text">
+                <button id="search-btn">搜索</button>
+            </div>
+        </div>
+        <div class="classify-item"><div class="classify-item-title">分类：</div><div class="classify-labels"><div class="tabs classes-tag"></div></div></div>
+        <div class="classify-item"><div class="classify-item-title">状态：</div><div class="classify-labels"><div class="tabs status-tag"></div></div></div>
+        <div class="classify-item"><div class="classify-item-title">更新：</div><div class="classify-labels"><div class="tabs times-tag"></div></div></div>
+        <div class="classify-item"><div class="classify-item-title">排序：</div><div class="classify-labels"><div class="tabs sort-tag">
+            <label class="tab">默认</label>
+            <label class="tab">书名</label>
+            <label class="tab">作者</label>
+            <label class="tab">分类</label>
+            <label class="tab">更新时间</label>
+        </div></div></div>
+    </div>
+    <ol class="books">       
+    </ol>
+</div>
+<div id="index" style="display: none;">
+    <div class="book-meta"></div>
+    <div class="book-cmd">
+        <label class="book-reload">刷新</label>
+        <label class="book-epub" style="display:none">电子书</label>
+        <label class="book-update">更新</label>
+        <label class="book-redown" style="display:none">下载</label>
+        <label class="book-delete">删除</label>
+        <label class="book-end">完结</label>
+    </div>
+    <div class="book-list">
+        <div class="list-title"><h3>目录</h3></div>
+        <div class="list-header">
+            <div class="list-counts"></div>
+            <div class="list-rule">倒序</div>
+        </div>
+        <ol class="list-content">
+        </ol>
+    </div>
+</div>
+<div id="chapter" style="display:none">
+    <div class="chapter-page">
+        <div class="chapter-container"></div>
+        <div class="chapter-footer">
+            <label class="prev-page">上一页</label>
+            <label class="home-page">首页</label>
+            <label class="next-page">下一页</label>
+        </div>
+    </div>
+</div>
+<div id="list" style="display:none">
+    <ol class="chapter-list">
+    </ol>
+</div>
+<div id="tool" class='flow-tools' style="display:none">
+    <div class="tool-top"></div>
+    <div class="tool-prev"></div>
+    <div class="tool-option"></div>
+    <div class="tool-index"></div>
+    <div class="tool-home"></div>
+    <div class="tool-next"></div>
+    <div class="tool-add"></div>
+</div>
+<div id="overlay" style="display:none"></div>
+<script type="text/javascript">
+    function init(){
+        var thisPage = null;
+        var List = null;
+        var Book = null;
+        var thisList = null;
+        var sortFun = (a,b)=>1;
+        var CID = 0;
+        var CIndex = 0;
+        var $ = x=>document.querySelector(x);
+        var $$ = x=>document.querySelectorAll(x);
+        var tools = {
+            home:$('.tool-home'),
+            index:$('.tool-index'),
+            option:$('.tool-option'),
+            top:$('.tool-top'),
+            prev:$('.tool-prev'),
+            next:$('.tool-next'),
+            add:$('.tool-add')
+        }
+        var doms = {
+            tool: $('#tool'),
+            home: $('#home'),
+            index: $('#index'),
+            chapter: $('#chapter'),
+            list: $('#list'),
+            bookList: $('ol.books'),
+            classify: $('.classify'),
+            bookMeta: $('.book-meta'),
+            listCounts: $('.list-counts'),
+            listContent: $('.list-content'),
+            listRule: $('.list-rule'),
+            TagClasses: $('.classes-tag'),
+            TagStatus: $('.status-tag'),
+            TagTimes: $('.times-tag'),
+            TagSort: $('.sort-tag'),
+            sortLabels: $$('.sort-tag > label'),
+            chapterPage: $('.chapter-page'),
+            chapterContainer: $('.chapter-container'),
+            chapterList: $('.chapter-list'),
+            chapterIndex: $('.home-page'),
+            chapterPrev: $('.prev-page'),
+            chapterNext: $('.next-page'),
+            bookReload: $('.book-reload'),
+            bookEpub: $('.book-epub'),
+            bookUpdate: $('.book-update'),
+            bookDelete: $('.book-delete'),
+            bookEnd: $('.book-end'),
+            overlay: $('#overlay'),
+            searchText: $('#search-text'),
+            searchBtn: $('#search-btn')
+        }
+        var bookmark = {
+            get:uuid=>localStorage.getItem(uuid),
+            set:(uuid,cid)=>localStorage.setItem(uuid, cid),
+            del:uuid=>localStorage.removeItem(uuid),
+            default:(k,v)=>{
+                var _v = localStorage.getItem(k)
+                if(_v !== null) return _v
+                localStorage.setItem(k,v)
+                return v
+            }
+        }
+        function createNode(txt) {
+            var template = `<div class='child'>${txt}</div>`;
+            var tempNode = document.createElement('div');
+            tempNode.innerHTML = template;
+            return tempNode.firstChild;
+        }
+        function each(array,fn){
+            for(var i=0;i<array.length;i++){
+                fn(array[i],i,array)
+            }
+        }
+        function decorate(type,fn){
+            return function(ev){
+                var ev = ev || window.event;
+                var target = ev.target || ev.srcElement;
+                var tagname = target.tagName.toLowerCase();
+                if(Array.isArray(type)){
+                    if(~type.indexOf(tagname)) return fn(target)
+                    return
+                }else if (tagname == type.toLowerCase()){
+                    return fn(target)
+                }
+            }
+        }
+        function display(){
+            each(arguments,x=>x.style.display = 'block')
+        }
+        function hide(){
+            each(arguments,x=>x.style.display = 'none')
+        }
+        function switchDisplay(){
+            [].forEach.call(arguments,function(x){
+                if(x.style.display === 'none'){
+                    x.style.display = 'block'
+                }else{
+                    x.style.display = 'none'
+                }
+            })
+        }
+        function showHomePage(){
+            display(doms.tool,doms.home,tools.option,tools.top,tools.add)
+            hide(doms.index,doms.chapter,doms.list,tools.prev,tools.next,tools.index,tools.home)
+            thisPage = 'home'
+        }
+        function showIndexPage(){
+            display(doms.tool,doms.index,tools.home,tools.top)
+            hide(doms.home,doms.chapter,doms.list,tools.index,tools.prev,tools.next,tools.option,tools.add)
+            thisPage = 'index'
+        }
+        function showChapterPage(){
+            display(doms.tool,doms.chapter,tools.prev,tools.next,tools.index,tools.home,tools.top)
+            hide(doms.home,doms.index,doms.list,tools.option,tools.add)
+            thisPage = 'chapter'
+        }
+        function showListPage(){
+            display(doms.tool,doms.list,tools.prev,tools.next,tools.index,tools.home,tools.top)
+            hide(doms.home,doms.index,tools.option,doms.chapter,tools.add)
+            thisPage = 'list'
+        }
+        function leftPad(str,padding,length){
+            str = '' + str;
+            if (str.length >= length) return str;
+            for (var i=str.length;i<length;i++){
+                str = padding + str;
+            }
+            return str;
+        }
+        function formatTime(date,template){
+            var time = new Date(date)
+            var day = template || "yyyy-MM-dd";
+            day = day.replace(/(y+)/,function ($,$1){
+                return leftPad(time.getFullYear(),0,$1.length)
+            });
+            day = day.replace(/(M+)/,function ($,$1){
+                return leftPad(time.getMonth() + 1,0,$1.length)
+            });
+            day = day.replace(/(d+)/,function ($,$1){
+                return leftPad(time.getDate(),0,$1.length)
+            });
+            day = day.replace(/(h+)/,function ($,$1){
+                return leftPad(time.getHours(),0,$1.length)
+            });
+            day = day.replace(/(m+)/,function ($,$1){
+                return leftPad(time.getMinutes(),0,$1.length)
+            });
+            day = day.replace(/(s+)/,function ($,$1){
+                return leftPad(time.getSeconds(),0,$1.length)
+            });
+            return day;
+        }
+        function hasOverlay(fn){
+            display(doms.overlay)
+            var timer = setTimeout(function(){
+                hide(doms.overlay)
+            },5000);
+            var res = fn();
+            if(res && res.then) return res.then(()=>{
+                hide(doms.overlay);
+                clearTimeout(timer);
+            });
+            hide(doms.overlay);
+            clearTimeout(timer);
+        }
+        //渲染列表
+        function renderList(list){
+            thisList = list.sort(sortFun);
+            doms.bookList.innerHTML = list.map(book=>`<li class="book-li"><div class="book-layout" uuid="${book.uuid}"><img src="/cover/${book.uuid}" class="book-cover" alt="${book.title}" uuid="${book.uuid}"><div class="book-cell"><div class="book-title-x"><h2 class="book-title" uuid="${book.uuid}">${book.title}</h2><span class="book-date">${formatTime(book.date)}</span></div><div class="book-author">作者：${book.author}</div><div class="book-classes">分类：${book.classes}</div><div class="book-status">更新状态：${book.isend ? '完结':'连载'}</div></div></li>`).join('')
+            doms.home.scrollTop = 0
+        }
+        //渲染书籍
+        function renderBook(){
+            //book.list.sort((x,y)=>x.id - y.id)
+            doms.bookMeta.innerHTML = `<div class="book-layout" uuid="${Book.meta.uuid}"><img src="/cover/${Book.meta.uuid}" class="book-cover"><div class="book-cell"><div class="book-title-x"><h2 class="book-title">${Book.meta.title}</h2><span class="book-date">${formatTime(Book.meta.date)}</span></div><div class="book-author">作者：${Book.meta.author}</div><div class="book-classes">分类：${Book.meta.classes}</div><div class="book-status">更新状态：${Book.meta.isend ? '完结':'连载'}</div></div></div><div class="book-brief"><p>${Book.meta.brief.replace(/\n/g,'</p><p>')}</p></div>`
+            doms.listCounts.innerText = `共${Book.list.length}章`
+            doms.listRule.innerText = '倒序'
+            doms.listContent.innerHTML = Book.list.map(chapter=>`<li cid="${chapter.id}">${chapter.title}</li>`).join('')
+            doms.chapterList.innerHTML = Book.list.map(chapter=>`<li cid="${chapter.id}">${chapter.title}</li>`).join('')
+            doms.index.scrollTop = 0;
+        }
+        //渲染筛选
+        function renderOptions(){
+            var All = List.concat();
+            var classes = {'全部':All}
+            //var authors = {'全部':All}
+            var status = {'全部':All,'完结':[],'连载':[]}
+            var times = {'全部':All,'一日内':[],'一周内':[],'一月内':[],'半年内':[],'半年外':[]}
+            var now = Date.now();
+            //分组
+            List.forEach(book=>{
+                if(book.classes in classes){
+                    classes[book.classes].push(book)
+                }else{
+                    classes[book.classes] = [book]
+                }
+
+                // if(book.author in authors){
+                //     authors[book.author].push(book)
+                // }else{
+                //     authors[book.author] = [book]
+                // }
+
+                book.status = book.isend ? '完结':'连载'
+                status[book.status].push(book)
+
+                var delta = now - book.date;
+                if(delta < 86400000){
+                    times['一日内'].push(book)
+                    times['一周内'].push(book)
+                    times['一月内'].push(book)
+                    times['半年内'].push(book)
+                }else if(delta < 604800000){
+                    times['一周内'].push(book)
+                    times['一月内'].push(book)
+                    times['半年内'].push(book)
+                }else if(delta < 2592000000){
+                    times['一月内'].push(book)
+                    times['半年内'].push(book)
+                }else if(delta < 15552000000){
+                    times['半年内'].push(book)
+                }else{
+                    times['半年外'].push(book)
+                }
+            });
+            //页面渲染
+            doms.TagClasses.innerHTML = Object.keys(classes).map(k=>`<label class="tab">${k}</label>`).join('')
+            doms.TagStatus.innerHTML = Object.keys(status).map(k=>`<label class="tab">${k}</label>`).join('')
+            doms.TagTimes.innerHTML = Object.keys(times).map(k=>`<label class="tab">${k}</label>`).join('')
+            //第一个label标记为选中
+            doms.TagClasses.querySelector('label').className = 'tab tab-selected';
+            //点击事件
+            function onClick(label,hash){
+                var text = label.innerText;
+                var list = hash[text]
+                if(!list) return
+                if(label.className == 'tab tab-selected' && thisList.length == list.length) return tools.option.click()
+                each(doms.TagStatus.querySelectorAll('label'),dom=>dom.className = 'tab');
+                each(doms.TagClasses.querySelectorAll('label'),dom=>dom.className = 'tab');
+                each(doms.TagTimes.querySelectorAll('label'),dom=>dom.className = 'tab');
+                label.className = 'tab tab-selected'
+                renderList(list)
+                tools.option.click()
+            }
+            doms.TagClasses.onclick = decorate('label',label=>onClick(label,classes));
+            doms.TagStatus.onclick = decorate('label',label=>onClick(label,status))
+            doms.TagTimes.onclick = decorate('label',label=>onClick(label,times))
+        }
+        //渲染章节
+        function renderChapter(chapter){
+            doms.chapterContainer.innerHTML = `<h3 class="chapter-title" cid="${chapter.id}">${chapter.title}</h3><div class="chapter-content"><p>` + chapter.content.replace(/\n/g,'</p><p>') + '</p></div>';
+        }
+        function appendChapter(chapter){
+            document.createDocumentFragment()
+            doms.chapterContainer.appendChild(createNode(`<h3 class="chapter-title" cid="${chapter.id}">${chapter.title}</h3>`))
+            doms.chapterContainer.appendChild(createNode('<div class="chapter-content"><p>' + chapter.content.replace(/\n/g,'</p><p>') + '</p></div>'))
+        }
+        function previewChapter(cid){
+            var idx = findCidIndex(cid);
+            if(idx == -1) return
+            if(idx <= CIndex) return
+            CIndex = idx
+            var lis = doms.chapterList.querySelectorAll('li')
+            each(lis,dom=>dom.className = '')
+            lis[idx].className = 'selected';
+            return fetch(`/chapter/${Book.meta.uuid}/${cid}`)
+            .then(res=>res.json())
+            .then(chapter=>{
+                CID = cid;
+                CIndex = findCidIndex(CID);
+                console.log(CIndex)
+                appendChapter(chapter);
+                bookmark.set(Book.meta.uuid,cid)
+            })
+            .then(()=>setTimeout(preview(CIndex,doms.chapter.scrollHeight,doms.chapter.clientHeight),100))
+        }
+        //读取书籍
+        function readBook(uuid,force){
+            //当前书籍
+            if(!force && Book && Book.meta.uuid == uuid){
+                var cid = bookmark.get(Book.meta.uuid);
+                if(cid) return readChapter(cid)
+                showIndexPage();
+                doms.index.scrollTop = 0
+                return
+            }
+            //请求书籍
+            hasOverlay(function(){
+                var headers = force ? {'cache':'reload'} : {}
+                return fetch('/book/'+uuid,headers).then(res=>res.json()).then(book=>{
+                    Book = book;
+                    Book.list.sort((x,y)=>x.id - y.id);
+                    renderBook();
+                    var cid = bookmark.get(Book.meta.uuid);
+                    if(cid && !force) return readChapter(cid)
+                    showIndexPage();
+                    doms.index.scrollTop = 0
+                })
+            })
+        }
+        //读取章节
+        function readChapter(cid){
+            var idx = findCidIndex(cid);
+            if(idx == -1) return
+            var lis = doms.chapterList.querySelectorAll('li')
+            each(lis,dom=>dom.className = '')
+            lis[idx].className = 'selected';
+            return fetch(`/chapter/${Book.meta.uuid}/${cid}`)
+            .then(res=>res.json())
+            .then(chapter=>{
+                CID = cid;
+                CIndex = findCidIndex(CID);
+                renderChapter(chapter);
+                showChapterPage();
+                doms.chapter.scrollTop = 0;
+                bookmark.set(Book.meta.uuid,cid)
+            })
+            .then(()=>setTimeout(preview(CIndex,doms.chapter.scrollHeight,doms.chapter.clientHeight),100))
+        }
+        //二分法查找章节的序号
+        function findCidIndex(cid){
+            var list = Book.list;
+            var low = 0, high=list.length-1;
+            while (low <= high){
+                var mid = Math.floor((high + low) / 2);
+                if (list[mid].id == cid) return mid;
+                else if (list[mid].id - cid < 0){
+                    low = mid + 1;
+                }
+                else if (list[mid].id - cid > 0){
+                    high = mid-1;
+                }
+                else {
+                    return -1;
+                }
+            }
+        }
+        //更新目录选择
+        function updateSelectedBookList(){
+            let cur = doms.chapterList.querySelector('.selected');
+            //console.log(cur.offsetTop);
+            //console.log(doms.chapterListPage.clientHeight);
+            doms.list.scrollTop = cur.offsetTop - doms.list.clientHeight / 2
+        }
+
+        function noop(){}
+
+        function preview(Cindex,height,maxHeight){
+            return function(){
+                if(CIndex == -1 || CIndex == Book.list.length - 1) return
+                var current = doms.chapter.scrollTop;
+                if(height - current <= 1.2*maxHeight && height - current > 0){
+                    doms.chapter.onscroll = noop;
+                    previewChapter(Book.list[CIndex + 1].id)
+                }
+            }
+        }
+
+        //绑定页面事件
+        function bindEvents(){
+            //显示筛选栏
+            tools.option.onclick = function(){switchDisplay(doms.bookList,doms.classify)}
+            //滚动到顶部
+            tools.top.onclick = function(){
+                doms.home.style.display != 'none' && doms.home.scrollTo(0,0)
+                doms.index.style.display != 'none' && doms.index.scrollTo(0,0)
+                doms.chapter.style.display != 'none' && doms.chapter.scrollTo(0,0)
+            }
+            //回到列表页面
+            tools.home.onclick = showHomePage
+            //回到书籍页面
+            tools.index.onclick = function(){
+                thisPage == 'list' ? showChapterPage():showListPage()
+                updateSelectedBookList()
+            }
+            //新增小说
+            tools.add.onclick = function(){
+                var url = prompt('请输入小说地址：')
+                if(!url) return
+                display(doms.overlay)
+                var timer = setTimeout(function(){
+                    hide(doms.overlay)
+                },5000);
+                fetch('/add/'+encodeURIComponent(url),{method: "POST"})
+                .then(res=>res.json())
+                .then(books=>{
+                    List = books;
+                    renderOptions();
+                    renderList(books);
+                    showHomePage()
+                    hide(doms.overlay)
+                    clearTimeout(timer)
+                })
+            }
+            //回到列表页面顶部
+            doms.chapterIndex.onclick = ()=>{
+                showIndexPage()
+                doms.index.scrollTo(0,0)
+            }
+            //上一页
+            doms.chapterPrev.onclick = tools.prev.onclick = ()=>{
+                if(CIndex == -1) return
+                if(CIndex == 0) return showIndexPage()
+                readChapter(Book.list[CIndex - 1].id)
+                //.then(()=>doms.chapter.scrollTop = doms.chapterPrev.offsetTop)
+            }
+            //下一页
+            doms.chapterNext.onclick =tools.next.onclick = ()=>{
+                if(CIndex == -1) return
+                if(CIndex == Book.list.length - 1) return showIndexPage()
+                
+                readChapter(Book.list[CIndex + 1].id)
+            }
+            //列表页面点击跳转
+            doms.bookList.onclick = decorate(['div','img','h2'],img=>{
+                var uuid = img.getAttribute('uuid')
+                if(uuid) return readBook(uuid)
+            });
+            //书籍页面目录排序
+            doms.listRule.onclick = function(){
+                if(this.innerText == '倒序'){
+                    this.innerText = '正序'
+                }else{
+                    this.innerText = '倒序'
+                }
+                var html = doms.listContent.innerHTML
+                var list = html.split('</li>').reverse()
+                list.shift()
+                doms.listContent.innerHTML = list.join('</li>') + '</li>'
+            }
+            //书页目录跳转
+            doms.listContent.onclick = decorate('li',function(li){
+                var cid = li.getAttribute('cid');
+                if(cid) return readChapter(cid)
+            });
+            //章节目录跳转
+            doms.chapterList.onclick = decorate('li',function(li){
+                var cid = li.getAttribute('cid');
+                if(cid) return readChapter(cid)
+            });
+            //排序函数
+            var sortFuns = {
+                '默认':(a,b)=>1,
+                '书名':(a,b)=>a.title > b.title ? 1 : -1,
+                '作者':(a,b)=>a.author > b.author ? 1 : -1,
+                '分类':(a,b)=>a.classes > b.classes ? 1 : -1,
+                '更新时间':(a,b)=>a.date - b.date,
+            }
+            //启动后读取参数
+            var type = bookmark.default('sort-type','默认');
+            var value = bookmark.default('sort-value','1');
+            var fn = sortFuns[type]
+            sortFun = (a,b)=>value*fn(a,b)
+            each(doms.sortLabels,dom=>{
+                if(dom.innerText == type){
+                    if(value == '1') return dom.className = 'tab tab-selected tab-up'
+                    return dom.className = 'tab tab-selected tab-down'
+                }
+                dom.className = 'tab'
+            });
+            //绑定排序行为
+            doms.TagSort.onclick = decorate('label',function(label){
+                var text = label.innerText;
+                var type = bookmark.default('sort-type','默认');
+                var value = bookmark.default('sort-value','1');
+                each(doms.sortLabels,dom=>label !== dom && (dom.className = 'tab'));
+                if(type == text){
+                    label.className = 'tab tab-selected tab-down'
+                    bookmark.set('sort-value','-1')
+                    value = -1
+                }else{
+                    label.className = 'tab tab-selected tab-up'
+                    bookmark.set('sort-type',text)
+                    bookmark.set('sort-value','1')
+                    value = 1
+                }
+                var fn = sortFuns[text];
+                sortFun = (a,b)=>value*fn(a,b)
+                renderList(thisList)
+                tools.option.click()
+            })
+            //过滤
+            doms.searchBtn.onclick = ()=>{
+                var text = doms.searchText.value;
+                if(!text) return
+                renderList(List.filter(x=>x.title.match(text)||x.author.match(text)||x.classes.match(text)||x.brief.match(text)))
+                tools.option.click()
+            }
+            //书籍页面刷新
+            doms.bookReload.onclick = ()=>readBook(Book.meta.uuid,true)
+            //电子书下载
+            doms.bookEpub.onclick = function(){
+                fetch(`/ebook/${Book.meta.uuid}`)
+                .then(res => res.blob().then(blob=>{
+                    var filename = res.headers.get('Content-Disposition').match(/filename="(.*)"/)[1];
+                    if (typeof window.navigator.msSaveBlob !== 'undefined') return window.navigator.msSaveBlob(blob, filename);
+                    var url = (window.URL && window.URL.createObjectURL) ? window.URL.createObjectURL(blob) : window.webkitURL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.setAttribute('download',filename);
+
+                    if (typeof a.download === 'undefined') {
+                        a.setAttribute('target', '_blank');
+                    }
+
+                    document.body.appendChild(a);
+                    a.click();
+
+                    setTimeout(function() {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    }, 200)
+                }))
+            }
+            //书籍更新
+            doms.bookUpdate.onclick = function(){
+                hasOverlay(function(){
+                    return fetch(`/update/${Book.meta.uuid}`,{method: "POST"})
+                    .then(res=>res.json())
+                    .then(json=>json.code && readBook(Book.meta.uuid,true));
+                });
+            }
+            doms.bookDelete.onclick = function(){
+                hasOverlay(function(){
+                    return fetch(`/delete/${Book.meta.uuid}`,{method: "POST"})
+                    .then(res=>res.json())
+                    .then(books=>{
+                        bookmark.del(Book.meta.uuid);
+                        Book = null;
+                        List = books;
+                        renderOptions();
+                        renderList(books);
+                        showHomePage();
+                    })
+                })
+            }
+            doms.bookEnd.onclick = function(){
+                hasOverlay(function(){
+                    return fetch(`/end/${Book.meta.uuid}`,{method: "POST"})
+                    .then(res=>res.json())
+                    .then(json=>readBook(Book.meta.uuid,true))
+                })
+            }
+            // doms.tool.ontouchstart = function(e) {
+            //     //e.preventDefault();
+            //     var startX = e.touches[0].clientX - this.offsetLeft;
+            //     var startY = e.touches[0].clientY - this.offsetTop;
+            //     this.style.height = this.clientHeight + 'px';
+            //     var maxWidth = document.body.clientWidth - this.offsetWidth;
+            //     var maxHeight = document.body.clientHeight - this.offsetHeight;
+            //     doms.list.touchstart = function (event) { event.preventDefault()}
+            //     doms.index.touchstart = function (event) { event.preventDefault()}
+            //     doms.chapter.touchstart = function (event) { event.preventDefault()}
+            //     doms.list.touchmove = function (event) { event.preventDefault()}
+            //     doms.index.touchmove = function (event) { event.preventDefault()}
+            //     doms.chapter.touchmove = function (event) { event.preventDefault()}
+            //     this.ontouchmove = function(e) {
+            //         e.preventDefault();
+            //         this.style.left = Math.min(Math.max(1,e.touches[0].clientX - startX),maxWidth-1) + 'px';
+            //         this.style.top =  Math.min(Math.max(1,e.touches[0].clientY - startY),maxHeight-1) + 'px';
+            //     }
+            //     console.log(this.style.left,this.style.top)
+            //     doms.tool.ontouchend = function() {
+            //     //e.preventDefault();
+            //         this.ontouchmove = null;
+            //         delete this.style.height
+            //         doms.list.touchstart = null;
+            //         doms.index.touchstart = null;
+            //         doms.chapter.touchstart = null;
+            //     }
+            // }
+            //dragable(document.querySelector('.flow-tools'));
+            //document.body.addEventListener('touchmove', e=>e.preventDefault(), false);
+            doms.overlay.addEventListener('touchmove', function (event) { event.preventDefault()})
+        }
+        function updateList(){
+            return fetch('/list')
+            .then(res=>res.json())
+            .then(books=>{
+                List = books;
+                renderOptions();
+                renderList(books);
+                showHomePage()
+            });
+        }
+        
+        //svg图标
+        function getToolIco(){
+            fetch('src/sort.svg').then(res=>res.text()).then(text=>{
+                each(doms.sortLabels,label=>label.innerHTML += text)
+            })
+            Object.keys(tools).forEach(key=>{
+                fetch(`src/${key}.svg`).then(res=>res.text()).then(text=>{
+                    tools[key].innerHTML = `<a class="flow-tool">${text}</a>`
+                })
+            })
+        }
+        getToolIco();
+        bindEvents();
+        hasOverlay(updateList);
+    }
+
+    init()
+    
+</script>    
+</body>
+</html>

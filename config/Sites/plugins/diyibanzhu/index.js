@@ -1,7 +1,8 @@
 module.exports = {
-    "host":"www.dybz9.pw",
+    "host":"www.dybz8.net",
     "match":[
-        "www.dybz9.net",
+        "dybz8.net",
+        "www.dybz8.net",
         "www.dybz9.pw",
         "www.diyibanzhu777.com",
         "www.diyibanzhu9.xyz"

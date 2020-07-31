@@ -39,6 +39,11 @@
       "name": "start",
       "activated": true,
       "func": "./plugins/start"
+    },
+    {
+      "name": "server",
+      "activated": true,
+      "func": "./plugins/server"
     }
   ],
   "request": {
