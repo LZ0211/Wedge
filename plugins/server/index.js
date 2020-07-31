@@ -1,4 +1,4 @@
-const Koa = require('koa2');
+const Koa = require('koa');
 const Router = require('koa-router');
 const fs = require('fs');
 const Path = require('path');
