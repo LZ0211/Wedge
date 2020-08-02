@@ -3,8 +3,6 @@
     <meta charSet="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <!-- <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" /> -->
-    <meta name=”apple-mobile-web-app-title” content=”Wedge阅读器”>
     <!-- 设置苹果工具栏颜色 -->
     <meta name="format-detection" content="telphone=no, email=no" />
     <!-- 忽略页面中的数字识别为电话，忽略email识别 -->
@@ -34,7 +32,7 @@
     <link href="src/style.css" type="text/css" rel="stylesheet"/>
 </head>
 <body>
-<div id="home">
+<div id="home" style="display: none;">
     <div class="classify" style="display:none">
         <div class="classify-item">
             <div class="classify-item-title">搜索：</div>
@@ -87,12 +85,9 @@
         </div>
     </div>
 </div>
-<div id="list" style="display:none">
-    <ol class="chapter-list">
-    </ol>
-</div>
 <div id="tool" class='flow-tools' style="display:none">
     <div class="tool-top"></div>
+    <div class="tool-refresh"></div>
     <div class="tool-prev"></div>
     <div class="tool-option"></div>
     <div class="tool-index"></div>
@@ -103,56 +98,6 @@
 <div id="overlay" style="display:none"></div>
 <script type="text/javascript">
     function init(){
-        var thisPage = null;
-        var List = null;
-        var Book = null;
-        var thisList = null;
-        var sortFun = (a,b)=>1;
-        var CID = 0;
-        var CIndex = 0;
-        var $ = x=>document.querySelector(x);
-        var $$ = x=>document.querySelectorAll(x);
-        var tools = {
-            home:$('.tool-home'),
-            index:$('.tool-index'),
-            option:$('.tool-option'),
-            top:$('.tool-top'),
-            prev:$('.tool-prev'),
-            next:$('.tool-next'),
-            add:$('.tool-add')
-        }
-        var doms = {
-            tool: $('#tool'),
-            home: $('#home'),
-            index: $('#index'),
-            chapter: $('#chapter'),
-            list: $('#list'),
-            bookList: $('ol.books'),
-            classify: $('.classify'),
-            bookMeta: $('.book-meta'),
-            listCounts: $('.list-counts'),
-            listContent: $('.list-content'),
-            listRule: $('.list-rule'),
-            TagClasses: $('.classes-tag'),
-            TagStatus: $('.status-tag'),
-            TagTimes: $('.times-tag'),
-            TagSort: $('.sort-tag'),
-            sortLabels: $$('.sort-tag > label'),
-            chapterPage: $('.chapter-page'),
-            chapterContainer: $('.chapter-container'),
-            chapterList: $('.chapter-list'),
-            chapterIndex: $('.home-page'),
-            chapterPrev: $('.prev-page'),
-            chapterNext: $('.next-page'),
-            bookReload: $('.book-reload'),
-            bookEpub: $('.book-epub'),
-            bookUpdate: $('.book-update'),
-            bookDelete: $('.book-delete'),
-            bookEnd: $('.book-end'),
-            overlay: $('#overlay'),
-            searchText: $('#search-text'),
-            searchBtn: $('#search-btn')
-        }
         var bookmark = {
             get:uuid=>localStorage.getItem(uuid),
             set:(uuid,cid)=>localStorage.setItem(uuid, cid),
@@ -163,6 +108,94 @@
                 localStorage.setItem(k,v)
                 return v
             }
+        };
+        var dom = document,
+        thisPage = null,
+        List = null,
+        Book = null,
+        thisList = null,
+        sortFun = (a,b)=>1,
+        CID = 0,
+        CIndex = 0,
+        sortType = bookmark.default('list_sort',1),
+        $ = x=>dom.querySelector(x),
+        $$ = x=>dom.querySelectorAll(x),
+        tools = {
+            home:$('.tool-home'),
+            index:$('.tool-index'),
+            option:$('.tool-option'),
+            top:$('.tool-top'),
+            prev:$('.tool-prev'),
+            next:$('.tool-next'),
+            add:$('.tool-add'),
+            refresh:$('.tool-refresh')
+        },
+        doms = {
+            tool: $('#tool'),
+            home: $('#home'),
+            index: $('#index'),
+            chapter: $('#chapter'),
+
+            bookList: $('ol.books'),
+            classify: $('.classify'),
+            bookMeta: $('.book-meta'),
+
+            listCounts: $('.list-counts'),
+            listContent: $('.list-content'),
+            listRule: $('.list-rule'),
+
+            TagClasses: $('.classes-tag'),
+            TagStatus: $('.status-tag'),
+            TagTimes: $('.times-tag'),
+            TagSort: $('.sort-tag'),
+            sortLabels: $$('.sort-tag > label'),
+
+            chapterPage: $('.chapter-page'),
+            chapterContainer: $('.chapter-container'),
+            chapterIndex: $('.home-page'),
+            chapterPrev: $('.prev-page'),
+            chapterNext: $('.next-page'),
+
+            bookReload: $('.book-reload'),
+            bookEpub: $('.book-epub'),
+            bookUpdate: $('.book-update'),
+            bookDelete: $('.book-delete'),
+            bookEnd: $('.book-end'),
+
+            overlay: $('#overlay'),
+            searchText: $('#search-text'),
+            searchBtn: $('#search-btn')
+        };
+        function leftPad(str,padding,length){
+            str = '' + str;
+            if (str.length >= length) return str;
+            for (var i=str.length;i<length;i++){
+                str = padding + str;
+            }
+            return str;
+        }
+        function formatTime(date,template){
+            var time = new Date(date)
+            var day = template || "yyyy-MM-dd";
+            day = day.replace(/(y+)/,function ($,$1){
+                return leftPad(time.getFullYear(),0,$1.length)
+            });
+            day = day.replace(/(M+)/,function ($,$1){
+                return leftPad(time.getMonth() + 1,0,$1.length)
+            });
+            day = day.replace(/(d+)/,function ($,$1){
+                return leftPad(time.getDate(),0,$1.length)
+            });
+            day = day.replace(/(h+)/,function ($,$1){
+                return leftPad(time.getHours(),0,$1.length)
+            });
+            day = day.replace(/(m+)/,function ($,$1){
+                return leftPad(time.getMinutes(),0,$1.length)
+            });
+            day = day.replace(/(s+)/,function ($,$1){
+                return leftPad(time.getSeconds(),0,$1.length)
+            });
+            return day;
         }
         function createNode(txt) {
             var template = `<div class='child'>${txt}</div>`;
@@ -170,6 +203,7 @@
             tempNode.innerHTML = template;
             return tempNode.firstChild;
         }
+        //console.log(tools,doms)
         function each(array,fn){
             for(var i=0;i<array.length;i++){
                 fn(array[i],i,array)
@@ -204,61 +238,26 @@
             })
         }
         function showHomePage(){
-            display(doms.tool,doms.home,tools.option,tools.top,tools.add)
-            hide(doms.index,doms.chapter,doms.list,tools.prev,tools.next,tools.index,tools.home)
+            display(doms.tool,doms.home,tools.option,tools.top,tools.add,tools.refresh)
+            hide(doms.index,doms.chapter,tools.prev,tools.next,tools.index,tools.home)
             thisPage = 'home'
         }
         function showIndexPage(){
             display(doms.tool,doms.index,tools.home,tools.top)
-            hide(doms.home,doms.chapter,doms.list,tools.index,tools.prev,tools.next,tools.option,tools.add)
+            hide(doms.home,doms.chapter,tools.index,tools.prev,tools.next,tools.option,tools.add,tools.refresh)
             thisPage = 'index'
         }
         function showChapterPage(){
             display(doms.tool,doms.chapter,tools.prev,tools.next,tools.index,tools.home,tools.top)
-            hide(doms.home,doms.index,doms.list,tools.option,tools.add)
+            hide(doms.home,doms.index,tools.option,tools.add,tools.refresh)
             thisPage = 'chapter'
         }
-        function showListPage(){
-            display(doms.tool,doms.list,tools.prev,tools.next,tools.index,tools.home,tools.top)
-            hide(doms.home,doms.index,tools.option,doms.chapter,tools.add)
-            thisPage = 'list'
-        }
-        function leftPad(str,padding,length){
-            str = '' + str;
-            if (str.length >= length) return str;
-            for (var i=str.length;i<length;i++){
-                str = padding + str;
-            }
-            return str;
-        }
-        function formatTime(date,template){
-            var time = new Date(date)
-            var day = template || "yyyy-MM-dd";
-            day = day.replace(/(y+)/,function ($,$1){
-                return leftPad(time.getFullYear(),0,$1.length)
-            });
-            day = day.replace(/(M+)/,function ($,$1){
-                return leftPad(time.getMonth() + 1,0,$1.length)
-            });
-            day = day.replace(/(d+)/,function ($,$1){
-                return leftPad(time.getDate(),0,$1.length)
-            });
-            day = day.replace(/(h+)/,function ($,$1){
-                return leftPad(time.getHours(),0,$1.length)
-            });
-            day = day.replace(/(m+)/,function ($,$1){
-                return leftPad(time.getMinutes(),0,$1.length)
-            });
-            day = day.replace(/(s+)/,function ($,$1){
-                return leftPad(time.getSeconds(),0,$1.length)
-            });
-            return day;
-        }
-        function hasOverlay(fn){
+        function hasOverlay(fn,timeout){
+            timeout = timeout || 5000
             display(doms.overlay)
             var timer = setTimeout(function(){
                 hide(doms.overlay)
-            },5000);
+            },timeout);
             var res = fn();
             if(res && res.then) return res.then(()=>{
                 hide(doms.overlay);
@@ -270,7 +269,7 @@
         //渲染列表
         function renderList(list){
             thisList = list.sort(sortFun);
-            doms.bookList.innerHTML = list.map(book=>`<li class="book-li"><div class="book-layout" uuid="${book.uuid}"><img src="/cover/${book.uuid}" class="book-cover" alt="${book.title}" uuid="${book.uuid}"><div class="book-cell"><div class="book-title-x"><h2 class="book-title" uuid="${book.uuid}">${book.title}</h2><span class="book-date">${formatTime(book.date)}</span></div><div class="book-author">作者：${book.author}</div><div class="book-classes">分类：${book.classes}</div><div class="book-status">更新状态：${book.isend ? '完结':'连载'}</div></div></li>`).join('')
+            doms.bookList.innerHTML = list.map(book=>`<li class="book-li" uuid="${book.uuid}"><div class="book-layout"><img src="/cover/${book.uuid}" class="book-cover" alt="${book.title}" uuid="${book.uuid}"><div class="book-cell"><div class="book-title-x"><h2 class="book-title" uuid="${book.uuid}">${book.title}</h2><span class="book-date">${formatTime(book.date)}</span></div><div class="book-author">作者：${book.author}</div><div class="book-classes">分类：${book.classes}</div><div class="book-status">更新状态：${book.isend ? '完结':'连载'}</div></div></li>`).join('')
             doms.home.scrollTop = 0
         }
         //渲染书籍
@@ -278,9 +277,8 @@
             //book.list.sort((x,y)=>x.id - y.id)
             doms.bookMeta.innerHTML = `<div class="book-layout" uuid="${Book.meta.uuid}"><img src="/cover/${Book.meta.uuid}" class="book-cover"><div class="book-cell"><div class="book-title-x"><h2 class="book-title">${Book.meta.title}</h2><span class="book-date">${formatTime(Book.meta.date)}</span></div><div class="book-author">作者：${Book.meta.author}</div><div class="book-classes">分类：${Book.meta.classes}</div><div class="book-status">更新状态：${Book.meta.isend ? '完结':'连载'}</div></div></div><div class="book-brief"><p>${Book.meta.brief.replace(/\n/g,'</p><p>')}</p></div>`
             doms.listCounts.innerText = `共${Book.list.length}章`
-            doms.listRule.innerText = '倒序'
+            doms.listRule.innerText = sortType > 0 ? '正序':'倒序'
             doms.listContent.innerHTML = Book.list.map(chapter=>`<li cid="${chapter.id}">${chapter.title}</li>`).join('')
-            doms.chapterList.innerHTML = Book.list.map(chapter=>`<li cid="${chapter.id}">${chapter.title}</li>`).join('')
             doms.index.scrollTop = 0;
         }
         //渲染筛选
@@ -364,23 +362,22 @@
             if(idx == -1) return
             if(idx <= CIndex) return
             CIndex = idx
-            var lis = doms.chapterList.querySelectorAll('li')
-            each(lis,dom=>dom.className = '')
-            lis[idx].className = 'selected';
+            CID = cid;
+            (doms.listContent.querySelector('.selected') || {}).className = '';
+            doms.listContent.querySelectorAll('li')[CIndex].className = 'selected';
             return fetch(`/chapter/${Book.meta.uuid}/${cid}`)
             .then(res=>res.json())
             .then(chapter=>{
-                CID = cid;
                 CIndex = findCidIndex(CID);
-                console.log(CIndex)
                 appendChapter(chapter);
                 bookmark.set(Book.meta.uuid,cid)
             })
-            .then(()=>setTimeout(preview(CIndex,doms.chapter.scrollHeight,doms.chapter.clientHeight),100))
+            .then(()=>setTimeout(()=>doms.chapter.onscroll=preview(CIndex,doms.chapter.scrollHeight,doms.chapter.clientHeight),100))
         }
         //读取书籍
         function readBook(uuid,force){
             //当前书籍
+            bookmark.set('book',uuid);
             if(!force && Book && Book.meta.uuid == uuid){
                 var cid = bookmark.get(Book.meta.uuid);
                 if(cid) return readChapter(cid)
@@ -393,7 +390,7 @@
                 var headers = force ? {'cache':'reload'} : {}
                 return fetch('/book/'+uuid,headers).then(res=>res.json()).then(book=>{
                     Book = book;
-                    Book.list.sort((x,y)=>x.id - y.id);
+                    Book.list.sort((x,y)=>sortType*(x.id - y.id));
                     renderBook();
                     var cid = bookmark.get(Book.meta.uuid);
                     if(cid && !force) return readChapter(cid)
@@ -406,20 +403,19 @@
         function readChapter(cid){
             var idx = findCidIndex(cid);
             if(idx == -1) return
-            var lis = doms.chapterList.querySelectorAll('li')
-            each(lis,dom=>dom.className = '')
-            lis[idx].className = 'selected';
+            CID = cid;
+            CIndex = findCidIndex(CID);
+            (doms.listContent.querySelector('.selected') || {}).className = '';
+            doms.listContent.querySelectorAll('li')[CIndex].className = 'selected';
             return fetch(`/chapter/${Book.meta.uuid}/${cid}`)
             .then(res=>res.json())
             .then(chapter=>{
-                CID = cid;
-                CIndex = findCidIndex(CID);
                 renderChapter(chapter);
                 showChapterPage();
                 doms.chapter.scrollTop = 0;
                 bookmark.set(Book.meta.uuid,cid)
             })
-            .then(()=>setTimeout(preview(CIndex,doms.chapter.scrollHeight,doms.chapter.clientHeight),100))
+            .then(()=>setTimeout(()=>doms.chapter.onscroll=preview(CIndex,doms.chapter.scrollHeight,doms.chapter.clientHeight),100))
         }
         //二分法查找章节的序号
         function findCidIndex(cid){
@@ -438,13 +434,6 @@
                     return -1;
                 }
             }
-        }
-        //更新目录选择
-        function updateSelectedBookList(){
-            let cur = doms.chapterList.querySelector('.selected');
-            //console.log(cur.offsetTop);
-            //console.log(doms.chapterListPage.clientHeight);
-            doms.list.scrollTop = cur.offsetTop - doms.list.clientHeight / 2
         }
 
         function noop(){}
@@ -465,36 +454,34 @@
             //显示筛选栏
             tools.option.onclick = function(){switchDisplay(doms.bookList,doms.classify)}
             //滚动到顶部
-            tools.top.onclick = function(){
-                doms.home.style.display != 'none' && doms.home.scrollTo(0,0)
-                doms.index.style.display != 'none' && doms.index.scrollTo(0,0)
-                doms.chapter.style.display != 'none' && doms.chapter.scrollTo(0,0)
-            }
+            tools.top.onclick = function(){doms[thisPage].scrollTo(0,0)}
             //回到列表页面
-            tools.home.onclick = showHomePage
+            tools.home.onclick = ()=>{
+                showHomePage();
+                bookmark.del('book');
+            }
+            //刷新主页
+            tools.refresh.onclick = ()=>location.reload()
             //回到书籍页面
             tools.index.onclick = function(){
-                thisPage == 'list' ? showChapterPage():showListPage()
-                updateSelectedBookList()
+                var cur = doms.listContent.querySelector('.selected');
+                showIndexPage()
+                doms.index.scrollTop = cur.offsetTop - doms.index.clientHeight / 2
             }
             //新增小说
             tools.add.onclick = function(){
                 var url = prompt('请输入小说地址：')
                 if(!url) return
-                display(doms.overlay)
-                var timer = setTimeout(function(){
-                    hide(doms.overlay)
-                },5000);
-                fetch('/add/'+encodeURIComponent(url),{method: "POST"})
-                .then(res=>res.json())
-                .then(books=>{
-                    List = books;
-                    renderOptions();
-                    renderList(books);
-                    showHomePage()
-                    hide(doms.overlay)
-                    clearTimeout(timer)
-                })
+                hasOverlay(function(){
+                    fetch('/add/'+encodeURIComponent(url),{method: "POST"})
+                    .then(res=>res.json())
+                    .then(books=>{
+                        List = books;
+                        renderOptions();
+                        renderList(books);
+                        showHomePage()
+                    })
+                },10000)
             }
             //回到列表页面顶部
             doms.chapterIndex.onclick = ()=>{
@@ -512,35 +499,25 @@
             doms.chapterNext.onclick =tools.next.onclick = ()=>{
                 if(CIndex == -1) return
                 if(CIndex == Book.list.length - 1) return showIndexPage()
-                
                 readChapter(Book.list[CIndex + 1].id)
             }
             //列表页面点击跳转
-            doms.bookList.onclick = decorate(['div','img','h2'],img=>{
+            doms.bookList.onclick = decorate(['li','img','h2'],img=>{
                 var uuid = img.getAttribute('uuid')
                 if(uuid) return readBook(uuid)
             });
             //书籍页面目录排序
             doms.listRule.onclick = function(){
-                if(this.innerText == '倒序'){
-                    this.innerText = '正序'
-                }else{
-                    this.innerText = '倒序'
-                }
-                var html = doms.listContent.innerHTML
-                var list = html.split('</li>').reverse()
-                list.shift()
-                doms.listContent.innerHTML = list.join('</li>') + '</li>'
+                sortType *= -1
+                bookmark.set('list_sort',sortType)
+                Book.list.sort((x,y)=>sortType*(x.id - y.id));
+                renderBook()
             }
             //书页目录跳转
             doms.listContent.onclick = decorate('li',function(li){
                 var cid = li.getAttribute('cid');
-                if(cid) return readChapter(cid)
-            });
-            //章节目录跳转
-            doms.chapterList.onclick = decorate('li',function(li){
-                var cid = li.getAttribute('cid');
-                if(cid) return readChapter(cid)
+                if(cid == CID) return showChapterPage();
+                return readChapter(cid)
             });
             //排序函数
             var sortFuns = {
@@ -646,34 +623,37 @@
                     .then(json=>readBook(Book.meta.uuid,true))
                 })
             }
-            // doms.tool.ontouchstart = function(e) {
-            //     //e.preventDefault();
-            //     var startX = e.touches[0].clientX - this.offsetLeft;
-            //     var startY = e.touches[0].clientY - this.offsetTop;
-            //     this.style.height = this.clientHeight + 'px';
-            //     var maxWidth = document.body.clientWidth - this.offsetWidth;
-            //     var maxHeight = document.body.clientHeight - this.offsetHeight;
-            //     doms.list.touchstart = function (event) { event.preventDefault()}
-            //     doms.index.touchstart = function (event) { event.preventDefault()}
-            //     doms.chapter.touchstart = function (event) { event.preventDefault()}
-            //     doms.list.touchmove = function (event) { event.preventDefault()}
-            //     doms.index.touchmove = function (event) { event.preventDefault()}
-            //     doms.chapter.touchmove = function (event) { event.preventDefault()}
-            //     this.ontouchmove = function(e) {
-            //         e.preventDefault();
-            //         this.style.left = Math.min(Math.max(1,e.touches[0].clientX - startX),maxWidth-1) + 'px';
-            //         this.style.top =  Math.min(Math.max(1,e.touches[0].clientY - startY),maxHeight-1) + 'px';
-            //     }
-            //     console.log(this.style.left,this.style.top)
-            //     doms.tool.ontouchend = function() {
-            //     //e.preventDefault();
-            //         this.ontouchmove = null;
-            //         delete this.style.height
-            //         doms.list.touchstart = null;
-            //         doms.index.touchstart = null;
-            //         doms.chapter.touchstart = null;
-            //     }
-            // }
+            doms.tool.ontouchstart = function(e) {
+                //e.preventDefault();
+                //var width = this.clientWidth;
+                var height = this.clientHeight;
+                
+                //var startX = e.touches[0].clientX - this.offsetLeft;
+                var startY = e.touches[0].clientY - this.offsetTop;
+                //var maxWidth = document.body.clientWidth - width;
+                var maxHeight = document.body.clientHeight - height;
+
+                
+                
+                this.ontouchmove = function(e) {
+                    e.preventDefault();
+                    doms[thisPage].style.cssText = 'overflow:hidden;'
+                    //this.style.right = maxWidth - Math.min(Math.max(1,e.touches[0].clientX - startX),maxWidth-1) + 'px';
+                    this.style.bottom = maxHeight - Math.min(Math.max(1,e.touches[0].clientY - startY),maxHeight-1) + 'px';
+                }
+            }
+            doms.tool.ontouchend = function() {
+                //e.preventDefault();
+                this.ontouchmove = null;
+                doms[thisPage].style.cssText = ''
+                //bookmark.set('float_right',this.style.right)
+                bookmark.set('float_bottom',this.style.bottom)
+            }
+            //doms.tool.style.right = bookmark.default('float_right','0px')
+            doms.tool.style.bottom = bookmark.default('float_bottom','10px')
+            doms.home.ontouchstart = doms.index.ontouchstart = doms.chapter.ontouchstart = function(){
+                this.style.cssText = ''
+            }
             //dragable(document.querySelector('.flow-tools'));
             //document.body.addEventListener('touchmove', e=>e.preventDefault(), false);
             doms.overlay.addEventListener('touchmove', function (event) { event.preventDefault()})
@@ -685,7 +665,8 @@
                 List = books;
                 renderOptions();
                 renderList(books);
-                showHomePage()
+                var uuid = bookmark.get('book');
+                uuid ? readBook(uuid) : showHomePage()
             });
         }
         
