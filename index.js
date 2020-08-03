@@ -1396,8 +1396,8 @@ class Wedge extends EventEmitter{
 
     deleteBook(uuid){
         process.nextTick(()=>{
-            fs.mkdirsSync('Trash');
-            fs.renameSync(uuid,'Trash/'+uuid);
+            fs.mkdirsSync('.Trash');
+            fs.renameSync(uuid,'.Trash/'+uuid);
             this.database.remove(uuid);
             this.end();
         });
@@ -1406,9 +1406,9 @@ class Wedge extends EventEmitter{
 
     recoveryBook(uuid){
         if (this.database.query(`uuid=${uuid}`).length) return this.end()
-        fs.exists('Trash/'+uuid+'/index.book',exist=>{
+        fs.exists('.Trash/'+uuid+'/index.book',exist=>{
             if(!exist) return this.end()
-            fs.renameSync('Trash/'+uuid,uuid);
+            fs.renameSync('.Trash/'+uuid,uuid);
             this.importBookRecord(uuid)
         })
         return this;
