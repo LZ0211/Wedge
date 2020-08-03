@@ -1,5 +1,6 @@
 const Koa = require('koa');
 const Router = require('koa-router');
+const koaBody = require('koa-body');
 const fs = require('fs');
 const Path = require('path');
 const Compress = require('koa-compress');
@@ -61,6 +62,8 @@ async function readFile(path) {
 module.exports = function (){
     const app = new Koa();
     const router = new Router();
+
+    app.use(koaBody({ multipart: true }));
 
     app.use(Compress({
         filter (content_type) {
@@ -170,10 +173,39 @@ module.exports = function (){
                 ctx.response.body = this.database.query()
                 resolve()
             })
-            spawn.removeBookRecord(ctx.params.uuid)
-            this.spawn().deleteBook(ctx.params.uuid)
+            spawn.deleteBook(ctx.params.uuid)
         }).then(next)
     })
+
+    router.post('/recovery/:uuid', (ctx, next)=>{
+        return new Promise((resolve, reject)=>{
+            var spawn = this.spawn()
+            spawn.end(function(){
+                ctx.compress = true;
+                ctx.response.type = 'application/json';
+                ctx.response.body = this.database.query()
+                resolve()
+            })
+            spawn.recoveryBook(ctx.params.uuid)
+        }).then(next)
+    })
+
+    router.post('/meta/:uuid', (ctx, next)=>{
+        return new Promise((resolve, reject)=>{
+            var spawn = this.spawn()
+            spawn.end(function(){
+                ctx.response.type = 'application/json';
+                ctx.response.body = JSON.stringify({"code":1})
+                return resolve()
+            });
+            spawn.loadBook(ctx.params.uuid,()=>{
+                spawn.book.setMeta(ctx.request.body)
+                spawn.end()
+            })
+        }).then(next)
+    })
+
+    // router.post()
 
     router.post('/end/:uuid', (ctx, next)=>{
         return new Promise((resolve, reject)=>{

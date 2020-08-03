@@ -1398,8 +1398,19 @@ class Wedge extends EventEmitter{
         process.nextTick(()=>{
             fs.mkdirsSync('Trash');
             fs.renameSync(uuid,'Trash/'+uuid);
+            this.database.remove(uuid);
             this.end();
         });
+        return this;
+    }
+
+    recoveryBook(uuid){
+        if (this.database.query(`uuid=${uuid}`).length) return this.end()
+        fs.exists('Trash/'+uuid+'/index.book',exist=>{
+            if(!exist) return this.end()
+            fs.renameSync('Trash/'+uuid,uuid);
+            this.importBookRecord(uuid)
+        })
         return this;
     }
 
@@ -1512,6 +1523,17 @@ class Wedge extends EventEmitter{
         .queue(uuids)
         .log(this.info.bind(this))
         .label('deleteBooks')
+        .start();
+        return this;
+    }
+
+    recoveryBooks(uuids){
+        Thread()
+        .use((dir,next)=>this.spawn().recoveryBook(dir).end(next))
+        .end(this.next())
+        .queue(uuids)
+        .log(this.info.bind(this))
+        .label('recoveryBooks')
         .start();
         return this;
     }

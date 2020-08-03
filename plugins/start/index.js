@@ -269,8 +269,8 @@ module.exports = function (){
             text:'删除书籍',
             func:[['请输入书籍ID：'],uuid=>app.deleteBook(uuid)]
         },{
-            text:'删除书籍记录',
-            func:[['请输入书籍ID：'],uuid=>app.removeBookRecord(uuid)]
+            text:'恢复书籍',
+            func:[['请输入书籍ID：'],uuid=>app.recoveryBook(uuid)]
         },{
             text:'导入书籍记录',
             func:[['请输入书籍ID：'],uuid=>app.importBookRecord(uuid)]
@@ -381,8 +381,8 @@ module.exports = function (){
                 text:'删除书籍',
                 func:[[],multInput(uuids=>app.deleteBooks(uuids))]
             },{
-                text:'删除书籍记录',
-                func:[[],multInput(uuids=>app.removeBookRecords(uuids))]
+                text:'恢复书籍',
+                func:[[],multInput(uuids=>app.recoveryBooks(uuids))]
             },{
                 text:'导入书籍记录',
                 func:[[],multInput(uuids=>app.importBookRecords(uuids))]
