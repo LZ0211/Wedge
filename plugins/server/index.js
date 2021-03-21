@@ -283,6 +283,20 @@ module.exports = function (){
         }).then(next)
     })
 
+    router.post('/edit/:uuid', (ctx, next)=>{
+        return new Promise((resolve, reject)=>{
+            var url = decodeURIComponent(ctx.params.url)
+            var spawn = this.spawn()
+            spawn.getBookMeta(url,()=>spawn.getBookCover(()=>spawn.updateBookMeta(()=>spawn.sendToDataBase(()=>{
+                ctx.compress = true;
+                ctx.response.type = 'application/json';
+                ctx.response.body = spawn.database.query()
+                resolve()
+                spawn.createBook(()=>spawn.checkBookCover(()=>spawn.getBookIndexs(x=>spawn.getChapters(x,()=>spawn.saveBook(()=>spawn.sendToDataBase(()=>spawn.generateEbook(()=>spawn.end())))))))
+            }))))
+        }).then(next)
+    })
+
     app.use(router.routes()).use(router.allowedMethods());
 
     this.server = ()=>{

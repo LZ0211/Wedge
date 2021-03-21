@@ -47,7 +47,7 @@ class Wedge extends EventEmitter{
         process.chdir(this.dir);
         this.config.file('setting.json');
         this.config.change(this.init.bind(this));
-        this.images = new Hash();
+        this.images = new Hash(images,0);
         this.images.file('images.json');
         return this;
     }
@@ -143,14 +143,14 @@ class Wedge extends EventEmitter{
     }
 
     plugins(){
-        this.getConfig('plugins')
+        Object.values(this.getConfig('plugins',{}))
         .filter(plugin=>plugin.activated)
         .forEach(plugin=>{
             try{
                 this.install(plugin);
             }catch(e){
                 console.log(e)
-                plugin.activated = false;
+                //plugin.activated = false;
             }
         });
         return this;
@@ -199,15 +199,13 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    end(){
-        let fn = arguments[0];
-        if (undefined == fn){
+    end(fn){
+        if (typeof fn === 'function'){
+            this.once('end',fn);
+        }else{
             this.info('end...');
             this.emit('end');
             this.book = Book();
-        }
-        if (typeof fn === 'function'){
-            this.once('end',fn);
         }
         return this;
     }
@@ -1314,7 +1312,7 @@ class Wedge extends EventEmitter{
                 fn()
                 this.log(`generate ebook of ${this.book.getMeta('uuid')} failed because of error ${msg.code}!`);
             }
-            fn = noop;
+            fn = this.noop;
         })
         work.on('exit',()=>fn())
         work.send(options);
@@ -1395,8 +1393,11 @@ class Wedge extends EventEmitter{
     }
 
     deleteBook(uuid){
-        process.nextTick(()=>{
-            fs.mkdirsSync('.Trash');
+        fs.mkdirsSync('.Trash');
+        fs.stat('.Trash/'+uuid,(err,stat)=>{
+            if(!err){
+                fs.rmdirsSync('.Trash/'+uuid)
+            }
             fs.renameSync(uuid,'.Trash/'+uuid);
             this.database.remove(uuid);
             this.end();
@@ -1406,8 +1407,8 @@ class Wedge extends EventEmitter{
 
     recoveryBook(uuid){
         if (this.database.query(`uuid=${uuid}`).length) return this.end()
-        fs.exists('.Trash/'+uuid+'/index.book',exist=>{
-            if(!exist) return this.end()
+        fs.stat('.Trash/'+uuid+'/index.book',(err,stat)=>{
+            if(err) return this.end()
             fs.renameSync('.Trash/'+uuid,uuid);
             this.importBookRecord(uuid)
         })

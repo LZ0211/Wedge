@@ -1,51 +1,42 @@
 {
-  "plugins": [
-    {
-      "name": "5sing",
-      "activated": false,
+  "plugins": {
+    "5sing":{
+      "activated": 0,
       "func": "./plugins/5sing"
     },
-    {
-      "name": "testSelector",
-      "activated": false,
+    "testSelector":{
+      "activated": 0,
       "func": "./plugins/testSelector"
     },
-    {
-      "name": "deepQuest",
-      "activated": true,
+    "deepQuest":{
+      "activated": 1,
       "func": "./plugins/deepQuest"
     },
-    {
-      "name": "sendToiReader",
-      "activated": true,
+    "sendToiReader":{
+      "activated": 1,
       "func": "./plugins/sendToiReader"
     },
-    {
-      "name": "sendToQQ",
-      "activated": true,
+    "sendToQQ":{
+      "activated": 1,
       "func": "./plugins/sendToQQ"
     },
-    {
-      "name": "searchEngine",
-      "activated": true,
+    "searchEngine":{
+      "activated": 1,
       "func": "./plugins/searchEngine"
     },
-    {
-      "name": "getPageImages",
-      "activated": true,
+    "getPageImages":{
+      "activated": 1,
       "func": "./plugins/getPageImages"
     },
-    {
-      "name": "start",
-      "activated": true,
+    "start":{
+      "activated": 1,
       "func": "./plugins/start"
     },
-    {
-      "name": "server",
-      "activated": true,
+    "server":{
+      "activated": 1,
       "func": "./plugins/server"
     }
-  ],
+  },
   "request": {
     "reconnect": 5,
     "imageReconnect": 3,

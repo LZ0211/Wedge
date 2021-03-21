@@ -189,9 +189,11 @@ function getCover($){
     var keywords = /cover|fimg|fmimg|book|info|summary|xiaoshuo|/i;
     filtred = filtred.filter((i,v)=>{
         var self = $(v);
-        var deep = 0
-        while(deep > 2){
-            if(self.innerHTML.match(title) || self.innerHTML.match(keywords)) return true;
+        var deep = 0;
+        while(deep < 2){
+            html = self.html()
+            console.log(html)
+            if(html.match(title) || html.match(keywords)) return true;
             deep += 1;
             self = self.parent();
         }
