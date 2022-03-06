@@ -74,7 +74,7 @@ function addRule(root){
         }
     }
     fs.readdirSync(dirname).filter(file=>file!=='.DS_Store').forEach(add)
-    if(process.env.NODE_ENV !== 'dev') return;
+    //if(process.env.NODE_ENV !== 'dev') return;
     fs.watch(dirname,function(event,file){
         event === 'rename' && fs.existsSync(path.join(dirname,file)) && add(file)
     });

@@ -1,32 +1,32 @@
 {
   "infoPage": {
-    "match": "$('.book-info').length",
+    "match": "/info/.test($.location())",
     "indexPage": "$.location($('a:contains(目录)').attr('href'))",
     "footer": "$('#footer').length",
     "bookInfos": {
       "origin": "$.location()",
-      "title": "$('span.title').eq(0).text()",
-      "author": "$('.book-author').eq(0).text()",
-      "classes": "$('.breadcrumb a').last().text()",
-      "isend": "$('.finish-status-1,.finish-status-0').text()",
-      "cover": "$.location($('.book-info img.cover').attr('src'))",
-      "brief": "$('.book-summary').html()"
+      "title": "$('.ullist a').text()",
+      "author": "$('span:contains(作者：)').find('a').eq(0).text()",
+      "classes": "$('td:contains(作品分类：)').text()",
+      "isend": "$('td:contains(连载状态：)').text()",
+      "cover": "$.location($('.divbox img').attr('src'))",
+      "brief": "$('.tabvalue div').html()"
     }
   },
   "indexPage": {
-    "match": "/list/i.test($.location())",
-    "infoPage": "$.location().replace('/list','')",
+    "match": "$('dl.index').length",
+    "infoPage": "$.location($('a:contains(返回书页)').attr('href'))",
     "footer": "$('#footer').length",
-    "filter": "$('font:contains(VIP)').parent().remove()",
-    "bookIndexs": "$('.volumes a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+    "filter": "$('dd:contains(VIP)').remove()",
+    "bookIndexs": "$('dl.index a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
-    "match": "$('.content').length",
-    "footer": "true",
-    "filter": "$('.content').find('a,script,div').remove()",
+    "match": "$('.acontent').length",
+    "footer": "$('.footlink').length",
+    "filter": "$('.acontent').find('a,script,div').remove()",
     "chapterInfos": {
       "source": "$.location()",
-      "content": "$('.content').html()"
+      "content": "$('.acontent').html()"
     }
   }
 }

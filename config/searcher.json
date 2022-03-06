@@ -5,7 +5,8 @@
     "name": ".qidian.com"
   },
   {
-    "url": "http://book.qq.com/search/index/type/all/wd/%title%.html",
+    "url": "https://book.qq.com/api/booksearch/query?keyWord=%title%&pageNo=1&pageSize=50",
+    "parse": "data.data.bookList.map((x,i)=>['https://book.qq.com/book-detail/'+x.bid,x.title])",
     "name": ".qq.com"
   },
   {
@@ -18,11 +19,12 @@
     "name": ".sogou.com"
   },
   {
-    "url": "http://search.zongheng.com/search/all/%title%/1.html",
+    "url": "http://search.zongheng.com/s",
+    "query": "keyword=%title%",
     "name": ".zongheng.com"
   },
   {
-    "url": "http://search.17k.com/search.xhtml",
+    "url": "https://search.17k.com/search.xhtml",
     "query": "c.st=1&c.q=%title%",
     "selector": "div.textmiddle > dl > dt > a",
     "name": ".17k.com"
@@ -259,32 +261,29 @@
     "name": ".sfacg.com"
   },
   {
-    "url": "http://www.youdubook.com/booklibrary/index.html",
-    "query": "keywords=%title%",
+    "url": "https://pre-api.youdubook.com/api/searchAll",
+    "method": "POST",
+    "dataType": "json",
+    "data": "page=1&pageSize=10&search_type=novel&search_value=%title%",
     "name": ".youdubook.com",
-    "selector": ".BooklibraryList > ul > li > span > a"
+    "parse": "data.data.data.map(x=>['https://www.youdubook.com/bookdetail/'+x.novel_id,x.novel_name])"
   },
   {
     "url": "http://www.ebtang.com/book/search",
-    "method": "POST",
-    "selector":"a.f14.strong",
-    "data": "page=1&rows=25&searchName=%title%&orderBy=1",
+    "data": "searchName=%title%",
     "name": ".ebtang.com"
   },
   {
-    "url": "http://www.itangyuan.com/search/book/%title%.html",
-    "selector":".bname a",
-    "name": ".itangyuan.com"
+    "url": "https://www.yueduyun.com/search",
+    "query": "keyword=%title%",
+    "selector":"td a",
+    "name": ".yueduyun.com"
   },
   {
-    "url": "http://www.yueloo.com/search",
-    "query": "searchkey=%title%",
-    "selector":"td.odd a",
-    "name": ".yueloo.com"
-  },
-  {
-    "url": "http://www.bayueju.com/Search/Index/lists.html",
-    "query": "g=Search&m=Index&a=lists&type=title&keyword=%title%",
+    "url": "http://www.bayueju.com/modules/article/search.php",
+    "method": "POST",
+    "query": "searchtype=all&modtype=article&searchkey=%title%",
+    "selector": ".c_subject a",
     "name": ".bayueju.com"
   },
   {
@@ -297,24 +296,13 @@
     "name": ".qwsy.com"
   },
   {
-    "url": "https://www.9kus.com/Search/searchList/key/%title%.html",
-    "selector": "a.NameColor",
-    "name": ".9kus.com"
-  },
-  {
-    "url": "http://www.tiandizw.com/search.php",
-    "query": "keyword=%title%&type=2",
+    "url": "http://www.tiandizw.com/search.php/newindex",
+    "query": "keyword=%title%",
     "name": ".tiandizw.com"
   },
   {
     "url": "https://www.sxyj.net/Book_Search.html",
     "query": "keyword=%title%",
     "name": ".sxyj.net"
-  },
-  {
-    "url": "http://admin.datangzww.com/web/bookroom/index",
-    "query": "c_id=0&char_num=&update_status=&is_vip=&char_order=&collect_num=&last_update_chapter_time=&sales=1&page=1&search=%title%",
-    "parse": "data.data.map(o=>['http://new.datangzww.com/#/book/bookinside/'+o.id,o.title])",
-    "name": ".datangzww.com"
   }
 ]

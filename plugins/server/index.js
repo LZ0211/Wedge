@@ -211,7 +211,7 @@ module.exports = function (){
         return new Promise((resolve, reject)=>{
             var spawn = this.spawn()
             spawn.loadBook(ctx.params.uuid,function(){
-                spawn.book.setMeta('isend',true);
+                spawn.book.setMeta('isend',!spawn.book.getMeta("isend"));
                 spawn.sendToDataBase(()=>spawn.saveBook(()=>{
                     ctx.response.type = 'application/json';
                     ctx.response.body = JSON.stringify({})
@@ -249,7 +249,7 @@ module.exports = function (){
                 filename = Path.join(directory,filename);
                 if (fs.existsSync(filename)){
                     if (fs.statSync(filename).mtime > meta.date){
-                        ctx.response.set('Content-Disposition', `attachment;filename="${encodeURIComponent(Path.basename(filename))}"`)
+                        ctx.response.set('Content-Disposition', `attachment;filename="${Path.basename(filename)}"`)
                         ctx.response.body = fs.createReadStream(filename)
                         return resolve()
                     }
@@ -260,7 +260,7 @@ module.exports = function (){
                         ctx.response.status = 404
                         reject()
                     }else{
-                        ctx.response.set('Content-Disposition', `attachment;filename="${encodeURIComponent(Path.basename(ebookfile))}"`)
+                        ctx.response.set('Content-Disposition', `attachment;filename="${Path.basename(ebookfile)}"`)
                         ctx.response.body = fs.createReadStream(ebookfile)
                         resolve()
                     }
@@ -283,17 +283,38 @@ module.exports = function (){
         }).then(next)
     })
 
+    router.post('/newchapter/:uuid', (ctx, next)=>{
+        return new Promise((resolve, reject)=>{
+            var spawn = this.spawn();
+            spawn.loadBook(ctx.params.uuid,function(){
+                spawn.getChapter(ctx.request.body,()=>{
+                    ctx.response.type = 'application/json';
+                    ctx.response.body = JSON.stringify({"code":1})
+                    return resolve()
+                })
+            })
+        }).then(next)
+    })
+
     router.post('/edit/:uuid', (ctx, next)=>{
         return new Promise((resolve, reject)=>{
-            var url = decodeURIComponent(ctx.params.url)
             var spawn = this.spawn()
-            spawn.getBookMeta(url,()=>spawn.getBookCover(()=>spawn.updateBookMeta(()=>spawn.sendToDataBase(()=>{
-                ctx.compress = true;
+            var uuid = ctx.params.uuid
+            spawn.loadBook(uuid,function(){
+                var book = spawn.book;
+                book.setMeta(ctx.request.body);
+                book.setMeta('date',+new Date);
+                var _uuid = book.getMeta('uuid');
+                if(_uuid != uuid){
+                    spawn.database.remove(uuid);
+                    fs.rmdirsSync(_uuid);
+                    fs.renameSync(uuid, _uuid);
+                    book.localizationSync(_uuid);
+                }
                 ctx.response.type = 'application/json';
-                ctx.response.body = spawn.database.query()
+                ctx.response.body = JSON.stringify({})
                 resolve()
-                spawn.createBook(()=>spawn.checkBookCover(()=>spawn.getBookIndexs(x=>spawn.getChapters(x,()=>spawn.saveBook(()=>spawn.sendToDataBase(()=>spawn.generateEbook(()=>spawn.end())))))))
-            }))))
+            });
         }).then(next)
     })
 

@@ -206,6 +206,7 @@ class Wedge extends EventEmitter{
             this.info('end...');
             this.emit('end');
             this.book = Book();
+            this.bookdir = null;
         }
         return this;
     }
@@ -249,6 +250,7 @@ class Wedge extends EventEmitter{
         options.proxyAuth = this.getConfig('request.proxyAuth');
         options.cookie = options.cookie || this.getConfig('request.cookie');
         options.headers = options.headers || this.getConfig('request.headers');
+        //this.debug(JSON.stringify(options,null,2));
         options.success = options.success || this.noop;
         options.error = options.error || this.noop;
 
@@ -680,10 +682,10 @@ class Wedge extends EventEmitter{
         let update = ()=>{
             let meta = app.book.meta;
             for (let x in meta){
-                if (meta[x] === '') return app.end();
+                if (meta[x] === '') return;
             }
-            if (!similar(meta.title,title)) return app.end();
-            if (!similar(meta.author,author)) return app.end();
+            if (!similar(meta.title,title)) return;
+            if (!similar(meta.author,author)) return;
             delete meta.source;
             this.book.setMeta(meta);
             app.info('updateMeta');
@@ -982,7 +984,9 @@ class Wedge extends EventEmitter{
             let success = (options.success || (data=>data)).bind(options);
             options.success = data=>{
                 let result = success(data);
+                //console.log(result)
                 if (!result) return setContent();
+                if (typeof result == 'string') return setContent(result);
                 if(result.url && result.success){
                     result.request = result;
                 }
@@ -1238,6 +1242,7 @@ class Wedge extends EventEmitter{
 
     saveChapter(chapter,fn){
         fn = this.next(fn);
+        if(this.bookdir == null) return fn(null);
         let localization = this.getConfig('book.localization');
         if (!chapter) return fn(null);
         if (!chapter.content && localization) return fn(chapter);
@@ -1297,7 +1302,8 @@ class Wedge extends EventEmitter{
             formation:this.getConfig("ebook.formation"),
             bookdir:this.bookdir,
             filename: this.getConfig("ebook.filename"),
-            filter:this.getConfig("ebook.filter")
+            filter:this.getConfig("ebook.filter"),
+            sort:this.getConfig("ebook.sort"),
         };
         fs.mkdirsSync(options.directory);
         this.log("generating ebook...");

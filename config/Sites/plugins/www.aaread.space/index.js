@@ -1,9 +1,9 @@
 module.exports = {
-    "host":"www.yueloo.com",
+    "host":"www.aaread.space",
     "match":[
-        "www.yueloo.com"
+        "www.aaread.space"
     ],
-    "charset":"gbk",
+    "charset":"utf8",
     "selector":require("./selector"),
     "replacer":require("./replacer")
 }

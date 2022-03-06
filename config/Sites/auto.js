@@ -1,3 +1,4 @@
+const { link } = require('fs');
 const URL = require('url');
 
 function toReStr(str) {
@@ -182,25 +183,50 @@ function getCover($){
         $(v).attr('src',src);
         return true;
     });
-    if(filtred.length === 0) return;
     if(filtred.length === 1) return filtred.eq(0).attr('src');
-    //查找关键词
+    if (filtred.length == 0){
+        filtred = covers;
+    }else{
+        covers = filtred;
+    }
+    //查找书名
     var title = getTitle($);
-    var keywords = /cover|fimg|fmimg|book|info|summary|xiaoshuo|/i;
-    filtred = filtred.filter((i,v)=>{
+    var filtred = filtred.filter((i,v)=>{
         var self = $(v);
         var deep = 0;
         while(deep < 2){
-            html = self.html()
-            console.log(html)
-            if(html.match(title) || html.match(keywords)) return true;
+            var html = $.html(self)
+            if(html.match(title)) return true;
             deep += 1;
             self = self.parent();
         }
     });
-    if(filtred.length === 0) return;
     if(filtred.length === 1) return filtred.eq(0).attr('src');
-    return filtred.last().attr('src');
+    if (filtred.length == 0){
+        filtred = covers;
+    }else{
+        covers = filtred;
+    }
+    //查找关键词
+    var keywords = /cover|fimg|fmimg|book|info|summary|xiaoshuo|intro|fm|fengmian/i;
+    var filtred = filtred.filter((i,v)=>{
+        var self = $(v);
+        var deep = 0;
+        while(deep < 2){
+            var html = $.html(self)
+            if(html.match(keywords)) return true;
+            deep += 1;
+            self = self.parent();
+        }
+        return false
+    });
+    if(filtred.length === 1) return filtred.eq(0).attr('src');
+    if (filtred.length == 0){
+        filtred = covers;
+    }else{
+        covers = filtred;
+    }
+    return filtred.first().attr('src');
 }
 var groups = {
     '上古先秦':/东周|西周|春秋战国|战国七雄|春秋五霸/g,
@@ -270,7 +296,13 @@ function getBrief($){
         var name = ''+$(v).attr('property') + $(v).attr('name');
         return name.match(/og:description|intro/i);
     }).map((i,v)=>$(v).attr('content')).toArray();
-    if(metas.length) return metas[0];
+    if(metas.length){
+        var brief = metas[0];
+        var title = getTitle($);
+        var regexp = new RegExp("^《?"+toReStr(title)+"》?","gi");
+        brief = brief.replace(regexp,"")
+        return brief
+    }
 }
 
 function getStatus($){
@@ -302,7 +334,7 @@ function getList($){
         if (mark in hash){
             hash[mark] += 1;
         }else {
-             hash[mark] = 1;
+            hash[mark] = 1;
         }
     });
     var maxNum = 0,maxMark;
@@ -312,14 +344,30 @@ function getList($){
             maxMark = x;
         }
     }
+    if(maxNum < 40){
+        var keys = Object.keys(hash)
+        var reg = /list|volume|chapter/i;
+        keys.filter(k=>k.match(reg))
+        if(keys.length >= 1){
+            keys.sort((a,b)=>a.search(reg)-b.search(reg))
+            maxMark = keys[0]
+        }
+    }
     var list = allLinks.filter((i,v)=>$(v).attr('sign') == maxMark).map((i,v)=>{
         var href = $(v).attr('href') || '';
         var array = href.split('/');
         var id = array.pop() || array.pop();
+        if(id.match(/\d+/)){
+            var arr = id.split(/\D+/);
+            id = arr.pop();
+            while(id == ""){
+                id = arr.pop()
+            }
+        }
         return {
             href:href,
             text:$(v).text().trim(),
-            index:id && id.replace(/\..*/,'')
+            index:id
         }
     }).toArray().sort((a,b)=>{
         if (/^\d+$/.test(a.index) && /^\d+$/.test(a.index)) return a.index - b.index;
@@ -338,7 +386,7 @@ function getList($){
         link.href = $.location(link.href);
         var arr = link.href.split('/');
         arr.pop() || arr.pop()
-        name = arr.join('/');
+        var name = arr.join('/');
         logs[name] = (logs[name] || 0) + 1;
     });
     if(Object.keys(logs).length === 1) return links;
@@ -381,6 +429,21 @@ function getContent($){
         textLength = length;
     }
     while (nextdom.length);
+}
+
+function getNextPage($){
+    var links = $('a');
+    var id = $.location().split("/").filter(x=>x).pop().split(".")[0].split('_')[0].split('-')[0]
+    links = links.filter((i,v)=>{
+        var link = $(v);
+        if(link.text().trim() == "下一页"){
+            var url = link.attr('href').split("/").filter(x=>x).pop().split(".")[0]
+            if(url.indexOf(id) == 0) return true
+        }
+    });
+    if(links.length > 0){
+        return $.location($(links[0]).attr('href'))
+    }
 }
 
 function getIndexLink($){
@@ -427,7 +490,8 @@ module.exports = {
             footer: footer,
             chapterInfos: {
                 source: getLocation,
-                content: getContent
+                content: getContent,
+                nextPage: getNextPage,
             }
         }
     },
@@ -466,6 +530,7 @@ module.exports = {
                 "热门小说推荐：",
                 "[^<>]*最快更新!无广告!",
                 "本书来自.*?网",
+                "本站域名.*",
                 "http:\\/\\/[\\w\\.\\/]*"
             ]
         }

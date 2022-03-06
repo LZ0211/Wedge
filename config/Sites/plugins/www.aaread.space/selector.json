@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "/book/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('div.book-info > h1 > em').text().trim()",
+      "author": "$('div.book-info > h1 > a').text().replace(' 著','').trim()",
+      "classes": "$('div.crumbs-nav a').eq(1).text()",
+      "isend": "$('.tag-box').text()",
+      "cover": "$.location($('.book-img img').attr('src'))",
+      "brief": "$('.intro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/book/i.test($.location())",
+    "infoPage": "$.location()",
+    "footer": "$('.footer').length",
+    "bookIndexs": "$('div.volume a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "/chapter/i.test($.location())",
+    "footer": "true",
+    "request": {
+      "url":"'https://www.aaread.space/_getcontent.php?_csrfToken=&id='+$.location().split('/').pop()",
+      "success":"text=>text.split('</p>').map(x=>x.replace('<p>','').replace(/<(\\w+)[^<>]*>[^<>]*<\\\/\\1>/g,'').trim()).join('\\n')"
+    }
+  }
+}

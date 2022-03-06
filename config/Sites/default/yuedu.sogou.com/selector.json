@@ -21,8 +21,8 @@
     "request": "{url:$.location().replace(/\\?.*/g,'').replace('book/info','ajax/book/info'),success:data=>data.dir.chapters.filter(x=>!x.lock).map(x=>({href:$.location(x.href),text:x.name})),headers:{'Referer':$.location(),'X-Requested-With':'XMLHttpRequest'}}"
   },
   "contentPage": {
-    "match": "/http:\\/\\/yuedu\\.sogou\\.com\\/book\\/view\\/.*/i.test($.location())",
+    "match": "/book\\/view\\/.*/i.test($.location())",
     "footer": "true",
-    "request": "{url:'http://yuedu.sogou.com/ajax/user/buy/?bkey='+$.location().replace('http://yuedu.sogou.com/book/view/','').replace('/','&ckey=')+'&buy=0&auto=0&_=' + (+new Date),success:data=>({content:data.detail.content})}"
+    "request": "{url:'https://yuedu.sogou.com/ajax/user/buy/?bkey='+$.location().replace('https://yuedu.sogou.com/book/view/','').replace('/','&ckey=')+'&buy=0&auto=0&_=' + (+new Date),success:data=>({content:data.detail.content})}"
   }
 }

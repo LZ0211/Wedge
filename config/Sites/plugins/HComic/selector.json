@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "$('.chapterlist').length",
+    "indexPage": "$.location()",
+    "footer": "true",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.topic_title').text().trim()",
+      "author": "$('.author').eq(0).text().trim()",
+      "classes": "'HComic'",
+      "isend": "$('.state').text()",
+      "cover": "$.location($('.cover_img').attr('src'))",
+      "brief": ""
+    }
+  },
+  "indexPage": {
+    "match": "$('.chapterlist').length",
+    "infoPage": "$.location()",
+    "footer": "true",
+    "bookIndexs": "$('.chapterlist a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).find('.title b').text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "$('.payCover').length",
+    "footer": "true",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$.raw.match(/data-original=\"(.*?)\"/g).map(x=>x.match(/data-original=\"(.*)\"/)[1]).map(x=>`<img src='${x}'>`).join('\\n')"
+    }
+  }
+}

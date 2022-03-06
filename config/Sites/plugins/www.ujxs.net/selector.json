@@ -1,0 +1,30 @@
+{
+  "infoPage": {
+    "match": "$('#bookinfo').length",
+    "indexPage": "$.location($('a.tgcj').attr('href'))",
+    "footer": "$('#footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('.d_title h1').text().trim()",
+      "author": "$('.d_title a').text().trim()",
+      "classes": "$('#count').text()",
+      "isend": "$('#count').text()",
+      "cover": "$.location($('#bookimg img').attr('src'))",
+      "brief": "$('#bookintro').html()"
+    }
+  },
+  "indexPage": {
+    "match": "$('#readerlist').length",
+    "infoPage": "$.location($('#xiazai a').attr('href'))",
+    "footer": "$('#footer').length",
+    "bookIndexs": "$('#readerlist a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "$('.read-content').length",
+    "footer": "$('#footer').length",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('.read-content').html()"
+    }
+  }
+}

@@ -1,7 +1,7 @@
 module.exports = {
-    "host":"www.youdubook.com",
+    "host":"m.diyibanzhu.cyou",
     "match":[
-        ".youdubook.com"
+        "m.diyibanzhu.cyou"
     ],
     "charset":"utf8",
     "selector":require("./selector"),

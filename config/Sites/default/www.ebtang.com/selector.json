@@ -1,33 +1,31 @@
 {
   "infoPage": {
-    "match": "/^http:\\/\\/www\\.ebtang\\.com\\/book\\/\\d+\\/?$/i.test($.location())",
-    "indexPage": "$.location($('a.wdpt.fl').attr('href'))",
-    "footer": "$('.footer').length",
+    "match": "$('#bookDetail').length && !$('#directoryList').length",
+    "indexPage": "$.location($('a:contains(录)').attr('href'))",
+    "footer": "$('#footer').length",
     "bookInfos": {
       "origin": "$.location()",
-      "title": "$('div > h1').text()",
-      "author": "$('div.zp-wdrg > div.sec.ac > p > a').text()",
-      "classes": "$('div.zp-wdlf > div > p > span').text().split('|')[1]",
-      "isend": "!!$('div.zp-wdlf > img').attr('src').match('over.jpg')",
-      "cover": "$.location($('p.bords > img').attr('src'))",
-      "brief": "$('div.minh > pre').html()"
+      "title": "$('#bookDetail').attr('d-name')",
+      "author": "$('#bookDetail').attr('d-author')",
+      "classes": "$('#bookDetail').attr('d-sort')",
+      "isend": "$('#bookDetail').attr(' d-finish')",
+      "cover": "$('#bookDetail').attr('d-cover')",
+      "brief": "$('#bookDetail').attr('d-info')"
     }
   },
   "indexPage": {
-    "match": "/directory/i.test($.location())",
+    "match": "$('#directoryList').length",
     "infoPage": "$.location('./')",
-    "filter": "$('a.vip').remove()",
-    "footer": "$('.footer').length",
-    "bookIndexs": "$('ul > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+    "footer": "$('#directoryList').length",
+    "bookIndexs": "$('#directoryList b').map((i,v)=>({href:$.location('./'+$(v).attr('d-id')),text:$(v).attr('d-title'),vip:$(v).attr('d-vip')})).toArray().filter(x=>x.vip=='0')"
   },
   "contentPage": {
-    "match": "$('#bookChapterForm').length",
+    "match": "/book/i.test($.location())",
     "footer": "true",
     "request": {
-      "url": "$.location()+'/more'",
-      "method": "'POST'",
-      "data": "'nextId='+$('#nextId').val()+'&randomString='+$('#randomString').val()+'&curId='",
-      "success": "data=>{$('#maincontent').html(data.toString());return $('pre').html()}"
+      "url": "$.location().replace('book','book/readbook') + '/more?randomString=' + $('#randomString').attr('value')",
+      "dataType": "'json'",
+      "success": "data=>data.bookChapter && data.bookChapter.content"
     }
   }
 }

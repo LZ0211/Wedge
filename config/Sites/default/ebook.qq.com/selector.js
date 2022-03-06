@@ -1,7 +1,7 @@
 module.exports = {
   "infoPage": {
     "match": "/intro\\.html/i.test($.location())",
-    "indexPage": "$.location().replace('http://ebook.qq.com/intro.html','http://ebook.qq.com/intro/directory.html')+'&pageIndex=1'",
+    "indexPage": "$.location().replace('intro','intro/directory')",
     "footer": "$('.footer').length > 0",
     "filter": "$('#totalIntro em').remove()",
     "bookInfos": {
@@ -16,9 +16,9 @@ module.exports = {
   },
   "indexPage": {
     "match": "/directory.html/i.test($.location())",
-    "infoPage": "$.location().replace('http://ebook.qq.com/intro/directory.html','http://ebook.qq.com/intro.html').replace('&pageIndex=1','')",
+    "infoPage": "$.location().replace('intro/directory','intro')",
     "footer": "true",
-    "bookIndexs":"$('a').map((i,v)=>({href:($(v).attr('href')||'').replace(/[\"\\\\]/g,''),text:$(v).text().replace(/&nbsp;/g,' ')})).toArray().slice(0,30)"
+    "bookIndexs":"($ = $.load($.data.listHtml)) && $('a:contains(免费)').map((i,v)=>({href:$(v).attr('href'),text:$(v).attr('title')})).toArray()"
   },
   "contentPage": {
     "match": "/hvread.html/i.test($.location())",

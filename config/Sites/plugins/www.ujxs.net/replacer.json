@@ -5,9 +5,9 @@
     "footer": null,
     "bookInfos": {
       "source": null,
-      "title": null,
+      "title": ["作者：.*"],
       "author": null,
-      "classes": null,
+      "classes": ["分类：","状态：[\\s\\S]*"],
       "isend": null,
       "cover": null,
       "brief": null,
@@ -26,7 +26,7 @@
     "chapterInfos": {
       "title": null,
       "source": null,
-      "content": null
+      "content": [".*免费阅读！",".*免费下载！","<script>.*?<\\/script>"]
     }
   }
 }

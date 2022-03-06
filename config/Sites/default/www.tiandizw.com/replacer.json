@@ -5,7 +5,7 @@
     "footer": null,
     "bookInfos": {
       "source": null,
-      "title": null,
+      "title": "<span>.*",
       "author": null,
       "classes": null,
       "isend": null,

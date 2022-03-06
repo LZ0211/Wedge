@@ -1,0 +1,31 @@
+{
+  "infoPage": {
+    "match": "/wap_novel/i.test($.location())",
+    "indexPage": "$.location().replace('wap_novel','wap_zhang')",
+    "footer": "$('.foot').length",
+    "bookInfos": {
+      "title": "$('div.xiangxi p.tit').text().trim()",
+      "author": "$('div.xiangxi p').eq(1).text().trim()",
+      "classes": "$('div.xiangxi p').eq(2).text().trim()",
+      "isend": "false",
+      "cover": "$.location($('div.xiangxi img').attr('src'))",
+      "brief": ""
+    }
+  },
+  "indexPage": {
+    "match": "/wap_zhang/i.test($.location())",
+    "infoPage": "$.location().replace('wap_zhang','wap_novel')",
+    "footer": "$('.foot').length",
+    "bookIndexs": "$('ul.z > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()",
+    "nextPage": "$.location($('.paginationnnn').find('a:contains(下页)').attr('href'))"
+  },
+  "contentPage": {
+    "match": "/wap_novelinfo/i.test($.location())",
+    "footer": "$('.foot').length",
+    "chapterInfos": {
+      "source": "$.location()",
+      "content": "$('div.content div.s').html()",
+      "nextPage": "$.location($('a:contains(下一篇)').eq(0).attr('href'))"
+    }
+  }
+}

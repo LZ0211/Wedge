@@ -1,7 +1,7 @@
 module.exports = {
-    "host":"www.itangyuan.com",
+    "host":"puka-hentai.org",
     "match":[
-        "www.itangyuan.com"
+        "puka-hentai.org"
     ],
     "charset":"utf8",
     "selector":require("./selector"),

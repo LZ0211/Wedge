@@ -1,50 +1,38 @@
 module.exports = {
   "infoPage": {
-    "match": "/^http:\\/\\/book\\.qq\\.com\\/intro\\.html/i.test($.location())",
-    "indexPage": "{method:'post',href:'http://book.qq.com/intro/listcontent.html',data:'bid='+$('#monthlyBtn').attr('bid')+'&pageIndex=1'}",
-    "footer": "$('.footer').length > 0",
+    "match": "/book-detail/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "true",
     "bookInfos": {
       "origin": "$.location()",
       "source": "$.location()",
-      "title": "$('.book_info > h3 > a').text()",
-      "author": "$('dd > a').eq(0).text()",
-      "classes": "$('dd.w_auth').eq(1).text()",
-      "isend": "true",
-      "cover": "$.location($('.bookBox img').attr('src'))",
-      "brief": "$('#moreIntroBtn').attr('moreintro')"
+      "title": "$('.book-title').text()",
+      "author": "$('.book-update span').eq(0).text()",
+      "classes": "$('.book-tags').text()",
+      "isend": "$('.book-update').text()",
+      "cover": "$.location($('.book-cover img').attr('src'))",
+      "brief": "$('.intro').html()"
     }
   },
   "indexPage": {
-    "match": "/listcontent/i.test($.location())",
-    "infoPage": "",
-    "footer": "true",
-    "bookIndexs":"$('a').map((i,v)=>({href:($(v).attr('href')||'').replace(/[\"\\\\]/g,''),text:$(v).text().replace(/&nbsp;/g,' ')})).toArray().slice(0,20)"
-  },
-  "contentPage": {
-    "match": "/^http:\\/\\/book\\.qq\\.com\\/read\\.html/i.test($.location())",
+    "match": "/book-detail/i.test($.location())",
+    "infoPage": "$.location()",
     "footer": "true",
     "request": $=>{
-      var script = $('script').text();
-      //console.log(script)
-      var matched,bid,cid;
-      if (matched = script.match(/bid = "(\d+)"/)){
-        bid = matched[1];
-      }
-      if (matched = script.match(/cid = "(\d+)"/)){
-        cid = matched[1];
-      }
-      //console.log(bid,cid)
+      var bid = $.location().replace("https://book.qq.com/book-detail/","");
       return {
-        url : 'http://book.qq.com/read/' + bid + '/' + cid,
+        url: "https://book.qq.com/api/book/detail/chapters?bid=" + bid,
         method : 'POST',
-        data : 'lang=&w=830&fontsize=14',
         dataType : "json",
-        success : function (data){
-          $("body").html(data.Content);
-          $('div.bookreadercontent').find('p').last().remove();
-          return $('div.bookreadercontent').html();
-        }
+        success: data=>data.data.filter(x=>x.free).map(x=>({text:x.chapterName,href:'https://book.qq.com/book-read/' + bid + '/' + x.cid}))
       }
+    }
+  },
+  "contentPage": {
+    "match": "/book-read/i.test($.location())",
+    "footer": "true",
+    "chapter": {
+      "content": ""
     }
   }
 }

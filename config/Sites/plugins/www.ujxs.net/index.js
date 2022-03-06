@@ -1,9 +1,9 @@
 module.exports = {
-    "host":"xiaoshuo.sogou.com",
+    "host":"www.ujxs.net",
     "match":[
-        "xiaoshuo.sogou.com"
+        "www.ujxs.net"
     ],
-    "charset":"utf8",
+    "charset":"gbk",
     "selector":require("./selector"),
     "replacer":require("./replacer")
 }

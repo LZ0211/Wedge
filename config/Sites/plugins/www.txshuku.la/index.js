@@ -1,9 +1,9 @@
 module.exports = {
-    "host":"www.youdubook.com",
+    "host":"www.txshuku.la",
     "match":[
-        ".youdubook.com"
+        "www.txshuku.la"
     ],
-    "charset":"utf8",
+    "charset":"gbk",
     "selector":require("./selector"),
     "replacer":require("./replacer")
 }
