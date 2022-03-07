@@ -1,8 +1,8 @@
-{
+module.exports = {
   "infoPage": {
-    "match": "/.heiyan\\.com\\/book\\/\\d+$/i.test($.location())",
+    "match": "/ruochu\\.com\\/book\\/\\d+$/i.test($.location())",
     "indexPage": "$.location().replace('book','chapter')",
-    "footer": "!!$('.footer').length",
+    "footer": "$('.footer').length",
     "bookInfos": {
       "origin": "$.location()",
       "title": "$('h1').eq(0).text().trim()",
@@ -14,15 +14,21 @@
     }
   },
   "indexPage": {
-    "match": "/.heiyan\\.com\\/chapter\\/\\d+$/i.test($.location())",
+    "match": "/ruochu\\.com\\/chapter\\/\\d+$/i.test($.location())",
     "infoPage": "$.location().replace('chapter','book')",
-    "footer": "!!$('.footer').length",
+    "footer": "$('.footer').length",
     "filter": "$('.isvip').remove()",
     "bookIndexs": "$('ul.float-list > li > a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
-    "match": "/.heiyan\\.com\\/book\\/\\d+\\/\\d+/i.test($.location())",
+    "match": "/book\\/\\d+\\/\\d+/i.test($.location())",
     "footer": "true",
-    "request": "{url:$.location().replace('book','ajax/book') + '?_' + Date.now(),success:data=>JSON.parse(data).chapter.htmlContent}"
+    "request": $=>{
+      return {
+        "url":$.location().replace('book','ajax/book') + '?_' + Date.now(),
+        "dataType": "json",
+        "success": data=>JSON.parse(data).chapter.htmlContent
+      }
+    }
   }
 }

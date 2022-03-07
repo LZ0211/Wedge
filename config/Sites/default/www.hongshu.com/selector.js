@@ -21,7 +21,7 @@ function utf8to16(str){var out,i,len,c;var char2,char3;out="";len=str.length;i=0
 
 module.exports = {
   "infoPage": {
-    "match": "/^http:\\/\\/www\\.hongshu\\.com\\/book\\/\\d+\\/$/i.test($.location())",
+    "match": "/hongshu\\.com\\/book\\/\\d+\\/$/i.test($.location())",
     "indexPage": "$.location($('.list').attr('href'))",
     "footer": "$('.footer').length > 0",
     "bookInfos": {
@@ -35,19 +35,19 @@ module.exports = {
     }
   },
   "indexPage": {
-    "match": "/^http:\\/\\/www\\.hongshu\\.com\\/bookreader\\/\\d+\\/$/i.test($.location())",
+    "match": "/hongshu\\.com\\/bookreader\\/\\d+\\/$/i.test($.location())",
     "infoPage": "$.location($('.qh').attr('href'))",
     "footer": "$('.footer').length > 0",
     "filter": "$('.vip').prev().remove()",
     "bookIndexs": "$('.columns a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
   },
   "contentPage": {
-    "match": "/^http:\\/\\/www\\.hongshu\\.com\\/content/i.test($.location())",
+    "match": "/hongshu\\.com\\/content/i.test($.location())",
     "footer": "true",
     "request": $=>{
-      var arr = $.location().replace('http://www.hongshu.com/content/','').replace('.html','').replace('/','-').split('-');
+      var arr = $.location().replace('https://www.hongshu.com/content/','').replace('.html','').replace('/','-').split('-');
       return {
-        url:'http://www.hongshu.com/bookajax.do',
+        url:'https://www.hongshu.com/bookajax.do',
         method:'POST',
         dataType:'json',
         data:'method=getchptkey&bid='+arr[0]+'&cid='+arr[2],
@@ -55,7 +55,7 @@ module.exports = {
           var key = data.key;
           if(!key) return;
           return {
-              url:'http://www.hongshu.com/bookajax.do',
+              url:'https://www.hongshu.com/bookajax.do',
               method:'POST',
               dataType:'json',
               data:'method=getchpcontent&bid='+arr[0]+'&jid='+arr[1]+'&cid='+arr[2],

@@ -1,31 +1,16 @@
 {
   "infoPage": {
-    "match": "/^http:\\/\\/www\\.yousuu\\.com\\/book\\/\\d+$/i.test($.location())",
-    "indexPage": "$.location($('a:contains(开始阅读)').attr('href'))",
-    "footer": "!!$('.footer').length",
+    "match": "/book\\/\\d+$/i.test($.location())",
+    "indexPage": "$.location()",
+    "footer": "$('.footer').length",
     "bookInfos": {
       "origin": "$.location()",
-      "title": "$('.media').prev().find('span').text()",
-      "author": "$('li:contains(作者:)').find('a').text()",
-      "classes": "$('#booktag > a.tag').text()",
-      "isend": "false",
-      "cover": "$.location($('img.bookavatar').attr('src'))",
-      "brief": "$('#bookinfo').html()"
-    }
-  },
-  "indexPage": {
-    "match": "/^http:\\/\\/www\\.yousuu\\.com\\/book\\/\\d+$/i.test($.location())",
-    "infoPage": "$.location()",
-    "footer": "!!$('.footer').length",
-    "bookIndexs": "[]"
-  },
-  "contentPage": {
-    "match": "false",
-    "footer": "false",
-    "chapterInfos": {
-      "title": "",
-      "source": "",
-      "content": ""
+      "title": "$('h1.book-name').eq(0).text()",
+      "author": "$('.book-author').text()",
+      "classes": "$('.el-tag a').last().text()",
+      "isend": "$('.status').text()",
+      "cover": "$.location($('.card-bookInfo-cover').attr('cover'))",
+      "brief": "$.raw.split('introduction:\"')[1].split('\",countWord')[0]"
     }
   }
 }

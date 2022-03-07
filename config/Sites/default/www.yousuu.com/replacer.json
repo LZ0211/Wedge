@@ -6,11 +6,11 @@
     "bookInfos": {
       "source": null,
       "title": null,
-      "author": null,
+      "author": "作者：",
       "classes": null,
       "isend": null,
       "cover": null,
-      "brief": null,
+      "brief": ["简介：","简介"],
       "keywords": null
     }
   },

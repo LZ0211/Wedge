@@ -1,31 +1,29 @@
 {
   "infoPage": {
-    "match": "/^http:\\/\\/www\\.ycsd\\.cn\\/book\\/\\d+\\/?$/i.test($.location())",
+    "match": "$('.book-info').length",
     "indexPage": "$.location($('a:contains(目录)').attr('href'))",
-    "footer": "$('footer').length > 0",
+    "footer": "$('footer').length",
     "bookInfos": {
       "origin": "$.location()",
-      "source": "$.location($('a:contains(目录)').attr('href'))",
-      "title": "$('.t > h1').text().trim()",
-      "author": "$('a.txt-brown').eq(0).text().trim()",
-      "classes": "$('.info > a').text()",
-      "isend": "$('.status-bk').text()",
-      "cover": "$.location($('.pic > img').attr('src'))",
-      "brief": "$('#aboutBook > p').html()"
+      "title": "$('.book-name').text()",
+      "author": "$('.author-name').text().trim()",
+      "classes": "$('.book-classify span').eq(0).text()",
+      "isend": "$('.chapter-name').text()",
+      "cover": "$.location($('.book-cover img').attr('src'))",
+      "brief": "$('.book-desc').html()"
     }
   },
   "indexPage": {
-    "match": "/^http:\\/\\/www\\.ycsd\\.cn\\/html\\/\\d+\\/\\d+\\/?$/i.test($.location())",
-    "infoPage": "$.location($('.t h2 a').attr('href'))",
+    "match": "$('.directory-list__wrap').length",
+    "infoPage": "$.location($('.web-crumbs a').last().attr('href'))",
     "footer": "$('footer').length > 0",
-    "filter": "$('.ico-vip').parent('li').remove()",
-    "bookIndexs": "$('.list-directory a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+    "filter": "$('.directory-item img').parent('a').remove()",
+    "bookIndexs": "$('.directory-list__wrap a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text().trim()})).toArray()"
   },
   "contentPage": {
-    "match": "/^http:\\/\\/www\\.ycsd\\.cn\\/html\\/\\d+\\/\\d+\\/\\d+\\.html$/i.test($.location())",
-    "footer": "$('footer').length > 0",
+    "match": "$('.content').length",
+    "footer": "$('footer').length",
     "chapterInfos": {
-      "source": "$.location()",
       "content": "$('.content').html()"
     }
   }

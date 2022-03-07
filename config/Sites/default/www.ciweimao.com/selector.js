@@ -42,15 +42,15 @@ module.exports = {
     "infoPage": "$.location($('a:contains(详情)').attr('href'))",
     "footer": "$('.footer').length > 0",
     "filter": "$('.icon-lock').parent('a').remove()",
-    "bookIndexs": "$('.book-chapter-list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+    "bookIndexs": "$('.book-chapter-list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text().trim()})).toArray()"
   },
     "contentPage": {
-    "match": "$('h3.chapter').length",
+    "match": "$('.chapter').length",
     "footer": "true",
     "request":$ => {
-        var qs = $.location().replace('http://www.ciweimao.com/chapter/','chapter_id=');
-        return {
-            url:'http://www.ciweimao.com/chapter/ajax_get_session_code',
+      var qs = $.location().replace('https://www.ciweimao.com/chapter/','chapter_id=');
+      return {
+            url:'https://www.ciweimao.com/chapter/ajax_get_session_code',
             method:'POST',
             data:qs,
             success:data => {
@@ -58,12 +58,13 @@ module.exports = {
                 if(data.code !== 100000) return data.tip;
                 return {
                     request:{
-                        url:'http://www.ciweimao.com/chapter/get_book_chapter_detail_info',
+                        url:'https://www.ciweimao.com/chapter/get_book_chapter_detail_info',
                         method:'POST',
                         data:qs+'&chapter_access_key='+chapter_access_key,
+                        dataType: "json",
                         headers:{
-                            "X-Requested-With":"XMLHttpRequest",
-                            "Referer":$.location()
+                          "X-Requested-With":"XMLHttpRequest",
+                          "Referer":$.location()
                         },
                         success:data => {
                             if(data.code !== 100000) return data.tip;
@@ -71,12 +72,12 @@ module.exports = {
                                 content: data.chapter_content,
                                 keys: data.encryt_keys,
                                 accessKey: chapter_access_key
-                            });
+                            }).replace(/<span>.*?<\/span>/ig,"");
                         }
                     }
                 }
             }
-        }
+      }
     }
   }
 }

@@ -12,7 +12,7 @@
       "author": "$('span[itemprop=\"author\"]').text().trim()",
       "classes": "$('span[itemprop=\"genre\"]').text().trim().split('-').sort((x,y)=>x.length-y.length).pop()",
       "isend": "$('span[itemprop=\"updataStatus\"]').text()",
-      "cover": "$('img[itemprop=\"image\"]').attr('_src')",
+      "cover": "$('img[itemprop=\"image\"]').attr('src')",
       "brief": "$('#novelintro').html()"
     }
   },

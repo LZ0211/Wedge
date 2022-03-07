@@ -6,8 +6,8 @@
     "bookInfos": {
       "source": null,
       "title": null,
-      "author": "作者：",
-      "classes": null,
+      "author": "作  者：",
+      "classes": "分  类：",
       "isend": null,
       "cover": null,
       "brief": null,
