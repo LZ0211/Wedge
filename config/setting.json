@@ -68,6 +68,7 @@
     "deepDownload": false,
     "maxDepth": 0,
     "localization": true,
+    "filterimage": true,
     "imageExts": [".jpg",".jpeg",".png",".gif",".tif",".webp",".bmp",".tga"],
     "imageMinSize": 5000,
     "unique":{
@@ -83,8 +84,9 @@
     "showKeys": ["uuid","title","author","classes","isend","date","source"]
   },
   "app": {
-    "log": false,
-    "debug": false,
+    "log": true,
+    "debug": true,
+    "info": true,
     "retry": {
       "meta": 3,
       "index": 3,
