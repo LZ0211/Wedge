@@ -289,7 +289,6 @@ class Wedge extends EventEmitter{
                     req.setHeader('Accept-Encoding','');
                     return req.end();
                 }
-                this.debug(err.code,options.url);
                 if (connectTimes < maxConnectTimes) return req.end();
                 let autoProxy = this.getConfig('app.autoProxy');
                 let autoProxyAuth = this.getConfig('app.autoProxyAuth');
@@ -299,10 +298,11 @@ class Wedge extends EventEmitter{
                     Array.isArray(autoProxyAuth) && req.proxyAuth(...autoProxyAuth);
                     return req.end();
                 }else{
+                    this.debug(this.bookdir,err.code,options.url);
                     return options.error(err.code);
                 }
             }
-            this.debug(res.statusCode,options.url);
+            this.debug(this.bookdir,res.statusCode,options.url);
             return options.error(res.statusCode);
         });
     }
@@ -333,7 +333,7 @@ class Wedge extends EventEmitter{
     searchInSite(title,site,fn){
         fn = this.next(fn);
         if(!site || !site.url) return fn();
-        this.debug(site.url)
+        //this.debug(site.url)
         let links = [];
         let push = link=>links.push(link);
         let url = site.url
@@ -551,7 +551,7 @@ class Wedge extends EventEmitter{
         let times = util.parseInteger(this.getConfig('app.retry.meta',3),3);
         let indexUrl = null;
         let setMeta = infos=>{
-            this.debug(JSON.stringify(infos,null,2));
+            //this.debug(JSON.stringify(infos,null,2));
             this.book.setMeta(infos);
             this.book.setMeta('source',links.length > 1 ? links : indexUrl);
             this.book.setMeta('origin',link);
@@ -576,7 +576,7 @@ class Wedge extends EventEmitter{
                 return setMeta(result.bookInfos);
             };
             options.error = error=>{
-                this.debug(error);
+                //this.debug(error);
                 if (--times <= 0) return this.end();
                 setTimeout(()=>this.request(options),1000*5);
             };
@@ -600,7 +600,7 @@ class Wedge extends EventEmitter{
                 return null;
             }
         };
-        this.debug(JSON.stringify(link,null,2));
+        //this.debug(JSON.stringify(link,null,2));
         requestInfo(link);
         return this;
     }
@@ -648,7 +648,7 @@ class Wedge extends EventEmitter{
                     }
                 }
                 options.error = error=>{
-                    this.debug(error);
+                    //this.debug(error);
                     if (--times <= 0) throw Error('Request failed');
                     setTimeout(()=>this.request(options),1000*5);
                 }
@@ -675,8 +675,18 @@ class Wedge extends EventEmitter{
             return false;
         }
         if(outClude.some(site=>~origin.indexOf(site))){
-            //app.end(fn);
-            this.getBookMeta(origin,fn);
+            //app.end(fn)
+            let app = this.spawn();
+            app.info(origin);
+            app.getBookMeta(origin,()=>{
+                let meta = app.book.meta;
+                delete meta.source;
+                for(let x in meta) {
+                    if (meta[x] == "") return fn();
+                }
+                this.book.setMeta(meta);
+                return fn();
+            });
             return this;
         }
         let search = (site,next)=>{
@@ -807,7 +817,7 @@ class Wedge extends EventEmitter{
         fn = this.next(fn);
         link = util.formatLink(link);
         this.info('getBookIndex');
-        this.debug(link.url)
+        //this.debug(link.url)
         //console.log(link)
         let times = util.parseInteger(this.getConfig('app.retry.index'),3);
         let setIndex = bookIndex=>{
@@ -853,7 +863,7 @@ class Wedge extends EventEmitter{
                 return setIndex(result.bookIndexs);
             };
             options.error = error=>{
-                this.debug(error);
+                //this.debug(error);
                 if (--times <= 0) return setIndex();
                 setTimeout(()=>this.request(options),1000*5);
             };
@@ -995,7 +1005,7 @@ class Wedge extends EventEmitter{
                 return setContent(result.chapterInfos);
             };
             options.error = error=>{
-                this.debug(error);
+                //this.debug(error);
                 if (--times <= 0) return fn(null);
                 setTimeout(()=>this.request(options),1000*5);
             };
@@ -1287,13 +1297,13 @@ class Wedge extends EventEmitter{
         return this;
     }
 
-    generateEbook(options,fn){
+    generateEbook(fn){
         fn = this.next(fn);
         if (0 === this.getConfig("ebook.activated")) return fn();
         if (!this.book.changed && this.getConfig("ebook.activated") <= 0) return fn();
         this.info('generateEbook');
         let work = child_process.fork(Path.join(__dirname,"lib/ebook/generator_process.js"),{cwd:process.cwd()});
-        options = options || {
+        let options = {
             directory:this.getConfig("ebook.directory"),
             formation:this.getConfig("ebook.formation"),
             bookdir:this.bookdir,
@@ -1301,23 +1311,23 @@ class Wedge extends EventEmitter{
             filter:this.getConfig("ebook.filter"),
             sort:this.getConfig("ebook.sort"),
         };
-        this.debug(JSON.stringify(options,null,2));
+        //this.debug(JSON.stringify(options,null,2));
         fs.mkdirsSync(options.directory);
-        this.log("generating ebook...");
+        this.info("generating ebook...");
         let msg = {};
         work.on("message",msg=>{
             if (!msg.code){
-                this.debug(Path.resolve(msg.filename));
-                this.log(`ebook ${msg.filename} generated successful!`);
+                this.info(Path.resolve(msg.filename));
+                this.info(`ebook ${msg.filename} generated successful!`);
                 if(!this.platform.match('win')) return;
                 if (this.getConfig("ebook.opendirectory")) this.openDir(options.directory);
                 if (this.getConfig("ebook.openebookfile")) this.openDir(msg.filename);
             }else {
-                this.log(`generate ebook of ${this.book.getMeta('uuid')} failed because of error ${msg.code}!`);
+                this.info(`generate ebook of ${this.book.getMeta('uuid')} failed because of error ${msg.code}!`);
             }
         });
         work.on('exit',()=>{
-            this.debug("Exit ebook generator!");
+            this.info("Exit ebook generator!");
             fn(msg);
 	})
         work.send(options);
@@ -1332,12 +1342,12 @@ class Wedge extends EventEmitter{
             formation:this.getConfig("ebook.formation"),
             filename:Path.resolve(file),
         };
-        this.log("converting ebook...");
+        this.info("converting ebook...");
         work.on("message",msg=>{
             if (!msg.code){
-                this.log("ebook converted successful!");
+                this.info("ebook converted successful!");
             }else {
-                this.log("ebook convertion failed!");
+                this.info("ebook convertion failed!");
             }
         });
         work.on('exit',()=>fn());
@@ -1352,7 +1362,7 @@ class Wedge extends EventEmitter{
         if (!this.book.changed && this.database.query('uuid='+meta.uuid).length) return fn();
         this.info('sendToDataBase');
         delete meta.cover;
-        this.log(meta);
+        this.info(meta);
         this.database.push(meta);
         return fn();
     }
@@ -1403,9 +1413,10 @@ class Wedge extends EventEmitter{
             if(!err){
                 fs.rmdirsSync('.Trash/'+uuid)
             }
-            fs.renameSync(uuid,'.Trash/'+uuid);
-            this.database.remove(uuid);
-            this.end();
+            fs.rename(uuid,'.Trash/'+uuid,err=>{
+                this.database.remove(uuid);
+                this.end();
+            });
         });
         return this;
     }
@@ -1414,8 +1425,10 @@ class Wedge extends EventEmitter{
         if (this.database.query(`uuid=${uuid}`).length) return this.end()
         fs.stat('.Trash/'+uuid+'/index.book',(err,stat)=>{
             if(err) return this.end()
-            fs.renameSync('.Trash/'+uuid,uuid);
-            this.importBookRecord(uuid)
+            fs.rename('.Trash/'+uuid,uuid,err=>{
+                if(err) return this.end();
+                this.importBookRecord(uuid)
+            });
         })
         return this;
     }
