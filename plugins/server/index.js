@@ -8,6 +8,28 @@ const zlib = require('zlib');
 const LocalAddress = require('./LocalAddress');
 const Mime = require('./mime');
 
+function uuid(len, radix){
+    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split(''),
+        uuid = [],
+        radix = radix || chars.length,
+        i,r;
+    if (len){
+        for (i = 0; i < len; i++){
+            uuid[i] = chars[0|Math.random()*radix];
+        }
+    }else {
+        uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+        uuid[14] = '4';
+        for (i = 0; i < 36; i++) {
+            if (!uuid[i]) {
+                r = 0 | Math.random()*16;
+                uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+            }
+        }
+    }
+    return uuid.join('');
+}
+
 function pathRep(str){
     const pair={
         ':':'：',
@@ -49,7 +71,7 @@ function isImage(data){
 }
 
 function setCache(ctx,time){
-    ctx.response.set('expires', new Date(Date.now() + time * 1000).toString());
+    ctx.response.set('expires', new Date(Date.now() + time * 1000).toGMTString());
     ctx.response.set('Cache-Control','max-age=' + time);
 }
 
@@ -59,9 +81,20 @@ async function readFile(path) {
     })
 }
 
+const count = (function(){
+    var N = 0;
+    return {
+        add:function(){N += 1},
+        sub:function(){N -= 1},
+        val:function(){return N}
+    }
+})();
+
+
 module.exports = function (){
     const app = new Koa();
     const router = new Router();
+    const Queue = [];
 
     app.use(koaBody({ multipart: true }));
 
@@ -90,22 +123,99 @@ module.exports = function (){
         setCache(ctx,100)
     })
 
+    router.get('/crypt',async (ctx,next)=>{
+        ctx.compress = true;
+        ctx.response.type = 'html';
+        ctx.response.body = fs.createReadStream(Path.join(__dirname,'./src/crypt.html'))
+    })
+
+    router.get('/crypt-list', async (ctx, next)=>{
+        ctx.compress = true;
+        ctx.response.type = "text/plain";
+        ctx.response.body = uuid(32) + Buffer.from(JSON.stringify(this.database.query(ctx.request.querystring))).toString("base64")
+    })
+
+    router.get('/crypt-book/:uuid', async (ctx, next)=>{
+        let filename = Path.join(this.dir,`${ctx.params.uuid}/index.book`)
+        let data = await readFile(filename)
+        if(data == null){
+            ctx.response.status = 404
+        }else{
+            ctx.compress = true
+            ctx.response.type = "text/plain"
+            ctx.response.body = uuid(32) + data.toString('base64')
+            setCache(ctx,3000)
+        }
+    })
+
+    router.get('/crypt-cover/:uuid', async (ctx, next)=>{
+        let filename = Path.join(this.dir,`${ctx.params.uuid}/cover.jpg`)
+        let data = await readFile(filename)
+        if(data == null){
+            ctx.response.status = 404
+        }else{
+            ctx.compress = true
+            ctx.response.type = "text/plain"
+            ctx.response.body = uuid(32) + data.toString('base64')
+            setCache(ctx,10*24*3600)
+        }
+    })
+
+    router.get('/crypt-chapter/:uuid/:id', async (ctx, next)=>{
+        let filename = Path.join(this.dir,`${ctx.params.uuid}/${ctx.params.id}.json`)
+        let data = await readFile(filename)
+        if(data == null){
+            ctx.response.status = 404
+        }else{
+            ctx.compress = true
+            ctx.response.type = "text/plain"
+            ctx.response.body = uuid(32) + data.toString('base64')
+            setCache(ctx,10*24*3600)
+        }
+    })
+
+    router.get('/crypt-img/:uuid/:id/:file', async (ctx, next)=>{
+        let filename = Path.join(this.dir,`${ctx.params.uuid}/${ctx.params.id}/${ctx.params.file}`)
+        let data = await readFile(filename)
+        if(data == null){
+            ctx.response.status = 404
+        }else{
+            ctx.compress = true
+            ctx.response.type = "text/plain"
+            ctx.response.body = uuid(32) + data.toString('base64')
+            setCache(ctx,100*24*3600)
+        }
+    })
+
+/*
+    router.get('/app',async (ctx,next)=>{
+        ctx.compress = true;
+        ctx.response.type = 'html';
+        ctx.response.body = fs.createReadStream(Path.join(__dirname,'./src/app.html'))
+    })
+
     router.get('/',async (ctx,next)=>{
         ctx.compress = true;
         ctx.response.type = 'html';
-        ctx.response.body = fs.createReadStream(Path.join(__dirname,'./src/index.html'))
+        ctx.response.body = fs.createReadStream(Path.join(__dirname,'./src/home.html'))
     })
 
-    router.get('/dev',async (ctx,next)=>{
+    router.get('/home.html',async (ctx,next)=>{
         ctx.compress = true;
         ctx.response.type = 'html';
-        ctx.response.body = fs.createReadStream(Path.join(__dirname,'index_dev.html'))
+        ctx.response.body = fs.createReadStream(Path.join(__dirname,'./src/home.html'))
     })
 
-    router.get('/index.html',async (ctx,next)=>{
+    router.get('/book.html',async (ctx,next)=>{
         ctx.compress = true;
         ctx.response.type = 'html';
-        ctx.response.body = fs.createReadStream(Path.join(__dirname,'./src/index.html'))
+        ctx.response.body = fs.createReadStream(Path.join(__dirname,'./src/book.html'))
+    })
+
+    router.get('/chapter.html',async (ctx,next)=>{
+        ctx.compress = true;
+        ctx.response.type = 'html';
+        ctx.response.body = fs.createReadStream(Path.join(__dirname,'./src/chapter.html'))
     })
 
     router.get('/list', async (ctx, next)=>{
@@ -122,7 +232,7 @@ module.exports = function (){
         }else{
             ctx.compress = true
             ctx.response.type = 'application/json'
-            ctx.response.body = data.toString().replace(/,\s*\"cover\"\s*:\s*\"[^\s\"]*\"/,"")
+            ctx.response.body = data.toString()
             setCache(ctx,3000)
         }
     })
@@ -136,7 +246,7 @@ module.exports = function (){
             //ctx.compress = true
             ctx.response.body = data;
             ctx.response.type = Mime(isImage(data) || "jpeg");
-            setCache(ctx,10*24*3600)
+            setCache(ctx,600)
         }
     })
 
@@ -152,6 +262,16 @@ module.exports = function (){
         }
     })
 
+    router.get('/img/:uuid/:id/:file', async (ctx, next)=>{
+        let extname = Path.extname(ctx.params.file).slice(1);
+        let filename = Path.join(this.dir,`${ctx.params.uuid}/${ctx.params.id}/${ctx.params.file}`)
+        ctx.compress = true;
+        ctx.response.type = Mime(extname);
+        ctx.response.body = fs.createReadStream(filename)
+        ctx.response.set()
+        setCache(ctx,100*24*3600)
+    })
+*/
     router.post('/update/:uuid', (ctx, next)=>{
         return new Promise((resolve, reject)=>{
             this.spawn()
@@ -249,21 +369,17 @@ module.exports = function (){
                 filename = Path.join(directory,filename);
                 if (fs.existsSync(filename)){
                     if (fs.statSync(filename).mtime > meta.date){
-                        ctx.response.set('Content-Disposition', `attachment;filename="${Path.basename(filename)}"`)
+                        ctx.response.type = 'application/epub+zip';
+                        ctx.response.set('Content-Disposition', `attachment;filename*=UTF-8''${encodeURIComponent(Path.basename(filename))};filename="${encodeURIComponent(Path.basename(filename))}"`)
                         ctx.response.body = fs.createReadStream(filename)
                         return resolve()
                     }
                 }
-                spawn.generateEbook(null,ebookfile=>{
+                spawn.generateEbook(null,()=>{
                     ctx.response.type = 'application/epub+zip';
-                    if (!ebookfile){
-                        ctx.response.status = 404
-                        reject()
-                    }else{
-                        ctx.response.set('Content-Disposition', `attachment;filename="${Path.basename(ebookfile)}"`)
-                        ctx.response.body = fs.createReadStream(ebookfile)
-                        resolve()
-                    }
+                    ctx.response.set('Content-Disposition', `attachment;filename*=UTF-8''${encodeURIComponent(Path.basename(filename))};filename="${encodeURIComponent(Path.basename(filename))}"`)
+                    ctx.response.body = fs.createReadStream(filename)
+                    resolve()
                 })
             })
         }).then(next)
@@ -271,15 +387,11 @@ module.exports = function (){
 
     router.post('/add/:url', (ctx, next)=>{
         return new Promise((resolve, reject)=>{
-            var url = decodeURIComponent(ctx.params.url)
-            var spawn = this.spawn()
-            spawn.getBookMeta(url,()=>spawn.getBookCover(()=>spawn.updateBookMeta(()=>spawn.sendToDataBase(()=>{
-                ctx.compress = true;
-                ctx.response.type = 'application/json';
-                ctx.response.body = spawn.database.query()
-                resolve()
-                spawn.createBook(()=>spawn.checkBookCover(()=>spawn.getBookIndexs(x=>spawn.getChapters(x,()=>spawn.saveBook(()=>spawn.sendToDataBase(()=>spawn.generateEbook(()=>spawn.end())))))))
-            }))))
+            Queue.push(decodeURIComponent(ctx.params.url))
+            ctx.compress = true;
+            ctx.response.type = 'application/json';
+            ctx.response.body = this.database.query()
+            resolve()
         }).then(next)
     })
 
@@ -309,10 +421,10 @@ module.exports = function (){
                     spawn.database.remove(uuid);
                     fs.rmdirsSync(_uuid);
                     fs.renameSync(uuid, _uuid);
-                    book.localizationSync(_uuid);
                 }
+                book.localizationSync(_uuid);
                 ctx.response.type = 'application/json';
-                ctx.response.body = JSON.stringify({})
+                ctx.response.body = JSON.stringify(book.meta)
                 resolve()
             });
         }).then(next)
@@ -320,9 +432,22 @@ module.exports = function (){
 
     app.use(router.routes()).use(router.allowedMethods());
 
+    app.on("error",(err,ctx)=>{
+        console.log(err);
+    })
+
     this.server = ()=>{
         const port = this.getConfig('server.port',3000);
         console.log(`start server ${LocalAddress.en0 || LocalAddress.eth0}:${port}`);
         app.listen(port);
     }
+
+    setInterval(()=>{
+        if(count.val() >= 3 || Queue.length == 0) return;
+        var spawn = this.spawn()
+        spawn.end(count.sub);
+        count.add();
+        spawn.newBook(Queue.shift())
+    },15000);
+
 }

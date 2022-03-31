@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<head>
+    <meta charSet="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- 设置苹果工具栏颜色 -->
+    <meta name="format-detection" content="telphone=no, email=no" />
+    <!-- 忽略页面中的数字识别为电话，忽略email识别 -->
+    <!-- 启用360浏览器的极速模式(webkit) -->
+    <meta name="renderer" content="webkit">
+    <!-- 避免IE使用兼容模式 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 针对手持设备优化，主要是针对一些老的不识别viewport的浏览器，比如黑莓 -->
+    <meta name="HandheldFriendly" content="true">
+    <!-- 微软的老式浏览器 -->
+    <meta name="MobileOptimized" content="320">
+    <!-- uc强制竖屏 -->
+    <meta name="screen-orientation" content="portrait">
+    <!-- QQ强制竖屏 -->
+    <meta name="x5-orientation" content="portrait">
+    <!-- UC强制全屏 -->
+    <meta name="full-screen" content="yes">
+    <!-- QQ强制全屏 -->
+    <meta name="x5-fullscreen" content="true">
+    <!-- UC应用模式 -->
+    <meta name="browsermode" content="application">
+    <!-- QQ应用模式 -->
+    <meta name="x5-page-mode" content="app">
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <title>小说阅读器</title>
+    <link href="src/style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<div id="index">
+    <div class="book-meta"></div>
+    <div class="book-cmd">
+        <label class="book-reload">刷新</label>
+        <label class="book-epub">电子书</label>
+        <label class="book-update">更新</label>
+        <label class="book-redown" style="display:none">下载</label>
+        <label class="book-delete" style="display:none">删除</label>
+        <label class="book-like">收藏</label>
+        <label class="book-end">完结</label>
+    </div>
+    <div class="book-list">
+        <div class="list-title"><h3>目录</h3></div>
+        <div class="list-header">
+            <div class="list-counts"></div>
+            <div class="list-rule">倒序</div>
+        </div>
+        <ol class="list-content">
+        </ol>
+    </div>
+</div>
+<div id="tool" class='flow-tools'>
+    <div class="tool-top"></div>
+    <div class="tool-refresh"></div>
+    <div class="tool-home"></div>
+    <div class="tool-bottom"></div>
+</div>
+
+<!-- <div id="edit">
+    <form action="edit">
+        <span>书名</span><input type="text" ><br>
+    </form>
+</div> -->
+<div id="overlay" style="display:none"></div>
+<script type="text/javascript">
+    function init(){
+        var bookmark = {
+            get:uuid=>localStorage.getItem(uuid),
+            set:(uuid,cid)=>localStorage.setItem(uuid, cid),
+            del:uuid=>localStorage.removeItem(uuid),
+            default:(k,v)=>{
+                var _v = localStorage.getItem(k)
+                if(_v !== null) return _v
+                localStorage.setItem(k,v)
+                return v
+            }
+        };
+        var dom = document,
+        isMobile = (()=>{ try { document.createEvent('TouchEvent'); return true; } catch (e) { return false; } })(),
+        Book = null,
+        CID = null,
+        CIndex = 0,
+        sortType = bookmark.default('list_sort',1),
+        $ = x=>dom.querySelector(x),
+        $$ = x=>dom.querySelectorAll(x),
+        tools = {
+            home:$('.tool-home'),
+            top:$('.tool-top'),
+            refresh:$('.tool-refresh'),
+            bottom:$('.tool-bottom'),
+        },
+        doms = {
+            tool: $('#tool'),
+            index: $('#index'),
+            bookMeta: $('.book-meta'),
+
+            listCounts: $('.list-counts'),
+            listContent: $('.list-content'),
+            listRule: $('.list-rule'),
+
+            bookReload: $('.book-reload'),
+            bookEpub: $('.book-epub'),
+            bookUpdate: $('.book-update'),
+            bookDelete: $('.book-delete'),
+            bookEnd: $('.book-end'),
+            bookLike: $('.book-like'),
+
+            overlay: $('#overlay'),
+        }
+        function createElementByTemplate(template) {
+            var dom = document.createElement('div');
+            dom.innerHTML = template;
+            return dom.childNodes[0];
+        }
+        function leftPad(str,padding,length){
+            str = '' + str;
+            if (str.length >= length) return str;
+            for (var i=str.length;i<length;i++){
+                str = padding + str;
+            }
+            return str;
+        }
+        function formatTime(date,template){
+            var time = new Date(date)
+            var day = template || "yyyy-MM-dd";
+            day = day.replace(/(y+)/,function ($,$1){
+                return leftPad(time.getFullYear(),0,$1.length)
+            });
+            day = day.replace(/(M+)/,function ($,$1){
+                return leftPad(time.getMonth() + 1,0,$1.length)
+            });
+            day = day.replace(/(d+)/,function ($,$1){
+                return leftPad(time.getDate(),0,$1.length)
+            });
+            day = day.replace(/(h+)/,function ($,$1){
+                return leftPad(time.getHours(),0,$1.length)
+            });
+            day = day.replace(/(m+)/,function ($,$1){
+                return leftPad(time.getMinutes(),0,$1.length)
+            });
+            day = day.replace(/(s+)/,function ($,$1){
+                return leftPad(time.getSeconds(),0,$1.length)
+            });
+            return day;
+        }
+        //console.log(tools,doms)
+        function array2hash(arr){
+            var hash = {}
+            each(arr,x=>hash[x] = 1);
+            return hash;
+        }
+        function each(array,fn){
+            for(var i=0;i<array.length;i++){
+                fn(array[i],i,array)
+            }
+        }
+        function decorate(type,fn){
+            return function(ev){
+                var ev = ev || window.event;
+                var target = ev.target || ev.srcElement;
+                var tagname = target.tagName.toLowerCase();
+                if(Array.isArray(type)){
+                    if(~type.indexOf(tagname)) return fn(target)
+                    return
+                }else if (tagname == type.toLowerCase()){
+                    return fn(target)
+                }
+            }
+        }
+        function display(){
+            each(arguments,x=>x.style.display = 'block')
+        }
+        function hide(){
+            each(arguments,x=>x.style.display = 'none')
+        }
+        function switchDisplay(){
+            [].forEach.call(arguments,function(x){
+                if(x.style.display === 'none'){
+                    x.style.display = 'block'
+                }else{
+                    x.style.display = 'none'
+                }
+            })
+        }
+        function showIndexPage(){location.reload()}
+        function showHomePage(){window.location.href = "/home.html"}
+        function readChapter(cid){window.location.href = "/chapter.html?uuid=" + Book.meta.uuid + "&cid=" + cid}
+        function hasOverlay(fn,timeout){
+            timeout = timeout || 5000
+            display(doms.overlay)
+            var timer = setTimeout(function(){
+                hide(doms.overlay)
+            },timeout);
+            var res = fn();
+            if(res && res.then) return res.then(()=>{
+                hide(doms.overlay);
+                clearTimeout(timer);
+            });
+            hide(doms.overlay);
+            clearTimeout(timer);
+        }
+        //渲染书籍
+        function renderBook(){
+            //book.list.sort((x,y)=>x.id - y.id)
+            doms.bookMeta.innerHTML = `<div class="book-layout" uuid="${Book.meta.uuid}"><img src="/cover/${Book.meta.uuid}" class="book-cover"><div class="book-cell"><div class="book-title-x"><h2 class="book-title">${Book.meta.title}</h2><span class="book-date">${formatTime(Book.meta.date)}</span></div><div class="book-author">作者：${Book.meta.author}</div><div class="book-classes">分类：${Book.meta.classes}</div><div class="book-status">更新状态：${Book.meta.isend ? '完结':'连载'}</div></div></div><div class="book-brief"><p>${Book.meta.brief.replace(/\n/g,'</p><p>')}</p></div>`
+            doms.listCounts.innerText = `共${Book.list.length}章`
+            doms.listRule.innerText = sortType > 0 ? '正序':'倒序'
+            doms.listContent.innerHTML = (sortType > 0 ? Book.list : Book.list.concat().reverse()).map(chapter=>`<li cid="${chapter.id}">${chapter.title}</li>`).join('')
+            doms.index.scrollTop = 0;
+            var tops = array2hash(JSON.parse(bookmark.get('tops') || '[]'));
+            doms.bookLike.innerText = (Book.meta.uuid in tops) ? "已收藏":"收藏";
+            var cid = bookmark.get(Book.meta.uuid);
+            var idx = findCidIndex(cid);
+            if(idx == -1) return
+            CID = cid;
+            CIndex = idx;
+            (doms.listContent.querySelector('.selected') || {}).className = '';
+            var index =  sortType > 0 ? CIndex : Book.list.length - 1 - CIndex;
+            doms.listContent.querySelectorAll('li')[index].className = 'selected';
+        }
+        //读取书籍
+        function readBook(force){
+            //当前书籍
+            var uuid = param('uuid');
+            bookmark.set('book',uuid);
+            //请求书籍
+            hasOverlay(function(){
+                var headers = force ? {'cache':'reload'} : {}
+                return fetch('/book/'+uuid,headers).then(res=>res.json()).then(book=>{
+                    Book = book;
+                    Book.list.sort((x,y)=>(x.id - y.id));
+                    renderBook();
+                    doms.index.scrollTop = 0
+                }).catch(noop)
+            })
+        }
+        //二分法查找章节的序号
+        function findCidIndex(cid){
+            var list = Book.list;
+            var low = 0, high=list.length-1;
+            while (low <= high){
+                var mid = Math.floor((high + low) / 2);
+                //console.log(low ,high, mid)
+                if (list[mid].id == cid) return mid;
+                else if (list[mid].id - cid < 0){
+                    low = mid + 1;
+                }
+                else if (list[mid].id - cid > 0){
+                    high = mid-1;
+                }
+                else {
+                    return -1;
+                }
+            }
+        }
+
+        function noop(){}
+
+        function param(key){
+            var params = window.location.search.substring(1).split("&");
+            for(var i=0;i<params.length;i++){
+                var arr = params[i].split("=");
+                if(arr[0] == key){
+                    return arr[1];
+                }
+            }
+            return null;
+        }
+
+        //绑定页面事件
+        function bindEvents(){
+            //滚动到顶部
+            tools.top.onclick = function(){doms.index.scrollTo(0,0)}
+            tools.bottom.onclick = function(){doms.index.scrollTo(0,doms.index.scrollHeight)}
+            //回到列表页面
+            tools.home.onclick = showHomePage;
+            //刷新主页
+            tools.refresh.onclick = showIndexPage;
+            //书籍页面目录排序
+            doms.listRule.onclick = function(){
+                sortType *= -1
+                bookmark.set('list_sort',sortType)
+                var html = doms.listContent.innerHTML
+                var list = html.split('</li>').reverse()
+                list.shift()
+                doms.listContent.innerHTML = list.join('</li>') + '</li>'
+                //Book.list.sort((x,y)=>sortType*(x.id - y.id));
+                //renderBook()
+            }
+            //书页目录跳转
+            doms.listContent.onclick = decorate('li',function(li){
+                var cid = li.getAttribute('cid');
+                return readChapter(cid)
+            });
+            //书籍页面刷新
+            doms.bookReload.onclick = ()=>readBook(Book.meta.uuid,true)
+            //电子书下载
+            doms.bookEpub.onclick = function(){
+                fetch(`/ebook/${Book.meta.uuid}`)
+                .then(res => res.blob().then(blob=>{
+                    var filename = decodeURIComponent(res.headers.get('Content-Disposition').match(/filename="(.*)"/)[1]);
+                    if (typeof window.navigator.msSaveBlob !== 'undefined') return window.navigator.msSaveBlob(blob, filename);
+                    var url = (window.URL && window.URL.createObjectURL) ? window.URL.createObjectURL(blob) : window.webkitURL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.setAttribute('download',filename);
+
+                    if (typeof a.download === 'undefined') {
+                        a.setAttribute('target', '_blank');
+                    }
+
+                    document.body.appendChild(a);
+                    a.click();
+
+                    setTimeout(function() {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    }, 200)
+                }))
+            }
+            display(doms.bookEpub);
+            //书籍更新
+            doms.bookUpdate.onclick = function(){
+                hasOverlay(function(){
+                    return fetch(`/update/${Book.meta.uuid}`,{method: "POST"})
+                    .then(res=>res.json())
+                    .then(json=>json.code && readBook(Book.meta.uuid,true));
+                });
+            }
+            doms.bookDelete.onclick = function(){
+                hasOverlay(function(){
+                    return fetch(`/delete/${Book.meta.uuid}`,{method: "POST"})
+                    .then(res=>res.json())
+                    .then(books=>{
+                        bookmark.del(Book.meta.uuid);
+                        Book = null;
+                        List = books;
+                        renderOptions();
+                        renderList(books);
+                        showHomePage();
+                    })
+                })
+            }
+            ;(isMobile ? hide : display)(doms.bookDelete);
+            doms.bookEnd.onclick = function(){
+                hasOverlay(function(){
+                    return fetch(`/end/${Book.meta.uuid}`,{method: "POST"})
+                    .then(res=>res.json())
+                    .then(json=>readBook(Book.meta.uuid,true))
+                })
+            }
+            doms.bookLike.onclick = function(){
+                var tops = array2hash(JSON.parse(bookmark.get('tops') || '[]'));
+                var uuid = Book.meta.uuid;
+                if(uuid in tops){
+                    delete tops[uuid];
+                    doms.bookLike.innerText = "收藏";
+                }else{
+                    tops[uuid] = 1;
+                    doms.bookLike.innerText = "已收藏";
+                }
+                bookmark.set('tops',JSON.stringify(Object.keys(tops)));
+            }
+            doms.tool.ontouchstart = function(e) {
+                //e.preventDefault();
+                //var width = this.clientWidth;
+                var height = this.clientHeight;
+                
+                //var startX = e.touches[0].clientX - this.offsetLeft;
+                var startY = e.touches[0].clientY - this.offsetTop;
+                //var maxWidth = document.body.clientWidth - width;
+                var maxHeight = document.body.clientHeight - height;
+
+                
+                
+                this.ontouchmove = function(e) {
+                    e.preventDefault();
+                    doms.index.style.cssText = 'overflow:hidden;'
+                    //this.style.right = maxWidth - Math.min(Math.max(1,e.touches[0].clientX - startX),maxWidth-1) + 'px';
+                    this.style.bottom = maxHeight - Math.min(Math.max(1,e.touches[0].clientY - startY),maxHeight-1) + 'px';
+                }
+            }
+            doms.tool.ontouchend = function() {
+                //e.preventDefault();
+                this.ontouchmove = null;
+                doms.index.style.cssText = ''
+                //bookmark.set('float_right',this.style.right)
+                bookmark.set('float_bottom',this.style.bottom)
+            }
+            //doms.tool.style.right = bookmark.default('float_right','0px')
+            doms.tool.style.bottom = bookmark.default('float_bottom','10px')
+            doms.index.ontouchstart = function(){
+                this.style.cssText = ''
+            }
+            //dragable(document.querySelector('.flow-tools'));
+            //document.body.addEventListener('touchmove', e=>e.preventDefault(), false);
+            doms.overlay.touchmove=function (event) { event.preventDefault()}
+            //doms.chapter.addEventListen("scroll",()=>isPlayAudio=0);
+        }
+        
+        //svg图标
+        function getToolIco(){
+            Object.keys(tools).forEach(key=>{
+                fetch(`src/${key}.svg`).then(res=>res.text()).then(text=>{
+                    tools[key].innerHTML = `<a class="flow-tool">${text}</a>`
+                })
+            })
+        }
+        getToolIco();
+        bindEvents();
+        hasOverlay(readBook);
+    }
+
+    init()
+    
+</script>    
+</body>
+</html>

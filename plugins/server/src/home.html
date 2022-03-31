@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<head>
+    <meta charSet="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- 设置苹果工具栏颜色 -->
+    <meta name="format-detection" content="telphone=no, email=no" />
+    <!-- 忽略页面中的数字识别为电话，忽略email识别 -->
+    <!-- 启用360浏览器的极速模式(webkit) -->
+    <meta name="renderer" content="webkit">
+    <!-- 避免IE使用兼容模式 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 针对手持设备优化，主要是针对一些老的不识别viewport的浏览器，比如黑莓 -->
+    <meta name="HandheldFriendly" content="true">
+    <!-- 微软的老式浏览器 -->
+    <meta name="MobileOptimized" content="320">
+    <!-- uc强制竖屏 -->
+    <meta name="screen-orientation" content="portrait">
+    <!-- QQ强制竖屏 -->
+    <meta name="x5-orientation" content="portrait">
+    <!-- UC强制全屏 -->
+    <meta name="full-screen" content="yes">
+    <!-- QQ强制全屏 -->
+    <meta name="x5-fullscreen" content="true">
+    <!-- UC应用模式 -->
+    <meta name="browsermode" content="application">
+    <!-- QQ应用模式 -->
+    <meta name="x5-page-mode" content="app">
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <title>小说阅读器</title>
+    <link href="src/style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<div id="home">
+    <div class="classify" style="display:none">
+        <div class="classify-item">
+            <div class="classify-item-title">搜索：</div>
+            <div class="search">
+                <input type="text" placeholder="请输入关键词" id="search-text">
+                <button id="search-btn">搜索</button>
+            </div>
+        </div>
+        <div class="classify-item"><div class="classify-item-title">分类：</div><div class="classify-labels"><div class="tabs classes-tag"></div></div></div>
+        <div class="classify-item"><div class="classify-item-title">状态：</div><div class="classify-labels"><div class="tabs status-tag"></div></div></div>
+        <div class="classify-item"><div class="classify-item-title">更新：</div><div class="classify-labels"><div class="tabs times-tag"></div></div></div>
+        <div class="classify-item"><div class="classify-item-title">排序：</div><div class="classify-labels"><div class="tabs sort-tag">
+            <label class="tab">默认</label>
+            <label class="tab">书名</label>
+            <label class="tab">作者</label>
+            <label class="tab">分类</label>
+            <label class="tab">更新时间</label>
+        </div></div></div>
+    </div>
+    <ol class="books">       
+    </ol>
+</div>
+<div id="tool" class='flow-tools'>
+    <div class="tool-top"></div>
+    <div class="tool-refresh"></div>
+    <div class="tool-option"></div>
+    <div class="tool-bottom"></div>
+</div>
+<div id="overlay" style="display:none"></div>
+<script type="text/javascript">
+    function init(){
+        var bookmark = {
+            get:uuid=>localStorage.getItem(uuid),
+            set:(uuid,cid)=>localStorage.setItem(uuid, cid),
+            del:uuid=>localStorage.removeItem(uuid),
+            default:(k,v)=>{
+                var _v = localStorage.getItem(k)
+                if(_v !== null) return _v
+                localStorage.setItem(k,v)
+                return v
+            }
+        };
+        var dom = document,
+        isMobile = (()=>{ try { document.createEvent('TouchEvent'); return true; } catch (e) { return false; } })(),
+        $ = x=>dom.querySelector(x),
+        $$ = x=>dom.querySelectorAll(x),
+        tools = {
+            option:$('.tool-option'),
+            top:$('.tool-top'),
+            refresh:$('.tool-refresh'),
+            bottom:$('.tool-bottom'),
+        },
+        doms = {
+            tool: $('#tool'),
+            home: $('#home'),
+            bookList: $('ol.books'),
+            classify: $('.classify'),
+
+            TagClasses: $('.classes-tag'),
+            TagStatus: $('.status-tag'),
+            TagTimes: $('.times-tag'),
+            TagSort: $('.sort-tag'),
+            sortLabels: $$('.sort-tag > label'),
+
+            overlay: $('#overlay'),
+            searchText: $('#search-text'),
+            searchBtn: $('#search-btn')
+        }
+        function createElementByTemplate(template) {
+            var dom = document.createElement('div');
+            dom.innerHTML = template;
+            return dom.childNodes[0];
+        }
+        function leftPad(str,padding,length){
+            str = '' + str;
+            if (str.length >= length) return str;
+            for (var i=str.length;i<length;i++){
+                str = padding + str;
+            }
+            return str;
+        }
+        function formatTime(date,template){
+            var time = new Date(date)
+            var day = template || "yyyy-MM-dd";
+            day = day.replace(/(y+)/,function ($,$1){
+                return leftPad(time.getFullYear(),0,$1.length)
+            });
+            day = day.replace(/(M+)/,function ($,$1){
+                return leftPad(time.getMonth() + 1,0,$1.length)
+            });
+            day = day.replace(/(d+)/,function ($,$1){
+                return leftPad(time.getDate(),0,$1.length)
+            });
+            day = day.replace(/(h+)/,function ($,$1){
+                return leftPad(time.getHours(),0,$1.length)
+            });
+            day = day.replace(/(m+)/,function ($,$1){
+                return leftPad(time.getMinutes(),0,$1.length)
+            });
+            day = day.replace(/(s+)/,function ($,$1){
+                return leftPad(time.getSeconds(),0,$1.length)
+            });
+            return day;
+        }
+        //console.log(tools,doms)
+        function array2hash(arr){
+            var hash = {}
+            each(arr,x=>hash[x] = 1);
+            return hash;
+        }
+        function each(array,fn){
+            for(var i=0;i<array.length;i++){
+                fn(array[i],i,array)
+            }
+        }
+        function decorate(type,fn){
+            return function(ev){
+                var ev = ev || window.event;
+                var target = ev.target || ev.srcElement;
+                var tagname = target.tagName.toLowerCase();
+                if(Array.isArray(type)){
+                    if(~type.indexOf(tagname)) return fn(target)
+                    return
+                }else if (tagname == type.toLowerCase()){
+                    return fn(target)
+                }
+            }
+        }
+        function display(){
+            each(arguments,x=>x.style.display = 'block')
+        }
+        function hide(){
+            each(arguments,x=>x.style.display = 'none')
+        }
+        function switchDisplay(){
+            [].forEach.call(arguments,function(x){
+                if(x.style.display === 'none'){
+                    x.style.display = 'block'
+                }else{
+                    x.style.display = 'none'
+                }
+            })
+        }
+        function hasOverlay(fn,timeout){
+            timeout = timeout || 5000
+            display(doms.overlay)
+            var timer = setTimeout(function(){
+                hide(doms.overlay)
+            },timeout);
+            var res = fn();
+            if(res && res.then) return res.then(()=>{
+                hide(doms.overlay);
+                clearTimeout(timer);
+            });
+            hide(doms.overlay);
+            clearTimeout(timer);
+        }
+        //渲染列表
+        function renderList(list){
+            var hash = array2hash(JSON.parse(bookmark.get('tops') || '[]'));
+            function sort(a,b){
+                if(a.uuid in hash && b.uuid in hash){
+                    return sortFun(a,b)
+                }
+                if(a.uuid in hash) return -1;
+                if(b.uuid in hash) return 1;
+                return sortFun(a,b)
+            }
+            thisList = list.sort(sort);
+            doms.bookList.innerHTML = list.map(book=>`<li class="book-li" uuid="${book.uuid}"><div class="book-layout"><a href="/book.html?uuid=${book.uuid}"><img src="/cover/${book.uuid}" class="book-cover" alt="${book.title}" uuid="${book.uuid}"></a><div class="book-cell"><div class="book-title-x"><a href="/book.html?uuid=${book.uuid}"><h2 class="book-title" uuid="${book.uuid}">${book.title}</h2></a><span class="book-date">${formatTime(book.date)}</span></div><div class="book-author">作者：${book.author}</div><div class="book-classes">分类：${book.classes}</div><div class="book-status">更新状态：${book.isend ? '完结':'连载'}</div></div></li>`).join('')
+            doms.home.scrollTop = 0
+        }
+        //渲染筛选
+        function renderOptions(){
+            var All = List.concat();
+            var classes = {'全部':All}
+            //var authors = {'全部':All}
+            var status = {'全部':All,'完结':[],'连载':[]}
+            var times = {'全部':All,'一日内':[],'一周内':[],'一月内':[],'半年内':[],'半年外':[]}
+            var now = Date.now();
+            //分组
+            List.forEach(book=>{
+                if(book.classes in classes){
+                    classes[book.classes].push(book)
+                }else{
+                    classes[book.classes] = [book]
+                }
+
+                // if(book.author in authors){
+                //     authors[book.author].push(book)
+                // }else{
+                //     authors[book.author] = [book]
+                // }
+
+                book.status = book.isend ? '完结':'连载'
+                status[book.status].push(book)
+
+                var delta = now - book.date;
+                if(delta < 86400000){
+                    times['一日内'].push(book)
+                    times['一周内'].push(book)
+                    times['一月内'].push(book)
+                    times['半年内'].push(book)
+                }else if(delta < 604800000){
+                    times['一周内'].push(book)
+                    times['一月内'].push(book)
+                    times['半年内'].push(book)
+                }else if(delta < 2592000000){
+                    times['一月内'].push(book)
+                    times['半年内'].push(book)
+                }else if(delta < 15552000000){
+                    times['半年内'].push(book)
+                }else{
+                    times['半年外'].push(book)
+                }
+            });
+            //页面渲染
+            doms.TagClasses.innerHTML = Object.keys(classes).map(k=>`<label class="tab">${k}</label>`).join('')
+            doms.TagStatus.innerHTML = Object.keys(status).map(k=>`<label class="tab">${k}</label>`).join('')
+            doms.TagTimes.innerHTML = Object.keys(times).map(k=>`<label class="tab">${k}</label>`).join('')
+            //第一个label标记为选中
+            doms.TagClasses.querySelector('label').className = 'tab tab-selected';
+            //点击事件
+            function onClick(label,hash){
+                var text = label.innerText;
+                var list = hash[text]
+                if(!list) return
+                if(label.className == 'tab tab-selected' && thisList.length == list.length) return tools.option.click()
+                each(doms.TagStatus.querySelectorAll('label'),dom=>dom.className = 'tab');
+                each(doms.TagClasses.querySelectorAll('label'),dom=>dom.className = 'tab');
+                each(doms.TagTimes.querySelectorAll('label'),dom=>dom.className = 'tab');
+                label.className = 'tab tab-selected'
+                renderList(list)
+                tools.option.click()
+            }
+            doms.TagClasses.onclick = decorate('label',label=>onClick(label,classes));
+            doms.TagStatus.onclick = decorate('label',label=>onClick(label,status))
+            doms.TagTimes.onclick = decorate('label',label=>onClick(label,times))
+        }
+        function noop(){}
+
+        //绑定页面事件
+        function bindEvents(){
+            //显示筛选栏
+            tools.option.onclick = function(){switchDisplay(doms.bookList,doms.classify)}
+            //滚动到顶部
+            tools.top.onclick = function(){doms.home.scrollTo(0,0)}
+            tools.bottom.onclick = function(){doms.home.scrollTo(0,doms.home.scrollHeight)}
+            //刷新主页
+            tools.refresh.onclick = location.reload.bind(location)
+            //排序函数
+            var sortFuns = {
+                '默认':(a,b)=>1,
+                '书名':(a,b)=>a.title > b.title ? 1 : -1,
+                '作者':(a,b)=>a.author > b.author ? 1 : -1,
+                '分类':(a,b)=>a.classes > b.classes ? 1 : -1,
+                '更新时间':(a,b)=>a.date - b.date,
+            }
+            //启动后读取参数
+            var type = bookmark.default('sort-type','默认');
+            var value = bookmark.default('sort-value','1');
+            var fn = sortFuns[type]
+            sortFun = (a,b)=>value*fn(a,b)
+            each(doms.sortLabels,dom=>{
+                if(dom.innerText == type){
+                    if(value == '1') return dom.className = 'tab tab-selected tab-up'
+                    return dom.className = 'tab tab-selected tab-down'
+                }
+                dom.className = 'tab'
+            });
+            //绑定排序行为
+            doms.TagSort.onclick = decorate('label',function(label){
+                var text = label.innerText;
+                var type = bookmark.default('sort-type','默认');
+                var value = bookmark.default('sort-value','1');
+                each(doms.sortLabels,dom=>label !== dom && (dom.className = 'tab'));
+                if(type == text){
+                    label.className = 'tab tab-selected tab-down'
+                    bookmark.set('sort-value','-1')
+                    value = -1
+                }else{
+                    label.className = 'tab tab-selected tab-up'
+                    bookmark.set('sort-type',text)
+                    bookmark.set('sort-value','1')
+                    value = 1
+                }
+                var fn = sortFuns[text];
+                sortFun = (a,b)=>value*fn(a,b)
+                renderList(thisList)
+                tools.option.click()
+            })
+            //过滤
+            doms.searchBtn.onclick = ()=>{
+                var text = doms.searchText.value;
+                if(!text) return
+                renderList(List.filter(x=>x.title.match(text)||x.author.match(text)||x.classes.match(text)||x.brief.match(text)))
+                tools.option.click()
+            }
+
+            doms.tool.ontouchstart = function(e) {
+                //e.preventDefault();
+                //var width = this.clientWidth;
+                var height = this.clientHeight;
+                
+                //var startX = e.touches[0].clientX - this.offsetLeft;
+                var startY = e.touches[0].clientY - this.offsetTop;
+                //var maxWidth = document.body.clientWidth - width;
+                var maxHeight = document.body.clientHeight - height;
+
+                this.ontouchmove = function(e) {
+                    e.preventDefault();
+                    doms[thisPage].style.cssText = 'overflow:hidden;'
+                    //this.style.right = maxWidth - Math.min(Math.max(1,e.touches[0].clientX - startX),maxWidth-1) + 'px';
+                    this.style.bottom = maxHeight - Math.min(Math.max(1,e.touches[0].clientY - startY),maxHeight-1) + 'px';
+                }
+            }
+            doms.tool.ontouchend = function() {
+                //e.preventDefault();
+                this.ontouchmove = null;
+                doms[thisPage].style.cssText = ''
+                //bookmark.set('float_right',this.style.right)
+                bookmark.set('float_bottom',this.style.bottom)
+            }
+            //doms.tool.style.right = bookmark.default('float_right','0px')
+            doms.tool.style.bottom = bookmark.default('float_bottom','10px')
+            doms.home.ontouchstart = function(){
+                this.style.cssText = ''
+            }
+            //dragable(document.querySelector('.flow-tools'));
+            //document.body.addEventListener('touchmove', e=>e.preventDefault(), false);
+            doms.overlay.touchmove=function (event) { event.preventDefault()}
+        }
+        function updateList(){
+            return fetch('/list')
+            .then(res=>res.json())
+            .then(books=>{
+                List = books;
+                renderOptions();
+                renderList(books);
+            });
+        }
+        
+        //svg图标
+        function getToolIco(){
+            fetch('src/sort.svg').then(res=>res.text()).then(text=>{
+                each(doms.sortLabels,label=>label.innerHTML += text)
+            })
+            Object.keys(tools).forEach(key=>{
+                fetch(`src/${key}.svg`).then(res=>res.text()).then(text=>{
+                    tools[key].innerHTML = `<a class="flow-tool">${text}</a>`
+                })
+            })
+        }
+        getToolIco();
+        bindEvents();
+        hasOverlay(updateList);
+    }
+
+    init()
+    
+</script>    
+</body>
+</html>
