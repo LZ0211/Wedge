@@ -6,12 +6,12 @@ module.exports = {
     "bookInfos": {
       "origin": "$.location()",
       "source": "$.location()",
-      "title": "$('.book-title').text()",
-      "author": "$('.book-update span').eq(0).text()",
-      "classes": "$('.book-tags').text()",
-      "isend": "$('.book-update').text()",
-      "cover": "$.location($('.book-cover img').attr('src'))",
-      "brief": "$('.intro').html()"
+      "title": "$('meta[property=\"og:novel:book_name\"]').attr('content')",
+      "author": "$('meta[property=\"og:novel:author\"]').attr('content')",
+      "classes": "$('meta[property=\"og:novel:category\"]').attr('content')",
+      "isend": "$('meta[property=\"og:novel:status\"]').attr('content')",
+      "cover": "$('meta[property=\"og:image\"]').attr('content')",
+      "brief": "$('meta[property=\"og:description\"]').attr('content')"
     }
   },
   "indexPage": {
