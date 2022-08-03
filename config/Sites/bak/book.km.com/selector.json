@@ -1,0 +1,28 @@
+{
+  "infoPage": {
+    "match": "/shuku/i.test($.location())",
+    "indexPage": "$.location($('a:contains(目录)').attr('href'))",
+    "footer": "$('.footer').length",
+    "bookInfos": {
+      "origin": "$.location()",
+      "title": "$('h2.tit').text().trim()",
+      "author": "$('.author a').text().trim()",
+      "classes": "$('.type').eq(2).next().text()",
+      "isend": "$('.state').text()",
+      "cover": "$.location($('.imgbox img').attr('src'))",
+      "brief": "$('.desc').html()"
+    }
+  },
+  "indexPage": {
+    "match": "/chapterlist/i.test($.location())",
+    "infoPage": "$.location($('.path > a').eq(-1).attr('href'))",
+    "footer": "!!$('.footer').length",
+    "filter": "$('.vip').remove()",
+    "bookIndexs": "$('.catalog_list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()"
+  },
+  "contentPage": {
+    "match": "true",
+    "footer": "true",
+    "request": "{url:$.html().match('RP.sign') && $.location().replace('_','&chapter_id=').replace('http://book.km.com/chapter/','http://book.km.com/index.php?c=catch&a=getContent&book_id=').replace('.html','&sign=')+$.html().match(/RP.sign = \"(.{32})?\"/)[1],success:data=>data,headers:{Referer:$.location()}}"
+  }
+}

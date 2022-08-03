@@ -1,9 +1,9 @@
 module.exports = {
-    "host":"m.diyibanzhu.cyou",
+    "host":"book.km.com",
     "match":[
-        "m.diyibanzhu.cyouz"
+        "book.km.com"
     ],
-    "charset":"utf8",
+    "charset":"gbk",
     "selector":require("./selector"),
     "replacer":require("./replacer")
 }

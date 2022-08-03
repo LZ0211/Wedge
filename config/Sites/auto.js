@@ -357,7 +357,10 @@ function getList($){
         var href = $(v).attr('href') || '';
         var array = href.split('/');
         var id = array.pop() || array.pop();
-        if(id.match(/\d+/)){
+        if(id == undefined){
+            id = null;
+        }
+        else if(id.match(/\d+/)){
             var arr = id.split(/\D+/);
             id = arr.pop();
             while(id == ""){
@@ -369,7 +372,7 @@ function getList($){
             text:$(v).text().trim(),
             index:id
         }
-    }).toArray().sort((a,b)=>{
+    }).toArray().filter(x=>x.index).sort((a,b)=>{
         if (/^\d+$/.test(a.index) && /^\d+$/.test(a.index)) return a.index - b.index;
         return a.index > b.index ? 1 : -1;
     });

@@ -17,7 +17,7 @@ module.exports = {
     "match": "$('.info').length",
     "infoPage": "$.location()",
     "footer": "$('.footer').length",
-    "bookIndexs": "$('.chapter-list .list').find('a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text()})).toArray()",
+    "bookIndexs": "$('.chapter-list a').map((i,v)=>({href:$.location($(v).attr('href')),text:$(v).text(),id:$(v).attr('href').split('/').pop().split('.').shift()})).toArray()",
     "nextPage":"$.location($('a.nextPage').attr('href'))"
   },
   "contentPage": {

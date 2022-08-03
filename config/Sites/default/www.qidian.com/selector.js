@@ -2,15 +2,15 @@ module.exports = {
   "infoPage": {
     "match": "/\\.qidian.com\\/info\\/\\d+/i.test($.location())",
     "indexPage": "$.location()",
-    "footer": "$('.footer').length > 0",
+    "footer": "$('.footer').length",
     "bookInfos": {
       "origin": "$.location()",
-      "title": "$('div.book-info > h1 > em').text().trim()",
-      "author": "$('div.book-info > h1 > span > a').text().trim()",
-      "classes": "$('div.book-info > p.tag > a.red').eq(1).text()",
-      "isend": "$('p.tag').text()",
-      "cover": "$.location($('#bookImg > img').attr('src'))",
-      "brief": "$('div.book-intro > p').html()"
+      "title": "$('meta[property=\"og:novel:book_name\"]').attr('content')",
+      "author": "$('meta[property=\"og:novel:author\"]').attr('content')",
+      "classes": "$('meta[property=\"og:novel:category\"]').attr('content')",
+      "isend": "$('meta[property=\"og:novel:status\"]').attr('content')",
+      "cover": "$('meta[property=\"og:image\"]').attr('content')",
+      "brief": "$('meta[property=\"og:description\"]').attr('content')"
     }
   },
   "indexPage": {
