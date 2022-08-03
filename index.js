@@ -498,8 +498,9 @@ class Wedge extends EventEmitter{
         this.info('loadBook');
         this.bookdir = Path.resolve(dir);
         if(!fs.existsSync(this.bookdir)){
-            if(this.getConfig('database.check')){
-                this.database.remove(Path.basename(this.bookdir));
+            let record = this.database.query(`uuid=${dir}`)[0];
+            if(record && record.source){
+                return this.newBook(record.source);
             }
             return this.end();
         }
