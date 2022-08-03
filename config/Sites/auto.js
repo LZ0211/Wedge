@@ -439,7 +439,7 @@ function getNextPage($){
     var id = $.location().split("/").filter(x=>x).pop().split(".")[0].split('_')[0].split('-')[0]
     links = links.filter((i,v)=>{
         var link = $(v);
-        if(link.text().trim() == "下一页"){
+        if(link.text().trim() == "下一页" && link.attr('href')){
             var url = link.attr('href').split("/").filter(x=>x).pop().split(".")[0]
             if(url.indexOf(id) == 0) return true
         }
@@ -454,7 +454,7 @@ function getNextListPage($){
     var id = $.location().replace(/index[^\/]*$/gi,'').split("/").filter(x=>x).pop()
     links = links.filter((i,v)=>{
         var link = $(v);
-        if(link.text().trim() == "下一页"){
+        if(link.text().trim() == "下一页" && link.attr('href')){
             var url = link.attr('href').replace(/index[^\/]*$/gi,'').split("/").filter(x=>x).pop()
             if(url.indexOf(id) == 0) return true
         }
