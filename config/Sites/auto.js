@@ -449,6 +449,21 @@ function getNextPage($){
     }
 }
 
+function getNextListPage($){
+    var links = $('a');
+    var id = $.location().replace(/index[^\/]*$/gi,'').split("/").filter(x=>x).pop()
+    links = links.filter((i,v)=>{
+        var link = $(v);
+        if(link.text().trim() == "下一页"){
+            var url = link.attr('href').replace(/index[^\/]*$/gi,'').split("/").filter(x=>x).pop()
+            if(url.indexOf(id) == 0) return true
+        }
+    });
+    if(links.length > 0){
+        return $.location($(links[0]).attr('href'))
+    }
+}
+
 function getIndexLink($){
 }
 
@@ -486,7 +501,8 @@ module.exports = {
             match: returnTrue,
             infoPage: getLocation,
             footer: footer,
-            bookIndexs: getList
+            bookIndexs: getList,
+            nextPage: getNextListPage
         },
         contentPage: {
             match: returnTrue,
